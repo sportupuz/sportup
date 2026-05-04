@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportUp - Halollik foydadan ustun!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Asosiy Small Caps stili */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Inter', sans-serif; 
+            font-variant: small-caps; 
+        }
+        
+        body { 
+            background: linear-gradient(rgba(245, 237, 227, 0.95), rgba(245, 237, 227, 0.95)), 
+                        url('https://www.toptal.com/designers/subtlepatterns/patterns/sports.png');
+            background-attachment: fixed;
+        }
+
+        /* Mijozlar fikri va formalar uchun Small Caps ni o'chirish */
+        .no-caps, .no-caps *, input, textarea, .review-card p {
+            font-variant: normal !important;
+            text-transform: none !important;
+        }
+
+        .welcome-header {
+            background: #ff6600;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 24px;
+            font-weight: 900;
+        }
+
+        header { background: rgba(255, 255, 255, 0.98); padding: 15px 5%; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 15px rgba(0,0,0,0.1); }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .logo h1 { color: #ff6600; font-size: 32px; letter-spacing: 2px; }
+
+        .search-bar input { width: 100%; padding: 14px 25px; border-radius: 50px; border: 2px solid #ff6600; outline: none; font-size: 16px; }
+
+        .main-container { display: flex; padding: 25px 5%; gap: 25px; }
+
+        /* Sidebar */
+        .sidebar { width: 260px; background: white; border-radius: 20px; padding: 15px; height: fit-content; position: sticky; top: 150px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        .nav-link { display: flex; align-items: center; padding: 14px; margin-bottom: 8px; cursor: pointer; border-radius: 12px; font-weight: bold; transition: 0.3s; color: #444; }
+        .nav-link.active { background: #ff6600; color: white; }
+        .nav-link:hover:not(.active) { background: #fff5ee; color: #ff6600; }
+        .nav-link i { margin-right: 12px; font-size: 18px; }
+
+        /* Admin/Info Section */
+        .info-section { background: white; border-radius: 20px; padding: 25px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-top: 5px solid #ff6600; }
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .admin-box { background: #fdfdfd; padding: 15px; border-radius: 15px; border: 1px solid #eee; }
+        .admin-box h4 { margin-bottom: 10px; color: #ff6600; font-size: 20px; }
+        .admin-box p { margin: 5px 0; display: flex; align-items: center; gap: 8px; }
+        .insta-link { color: #e1306c; text-decoration: none; font-weight: bold; }
+
+        /* Products */
+        .ozon-product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .product-card { background: white; border-radius: 20px; overflow: hidden; border: 1px solid #eee; transition: 0.4s; position: relative; }
+        .product-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .product-card img { width: 100%; height: 230px; object-fit: cover; background: #f9f9f9; }
+        .card-info { padding: 15px; text-align: center; }
+        .price { font-size: 20px; font-weight: 800; color: #ff6600; margin-bottom: 8px; }
+        .buy-btn { background: #ccc; color: white; padding: 10px; border-radius: 10px; font-weight: bold; cursor: not-allowed; display: block; text-decoration: none; }
+
+        /* Reviews */
+        .reviews-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin: 20px 0; }
+        .review-card { background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.03); border-left: 4px solid #ff6600; }
+        .review-card b { color: #ff6600; display: block; margin-bottom: 5px; }
+
+        /* Review Form */
+        .review-form { background: #f9f9f9; padding: 20px; border-radius: 15px; margin-top: 20px; }
+        .review-form input, .review-form textarea { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
+        .send-btn { background: #ff6600; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; font-variant: small-caps; }
+
+        @media (max-width: 900px) {
+            .main-container { flex-direction: column; }
+            .sidebar { width: 100%; position: static; display: flex; overflow-x: auto; padding-bottom: 5px; }
+            .nav-link { white-space: nowrap; }
+            .admin-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="welcome-header">ASSALOMU ALAYKUM! SPORTUP DO'KONIGA XUSH KELIBSIZ!</div>
+
+<header>
+    <div class="header-top">
+        <div class="logo">
+            <h1>SPORTUP</h1>
+            <p>Halollik foydadan ustun!</p>
+        </div>
+        <div class="qr-box" style="text-align: center;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=https://t.me/sportup_uz" style="border: 1px solid #ff6600; border-radius: 5px;">
+            <p style="font-size: 8px; font-weight: bold;">Kanalga o'ting</p>
+        </div>
+    </div>
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Mahsulotlarni ismini yozib qidiring..." onkeyup="search()">
+    </div>
+</header>
+
+<div class="main-container">
+    <aside class="sidebar">
+        <div class="nav-link active" onclick="filter('butsi', this)"><i class="fa-solid fa-shoe-prints"></i> Butsilar</div>
+        <div class="nav-link" onclick="filter('sarakanowka', this)"><i class="fa-solid fa-futbol"></i> Sarakanowka</div>
+        <div class="nav-link" onclick="filter('krasofka', this)"><i class="fa-solid fa-socks"></i> Krasofkalar</div>
+        <div class="nav-link" onclick="filter('forma', this)"><i class="fa-solid fa-shirt"></i> Formalar</div>
+        <div class="nav-link" onclick="filter('topplar', this)"><i class="fa-solid fa-circle"></i> To'plar</div>
+    </aside>
+
+    <div style="flex: 1;">
+        <!-- INFO SECTION -->
+        <section class="info-section">
+            <div class="admin-grid">
+                <div class="admin-box">
+                    <h4>Egalar:</h4>
+                    <p><b>Bahrom:</b> +998 99 477 68 08 <a href="https://instagram.com/bahromablanazarov" class="insta-link">@bahromablanazarov</a></p>
+                    <p><b>Akmal:</b> +998 99 477 07 82 <a href="https://instagram.com/akman_ablanazarov" class="insta-link">@akmal_abalanazarov</a></p>
+                </div>
+                <div class="admin-box">
+                    <h4>Mutasaddilar:</h4>
+                    <p><b>Abdumalik:</b> <a href="https://instagram.com/_bakhromvic" class="insta-link">@berdaliyev_z</a></p>
+                    <p><b>Abdulaziz:</b> <a href="https://instagram.com/berdaliyev_a" class="insta-link">@berdaliyev_a</a></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRODUCT GRID -->
+        <main class="ozon-product-grid" id="productGrid"></main>
+
+        <!-- REVIEWS SECTION -->
+        <section class="info-section no-caps" style="margin-top: 40px;">
+            <h3 style="font-variant: small-caps;"><i class="fa-solid fa-comments"></i> Mijozlarimiz fikri</h3>
+            
+            <div class="reviews-container" id="reviewsContainer">
+                <div class="review-card">
+                    <b>Jasur:</b>
+                    <p>Sifat juda zo'r, butsilar kutilganidan ham yaxshi chiqdi! Rahmat SportUp.</p>
+                </div>
+                <div class="review-card">
+                    <b>Olimjon:</b>
+                    <p>Dostavka vaqtida keldi. Halol savdo uchun rahmat akalar.</p>
+                </div>
+            </div>
+
+            <!-- Fikr qoldirish formasi -->
+            <div class="review-form">
+                <h4 style="font-variant: small-caps; margin-bottom: 10px;">Fikringizni qoldiring:</h4>
+                <input type="text" id="revName" placeholder="Ismingiz">
+                <textarea id="revText" rows="3" placeholder="Fikringizni shu yerga yozing..."></textarea>
+                <button class="send-btn" onclick="addReview()">Yuborish</button>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+    // Rasmlar manzili (ishlaydigan linklar)
+    const imgs = {
+        butsi: "https://images.unsplash.com/photo-1511886929837-354d827aae26?w=400",
+        sara: "https://images.unsplash.com/photo-1520639889313-7272a6131c82?w=400",
+        kras: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400",
+        forma: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400",
+        top: "https://images.unsplash.com/photo-1614632537423-1e6c2e7e0aab?w=400"
+    };
+
+    const products = {
+        butsi: Array.from({length: 20}, (_, i) => ({ n: `Nike Mercurial Pro V${i+1}`, p: "850,000", i: imgs.butsi })),
+        sarakanowka: Array.from({length: 20}, (_, i) => ({ n: `Adidas Predator Turf T${i+1}`, p: "650,000", i: imgs.sara })),
+        krasofka: Array.from({length: 20}, (_, i) => ({ n: `Air Max Sport Edition S${i+1}`, p: "750,000", i: imgs.kras })),
+        forma: Array.from({length: 20}, (_, i) => ({ n: `Real Madrid Home Kit M${i+1}`, p: "350,000", i: imgs.forma })),
+        topplar: Array.from({length: 20}, (_, i) => ({ n: `FIFA World Cup Ball B${i+1}`, p: "450,000", i: imgs.top }))
+    };
+
+    function filter(cat, el) {
+        document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+        el.classList.add('active');
+        const grid = document.getElementById('productGrid');
+        grid.innerHTML = '';
+        products[cat].forEach(p => {
+            grid.innerHTML += `
+                <div class="product-card">
+                    <img src="${p.i}" alt="SportUp Product">
+                    <div class="card-info">
+                        <div class="price">${p.p} UZS</div>
+                        <div class="name">${p.n}</div>
+                        <a href="#" class="buy-btn">TEZ KUNDA...</a>
+                    </div>
+                </div>`;
+        });
+    }
+
+    function search() {
+        let val = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('.product-card').forEach(c => {
+            let name = c.querySelector('.name').innerText.toLowerCase();
+            c.style.display = name.includes(val) ? "block" : "none";
+        });
+    }
+
+    function addReview() {
+        const name = document.getElementById('revName').value;
+        const text = document.getElementById('revText').value;
+        if(name && text) {
+            const container = document.getElementById('reviewsContainer');
+            const newRev = document.createElement('div');
+            newRev.className = 'review-card';
+            newRev.innerHTML = `<b>${name}:</b><p>${text}</p>`;
+            container.prepend(newRev);
+            document.getElementById('revName').value = '';
+            document.getElementById('revText').value = '';
+            alert("Rahmat! Fikringiz qabul qilindi.");
+        } else {
+            alert("Iltimos, ismingiz va fikringizni to'liq yozing!");
+        }
+    }
+
+    // Birinchi yuklash
+    filter('butsi', document.querySelector('.nav-link'));
+</script>
+
+</body>
+</html>
