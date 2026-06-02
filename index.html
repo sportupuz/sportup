@@ -1,14 +1,11 @@
+cat > /mnt/user-data/outputs/sportup.html << 'HTMLEOF'
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz" data-theme="light">
 <head>
-<meta property="og:image" content="https://sportupuz.github.io/sportupuz.jpg">
-<meta property="og:title" content="SportUp - Halollik Foydadan Ustun!">
-<meta property="og:description" content="O'zbekistonning #1 sport do'koni">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SportUp — Halollik Foydadan Ustun!</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="icon" href="sportupuz.jpg" type="image/jpeg">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -16,8 +13,17 @@
   --lt:#F7F4F0;--bd:#E8E2DA;--dk:#0D0D0D;--gy:#8A8478;--wh:#FFFFFF;
   --green:#00C851;--blue:#0066FF;
   --card-gap:20px;
+  --bg-page:#F7F4F0;--bg-card:#FFFFFF;--bg-header:#FFFFFF;
+  --text-main:#0D0D0D;--text-muted:#8A8478;--border:#E8E2DA;
+  --sb-bg:#FFFFFF;--sb-border:#E8E2DA;
 }
-body{font-family:'Barlow',sans-serif;background:var(--lt);color:var(--dk);overflow-x:hidden}
+[data-theme="dark"]{
+  --lt:#1A1A1A;--bd:#2E2E2E;--dk:#F0F0F0;--gy:#888;--wh:#222;
+  --bg-page:#111;--bg-card:#1E1E1E;--bg-header:#161616;
+  --text-main:#F0F0F0;--text-muted:#888;--border:#2E2E2E;
+  --sb-bg:#161616;--sb-border:#2A2A2A;--orl:#2A1500;--orll:#1E1000;
+}
+body{font-family:'Barlow',sans-serif;background:var(--bg-page);color:var(--text-main);overflow-x:hidden;transition:background .3s,color .3s}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:var(--lt)}
 ::-webkit-scrollbar-thumb{background:var(--or);border-radius:3px}
@@ -42,72 +48,96 @@ body{font-family:'Barlow',sans-serif;background:var(--lt);color:var(--dk);overfl
 @keyframes personCardIn{from{opacity:0;transform:translateX(-12px) scale(.94)}to{opacity:1;transform:translateX(0) scale(1)}}
 @keyframes infoSlide{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 @keyframes tagPop{from{transform:scale(0)}to{transform:scale(1)}}
+@keyframes cartBounce{0%{transform:scale(1)}40%{transform:scale(1.4)}100%{transform:scale(1)}}
+@keyframes notifySlide{from{opacity:0;transform:translateX(120px)}to{opacity:1;transform:translateX(0)}}
+@keyframes orderCardIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 
 /* TICKER */
-.ticker{background:var(--dk);color:#fff;height:36px;overflow:hidden;position:relative;display:flex;align-items:center}
+.ticker{background:var(--dk);color:var(--bg-page);height:36px;overflow:hidden;position:relative;display:flex;align-items:center}
+[data-theme="dark"] .ticker{background:#FF5500;color:#fff}
 .ticker-inner{display:flex;white-space:nowrap;animation:tickerMove 32s linear infinite}
 .ticker-inner:hover{animation-play-state:paused}
 .ticker-inner span{font-size:11px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;padding:0 28px}
 .ticker-inner span b{color:var(--or)}
+[data-theme="dark"] .ticker-inner span b{color:#fff}
 .t-tag{background:var(--or);color:#fff;font-size:9px;font-weight:900;padding:2px 8px;letter-spacing:1px;text-transform:uppercase;margin:0 4px;border-radius:2px;vertical-align:middle}
+[data-theme="dark"] .t-tag{background:#fff;color:var(--or)}
 
 /* HEADER */
-.header{background:var(--wh);display:flex;align-items:center;gap:14px;padding:0 22px;border-bottom:3px solid var(--or);position:sticky;top:0;z-index:400;height:66px;box-shadow:0 4px 24px rgba(0,0,0,.09);animation:slideDown .4s ease}
+.header{background:var(--bg-header);display:flex;align-items:center;gap:14px;padding:0 22px;border-bottom:3px solid var(--or);position:sticky;top:0;z-index:400;height:66px;box-shadow:0 4px 24px rgba(0,0,0,.12);animation:slideDown .4s ease;transition:background .3s}
 .logo-wrap{flex-shrink:0;cursor:pointer;user-select:none}
-.logo{font-family:'Bebas Neue';font-size:38px;color:var(--dk);letter-spacing:3px;line-height:1;animation:logoGlow 4s ease infinite}
+.logo{font-family:'Bebas Neue';font-size:38px;color:var(--text-main);letter-spacing:3px;line-height:1;animation:logoGlow 4s ease infinite}
 .logo em{color:var(--or);font-style:normal}
-.logo-tagline{font-size:8px;font-weight:800;color:var(--gy);letter-spacing:3px;text-transform:uppercase;margin-top:-3px}
+.logo-tagline{font-size:8px;font-weight:800;color:var(--text-muted);letter-spacing:3px;text-transform:uppercase;margin-top:-3px}
 .search-wrap{flex:1;max-width:460px;position:relative}
-.search-wrap input{width:100%;padding:11px 18px 11px 48px;border:2px solid var(--bd);border-radius:50px;font-family:'Barlow';font-size:13px;font-weight:500;background:var(--lt);outline:none;transition:.25s;color:var(--dk)}
-.search-wrap input:focus{border-color:var(--or);background:#fff;box-shadow:0 0 0 5px rgba(255,85,0,.1)}
+.search-wrap input{width:100%;padding:11px 18px 11px 48px;border:2px solid var(--border);border-radius:50px;font-family:'Barlow';font-size:13px;font-weight:500;background:var(--lt);outline:none;transition:.25s;color:var(--text-main)}
+.search-wrap input:focus{border-color:var(--or);background:var(--bg-card);box-shadow:0 0 0 5px rgba(255,85,0,.1)}
 .search-icon{position:absolute;left:17px;top:50%;transform:translateY(-50%);font-size:18px;opacity:.5;pointer-events:none}
 .h-right{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
+
+/* DARK MODE TOGGLE */
+.dark-toggle{width:48px;height:26px;border-radius:13px;background:var(--border);border:none;cursor:pointer;position:relative;transition:.3s;flex-shrink:0}
+.dark-toggle::after{content:'';position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.3s;display:flex;align-items:center;justify-content:center}
+[data-theme="dark"] .dark-toggle{background:var(--or)}
+[data-theme="dark"] .dark-toggle::after{left:25px;background:#fff}
+.dark-icon{font-size:14px;position:absolute;top:50%;transform:translateY(-50%);transition:.3s;pointer-events:none}
+.dark-icon.sun{left:5px;opacity:1}
+.dark-icon.moon{right:5px;opacity:.4}
+[data-theme="dark"] .dark-icon.sun{opacity:.4}
+[data-theme="dark"] .dark-icon.moon{opacity:1}
+
 .h-soc{display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:30px;font-size:11px;font-weight:800;text-decoration:none;transition:.25s;letter-spacing:.5px;border:none;cursor:pointer;font-family:'Barlow';position:relative;overflow:hidden}
 .h-soc:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.2)}
 .h-tg{background:#229ED9;color:#fff}
 .h-ig{background:linear-gradient(135deg,#F09433,#E6683C,#DC2743,#CC2366,#BC1888);color:#fff}
-
-/* SIGNUP / LOGIN BTN */
 .h-signup{display:flex;align-items:center;gap:6px;padding:9px 18px;border-radius:30px;font-size:11px;font-weight:900;letter-spacing:1px;border:2px solid var(--or);background:transparent;color:var(--or);cursor:pointer;transition:.25s;font-family:'Barlow';text-transform:uppercase}
 .h-signup:hover{background:var(--or);color:#fff;transform:translateY(-2px);box-shadow:0 8px 20px rgba(255,85,0,.3)}
-.h-login{display:flex;align-items:center;gap:6px;padding:9px 18px;border-radius:30px;font-size:11px;font-weight:900;letter-spacing:1px;border:2px solid var(--dk);background:var(--dk);color:#fff;cursor:pointer;transition:.25s;font-family:'Barlow';text-transform:uppercase}
-.h-login:hover{background:var(--or);border-color:var(--or);transform:translateY(-2px)}
 
-.cart-btn{position:relative;width:48px;height:48px;border-radius:50%;background:var(--dk);color:#fff;border:none;cursor:pointer;font-size:21px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.25s;animation:pulse 2.5s infinite}
+/* CART BUTTON */
+.cart-wrap{position:relative}
+.cart-btn{width:48px;height:48px;border-radius:50%;background:var(--dk);color:var(--bg-card);border:none;cursor:pointer;font-size:21px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.25s}
+[data-theme="dark"] .cart-btn{background:var(--or);color:#fff}
 .cart-btn:hover{background:var(--or);transform:scale(1.1) rotate(8deg)}
-.cart-count{position:absolute;top:-4px;right:-4px;background:#E53935;color:#fff;font-size:9px;width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;border:2.5px solid #fff;transition:transform .2s}
+.cart-count{position:absolute;top:-4px;right:-4px;background:#E53935;color:#fff;font-size:9px;min-width:19px;height:19px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;border:2.5px solid var(--bg-header);padding:0 4px;transition:transform .2s}
+.cart-count.bounce{animation:cartBounce .4s ease}
+
+.h-admin-btn{display:flex;align-items:center;gap:6px;padding:9px 18px;border-radius:30px;font-size:11px;font-weight:900;letter-spacing:1px;border:2px solid var(--green);background:var(--green);color:#fff;cursor:pointer;transition:.25s;font-family:'Barlow';text-transform:uppercase}
+.h-admin-btn:hover{background:#00a843;border-color:#00a843;transform:translateY(-2px)}
 
 /* LAYOUT */
 .layout{display:flex;min-height:calc(100vh - 102px)}
 
 /* SIDEBAR */
-.sb{width:224px;min-width:224px;background:var(--wh);border-right:1px solid var(--bd);padding:18px 10px 28px;position:sticky;top:102px;height:calc(100vh - 102px);overflow-y:auto;animation:slideR .5s ease}
-.sb-label{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;color:var(--gy);margin-bottom:12px;padding:0 8px}
-.cat-btn{display:flex;align-items:center;gap:10px;padding:12px 13px;border-radius:14px;border:none;background:transparent;cursor:pointer;width:100%;text-align:left;font-family:'Barlow Condensed';font-size:14px;font-weight:700;color:var(--dk);margin-bottom:4px;transition:all .22s;letter-spacing:.3px;position:relative;overflow:hidden}
+.sb{width:224px;min-width:224px;background:var(--sb-bg);border-right:1px solid var(--sb-border);padding:18px 10px 28px;position:sticky;top:102px;height:calc(100vh - 102px);overflow-y:auto;animation:slideR .5s ease;transition:background .3s,border .3s}
+.sb-label{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;color:var(--text-muted);margin-bottom:12px;padding:0 8px}
+.cat-btn{display:flex;align-items:center;gap:10px;padding:12px 13px;border-radius:14px;border:none;background:transparent;cursor:pointer;width:100%;text-align:left;font-family:'Barlow Condensed';font-size:14px;font-weight:700;color:var(--text-main);margin-bottom:4px;transition:all .22s;letter-spacing:.3px;position:relative;overflow:hidden}
 .cat-btn::before{content:'';position:absolute;left:0;top:0;height:100%;width:3px;background:var(--or);transform:scaleY(0);transition:.22s;border-radius:0 2px 2px 0}
 .cat-btn:hover{background:var(--orl);color:var(--or);transform:translateX(5px)}
 .cat-btn:hover::before{transform:scaleY(1)}
-.cat-btn.active{background:var(--dk);color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.22)}
-.cat-btn.active::before{transform:scaleY(1);background:#fff;opacity:.4}
+.cat-btn.active{background:var(--dk);color:var(--bg-card);box-shadow:0 6px 20px rgba(0,0,0,.22)}
+[data-theme="dark"] .cat-btn.active{background:var(--or);color:#fff}
+.cat-btn.active::before{transform:scaleY(1);background:rgba(255,255,255,.4)}
 .cat-btn.active .cat-count{background:rgba(255,255,255,.2)}
 .cat-icon{font-size:18px;width:26px;text-align:center;flex-shrink:0}
 .cat-name{flex:1}
 .cat-count{font-size:10px;background:rgba(0,0,0,.07);padding:2px 8px;border-radius:10px;font-weight:900}
-.sb-divider{height:1px;background:var(--bd);margin:16px 4px}
-.acc-btn{display:flex;align-items:center;justify-content:space-between;padding:12px 13px;border-radius:14px;border:1.5px solid var(--bd);background:var(--lt);cursor:pointer;width:100%;font-family:'Barlow Condensed';font-size:13px;font-weight:800;color:var(--dk);transition:all .25s;margin-bottom:6px;letter-spacing:.5px}
+[data-theme="dark"] .cat-count{background:rgba(255,255,255,.1)}
+.sb-divider{height:1px;background:var(--border);margin:16px 4px}
+.acc-btn{display:flex;align-items:center;justify-content:space-between;padding:12px 13px;border-radius:14px;border:1.5px solid var(--border);background:var(--lt);cursor:pointer;width:100%;font-family:'Barlow Condensed';font-size:13px;font-weight:800;color:var(--text-main);transition:all .25s;margin-bottom:6px;letter-spacing:.5px}
 .acc-btn:hover{background:var(--orl);border-color:var(--or);color:var(--or)}
-.acc-btn.open{background:var(--dk);color:#fff;border-color:var(--dk)}
+.acc-btn.open{background:var(--dk);color:var(--bg-card);border-color:var(--dk)}
+[data-theme="dark"] .acc-btn.open{background:var(--or);border-color:var(--or);color:#fff}
 .acc-arrow{font-size:9px;transition:transform .3s}
 .acc-btn.open .acc-arrow{transform:rotate(180deg)}
-.acc-panel{display:none;padding:6px 2px;border:1px solid var(--bd);border-radius:14px;margin-bottom:8px;background:var(--lt);animation:fadeUp .25s ease}
+.acc-panel{display:none;padding:6px 2px;border:1px solid var(--border);border-radius:14px;margin-bottom:8px;background:var(--lt);animation:fadeUp .25s ease}
 .acc-panel.show{display:block}
-.person-row{display:flex;align-items:flex-start;gap:10px;padding:10px 11px;border-radius:12px;margin-bottom:3px;background:var(--wh);border:1px solid transparent;transition:.2s;cursor:pointer;position:relative}
-.person-row:hover{background:var(--orl);border-color:var(--bd);transform:translateX(4px)}
+.person-row{display:flex;align-items:flex-start;gap:10px;padding:10px 11px;border-radius:12px;margin-bottom:3px;background:var(--bg-card);border:1px solid transparent;transition:.2s;cursor:pointer;position:relative}
+.person-row:hover{background:var(--orl);border-color:var(--border);transform:translateX(4px)}
 .p-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:2px solid var(--or);background:var(--orl)}
 .p-info{flex:1;min-width:0}
-.p-name{font-size:12px;font-weight:900;color:var(--dk)}
+.p-name{font-size:12px;font-weight:900;color:var(--text-main)}
 .p-phone{font-size:11px;color:var(--or);font-weight:800;margin-top:2px}
-.p-role-tag{font-size:9px;font-weight:800;color:var(--gy);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+.p-role-tag{font-size:9px;font-weight:800;color:var(--text-muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
 .ig-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:9px;font-weight:900;text-decoration:none;color:#fff;background:linear-gradient(135deg,#F09433,#DC2743,#BC1888);margin-top:4px;transition:.2s;letter-spacing:.5px}
 .ig-badge:hover{opacity:.85;transform:scale(1.04)}
 .sb-soc{display:flex;align-items:center;gap:6px;padding:10px 13px;border-radius:12px;font-size:11px;font-weight:800;text-decoration:none;margin:4px 4px 2px;background:#229ED9;color:#fff;transition:.2s;font-family:'Barlow';letter-spacing:.3px}
@@ -122,7 +152,7 @@ body{font-family:'Barlow',sans-serif;background:var(--lt);color:var(--dk);overfl
 .pcp-avatar{width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:28px;border:3px solid rgba(255,255,255,.5);margin-bottom:10px;animation:avatarPulse 2s infinite}
 .pcp-fullname{font-family:'Bebas Neue';font-size:22px;color:#fff;letter-spacing:2px;line-height:1.1}
 .pcp-role-tag{display:inline-block;background:rgba(255,255,255,.2);color:#fff;font-size:9px;font-weight:900;padding:3px 10px;border-radius:20px;letter-spacing:1.5px;text-transform:uppercase;margin-top:6px;animation:tagPop .3s cubic-bezier(.34,1.56,.64,1) .1s both}
-.pcp-body{padding:16px}
+.pcp-body{padding:16px;background:var(--dk)}
 .pcp-row{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.07);animation:infoSlide .3s ease both}
 .pcp-row:last-child{border-bottom:none}
 .pcp-icon{font-size:16px;width:28px;text-align:center;flex-shrink:0}
@@ -138,44 +168,45 @@ body{font-family:'Barlow',sans-serif;background:var(--lt);color:var(--dk);overfl
 /* CONTENT */
 .ct{flex:1;padding:22px 26px;overflow-y:auto;max-height:calc(100vh - 102px)}
 .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;animation:fadeUp .5s ease}
-.page-title{font-family:'Bebas Neue';font-size:42px;color:var(--dk);letter-spacing:2px;line-height:1}
+.page-title{font-family:'Bebas Neue';font-size:42px;color:var(--text-main);letter-spacing:2px;line-height:1}
 .page-title em{color:var(--or);font-style:normal}
-.count-badge{background:var(--dk);color:#fff;font-size:10px;font-weight:900;padding:6px 16px;border-radius:30px;letter-spacing:1.5px;text-transform:uppercase}
+.count-badge{background:var(--dk);color:var(--bg-card);font-size:10px;font-weight:900;padding:6px 16px;border-radius:30px;letter-spacing:1.5px;text-transform:uppercase}
+[data-theme="dark"] .count-badge{background:var(--or)}
 
 /* TRUST BAR */
 .trust-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
-.trust-card{background:var(--wh);border-radius:16px;padding:16px 12px;text-align:center;border:1.5px solid var(--bd);transition:all .3s;animation:fadeUp .5s ease both;cursor:default}
+.trust-card{background:var(--bg-card);border-radius:16px;padding:16px 12px;text-align:center;border:1.5px solid var(--border);transition:all .3s;animation:fadeUp .5s ease both;cursor:default}
 .trust-card:hover{border-color:var(--or);transform:translateY(-5px);box-shadow:0 12px 32px rgba(255,85,0,.12)}
 .trust-ico{font-size:24px;display:block;margin-bottom:5px;animation:float 3s ease infinite}
-.trust-title{font-size:10px;font-weight:900;color:var(--dk);text-transform:uppercase;letter-spacing:1px}
-.trust-sub{font-size:9px;color:var(--gy);font-weight:500;margin-top:2px}
+.trust-title{font-size:10px;font-weight:900;color:var(--text-main);text-transform:uppercase;letter-spacing:1px}
+.trust-sub{font-size:9px;color:var(--text-muted);font-weight:500;margin-top:2px}
 
 /* PRODUCT GRID */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(192px,1fr));gap:var(--card-gap)}
-.no-results{grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--gy)}
+.no-results{grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--text-muted)}
 .no-results span{font-size:52px;display:block;margin-bottom:14px}
 
 /* PRODUCT CARD */
-.pcard{background:var(--wh);border-radius:20px;overflow:hidden;border:1.5px solid var(--bd);cursor:pointer;transition:all .35s cubic-bezier(.25,.46,.45,.94);position:relative;animation:cardIn .45s ease both}
+.pcard{background:var(--bg-card);border-radius:20px;overflow:hidden;border:1.5px solid var(--border);cursor:pointer;transition:all .35s cubic-bezier(.25,.46,.45,.94);position:relative;animation:cardIn .45s ease both}
 .pcard:hover{transform:translateY(-10px);border-color:var(--or);box-shadow:0 24px 56px rgba(255,85,0,.18)}
 .pcard:active{transform:translateY(-5px) scale(.98)}
 .pcard .ripple{position:absolute;border-radius:50%;background:rgba(255,85,0,.25);transform:scale(0);animation:ripple .6s linear;pointer-events:none;z-index:10}
 .card-badge{position:absolute;top:11px;left:11px;background:var(--or);color:#fff;font-size:8px;font-weight:900;padding:3px 10px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;z-index:5;animation:badgePop .45s cubic-bezier(.34,1.56,.64,1) both;animation-delay:.2s}
 .card-badge.new{background:var(--green)}
 .card-badge.sale{background:#E53935}
-.img-wrap{width:100%;height:178px;overflow:hidden;border-bottom:1px solid var(--bd);position:relative;background:#F0EBE3}
-.img-shimmer{position:absolute;inset:0;background:linear-gradient(90deg,#F0EBE3 25%,#E4DDD4 50%,#F0EBE3 75%);background-size:700px 100%;animation:shimmer 1.6s infinite;z-index:2}
+.img-wrap{width:100%;height:178px;overflow:hidden;border-bottom:1px solid var(--border);position:relative;background:var(--lt)}
+.img-shimmer{position:absolute;inset:0;background:linear-gradient(90deg,var(--lt) 25%,var(--border) 50%,var(--lt) 75%);background-size:700px 100%;animation:shimmer 1.6s infinite;z-index:2}
 .pimg{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .4s,transform .4s;position:absolute;inset:0;z-index:3}
 .pimg.show{opacity:1;animation:imgReveal .5s ease both}
 .pcard:hover .pimg{transform:scale(1.07)}
-.img-fallback{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:4;background:linear-gradient(135deg,var(--orl) 0%,#fff 100%)}
+.img-fallback{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:4;background:linear-gradient(135deg,var(--orl) 0%,var(--bg-card) 100%)}
 .img-fallback .fi-emoji{font-size:60px;margin-bottom:8px;animation:float 2.5s ease infinite}
-.img-fallback .fi-brand{font-size:10px;font-weight:900;color:var(--gy);text-transform:uppercase;letter-spacing:2px}
+.img-fallback .fi-brand{font-size:10px;font-weight:900;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px}
 .card-body{padding:14px 14px 16px}
 .card-brand{font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:2.5px;color:var(--or);margin-bottom:3px}
-.card-price{font-family:'Bebas Neue';font-size:26px;color:var(--dk);line-height:1;margin-bottom:2px}
-.card-name{font-size:11px;color:var(--gy);font-weight:500;margin-bottom:8px;line-height:1.45;min-height:32px}
-.card-info{font-size:10px;color:var(--dk);font-weight:600;line-height:1.6;margin-bottom:11px;padding:7px 10px;background:var(--lt);border-radius:9px;border-left:3px solid var(--or)}
+.card-price{font-family:'Bebas Neue';font-size:26px;color:var(--text-main);line-height:1;margin-bottom:2px}
+.card-name{font-size:11px;color:var(--text-muted);font-weight:500;margin-bottom:8px;line-height:1.45;min-height:32px}
+.card-info{font-size:10px;color:var(--text-main);font-weight:600;line-height:1.6;margin-bottom:11px;padding:7px 10px;background:var(--lt);border-radius:9px;border-left:3px solid var(--or)}
 .buy-btn{width:100%;padding:11px;background:var(--or);color:#fff;border:none;border-radius:11px;font-family:'Barlow Condensed';font-size:13px;font-weight:800;cursor:pointer;transition:all .22s;display:flex;align-items:center;justify-content:center;gap:6px;letter-spacing:.5px}
 .buy-btn:hover{background:var(--ord);transform:scale(1.02)}
 
@@ -184,122 +215,217 @@ body{font-family:'Barlow',sans-serif;background:var(--lt);color:var(--dk);overfl
 .overlay.open{display:flex}
 
 /* PRODUCT MODAL */
-.pmodal{background:var(--wh);border-radius:26px;max-width:490px;width:100%;position:relative;overflow:hidden;animation:popIn .38s cubic-bezier(.34,1.3,.64,1);box-shadow:0 40px 100px rgba(0,0,0,.35)}
-.pmod-img-wrap{width:100%;height:270px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;background:#F0EBE3}
+.pmodal{background:var(--bg-card);border-radius:26px;max-width:490px;width:100%;position:relative;overflow:hidden;animation:popIn .38s cubic-bezier(.34,1.3,.64,1);box-shadow:0 40px 100px rgba(0,0,0,.35)}
+.pmod-img-wrap{width:100%;height:270px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;background:var(--lt)}
 .pmod-img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .4s}
 .pmod-img.show{opacity:1;animation:imgReveal .6s ease}
-.pmod-fallback{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--orl),#fff)}
+.pmod-fallback{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--orl),var(--bg-card))}
 .pmod-fallback span{font-size:96px;animation:float 2.5s ease infinite}
 .close-btn{position:absolute;top:13px;right:13px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:38px;height:38px;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;transition:.22s;backdrop-filter:blur(6px)}
 .close-btn:hover{background:rgba(0,0,0,.9);transform:scale(1.1) rotate(90deg)}
 .pmod-body{padding:22px 24px 24px}
 .pmod-brand{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:3px;color:var(--or);margin-bottom:4px}
-.pmod-name{font-family:'Bebas Neue';font-size:26px;color:var(--dk);margin-bottom:2px;line-height:1.1}
+.pmod-name{font-family:'Bebas Neue';font-size:26px;color:var(--text-main);margin-bottom:2px;line-height:1.1}
 .pmod-price{font-family:'Bebas Neue';font-size:34px;color:var(--or);margin-bottom:14px}
 .pmod-info{background:var(--lt);border-radius:14px;padding:13px 15px;margin-bottom:18px;border-left:4px solid var(--or)}
-.pmod-info p{font-size:12px;color:var(--dk);font-weight:500;line-height:1.85}
+.pmod-info p{font-size:12px;color:var(--text-main);font-weight:500;line-height:1.85}
 .pmod-info strong{color:var(--or);font-weight:900}
-.order-label{font-size:9px;font-weight:900;color:var(--gy);margin-bottom:11px;text-transform:uppercase;letter-spacing:2px}
+.order-label{font-size:9px;font-weight:900;color:var(--text-muted);margin-bottom:11px;text-transform:uppercase;letter-spacing:2px}
 .order-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .order-btn{padding:14px 8px;border:none;border-radius:13px;font-family:'Barlow Condensed';font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:all .25s;letter-spacing:.5px}
 .order-btn:hover{transform:translateY(-3px);filter:brightness(1.1)}
 .o-tg{background:#229ED9;color:#fff}
 .o-ig{background:linear-gradient(135deg,#F09433,#E6683C,#DC2743,#CC2366,#BC1888);color:#fff}
-.o-online{background:var(--dk);color:#fff;grid-column:1/-1;font-size:16px;padding:16px;font-weight:900;border-radius:13px;letter-spacing:1px}
+.o-online{background:var(--dk);color:var(--bg-card);grid-column:1/-1;font-size:16px;padding:16px;font-weight:900;border-radius:13px;letter-spacing:1px}
+[data-theme="dark"] .o-online{background:var(--or);color:#fff}
 .o-online:hover{background:var(--or)}
 
 /* ORDER FORM MODAL */
-.omodal{background:var(--wh);border-radius:26px;padding:30px 28px;max-width:400px;width:100%;position:relative;animation:popIn .38s cubic-bezier(.34,1.3,.64,1);box-shadow:0 40px 100px rgba(0,0,0,.35)}
-.omod-close{position:absolute;top:14px;right:14px;background:var(--lt);color:var(--dk);border:none;border-radius:50%;width:34px;height:34px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
-.omod-close:hover{background:var(--bd);transform:rotate(90deg)}
+.omodal{background:var(--bg-card);border-radius:26px;padding:30px 28px;max-width:440px;width:100%;position:relative;animation:popIn .38s cubic-bezier(.34,1.3,.64,1);box-shadow:0 40px 100px rgba(0,0,0,.35);max-height:90vh;overflow-y:auto}
+.omod-close{position:absolute;top:14px;right:14px;background:var(--lt);color:var(--text-main);border:none;border-radius:50%;width:34px;height:34px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+.omod-close:hover{background:var(--border);transform:rotate(90deg)}
 .omodal h3{font-family:'Bebas Neue';font-size:34px;color:var(--or);margin-bottom:6px;letter-spacing:2px}
-.omod-product{font-weight:700;font-size:12px;margin-bottom:18px;padding:11px 14px;background:var(--orl);border-radius:12px;border-left:3px solid var(--or);line-height:1.7;color:var(--dk)}
-.omodal input{width:100%;padding:13px 17px;border:1.5px solid var(--bd);border-radius:13px;font-family:'Barlow';font-size:13px;outline:none;margin-bottom:11px;background:var(--lt);transition:.25s;color:var(--dk)}
-.omodal input:focus{border-color:var(--or);background:#fff;box-shadow:0 0 0 4px rgba(255,85,0,.1)}
+.omod-product{font-weight:700;font-size:12px;margin-bottom:18px;padding:11px 14px;background:var(--orl);border-radius:12px;border-left:3px solid var(--or);line-height:1.7;color:var(--text-main)}
+.omodal input{width:100%;padding:13px 17px;border:1.5px solid var(--border);border-radius:13px;font-family:'Barlow';font-size:13px;outline:none;margin-bottom:11px;background:var(--lt);transition:.25s;color:var(--text-main)}
+.omodal input:focus{border-color:var(--or);background:var(--bg-card);box-shadow:0 0 0 4px rgba(255,85,0,.1)}
+.img-upload-area{width:100%;border:2px dashed var(--border);border-radius:13px;padding:18px;text-align:center;cursor:pointer;transition:.25s;margin-bottom:11px;background:var(--lt);position:relative}
+.img-upload-area:hover{border-color:var(--or);background:var(--orl)}
+.img-upload-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.img-upload-icon{font-size:28px;display:block;margin-bottom:5px}
+.img-upload-label{font-size:11px;color:var(--text-muted);font-weight:600}
+.img-preview-wrap{display:none;margin-bottom:11px;border-radius:13px;overflow:hidden;border:1.5px solid var(--border);position:relative}
+.img-preview-wrap img{width:100%;max-height:160px;object-fit:cover;display:block}
+.img-preview-remove{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:50%;width:28px;height:28px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .omodal .submit{width:100%;background:var(--or);color:#fff;border:none;padding:16px;border-radius:14px;font-family:'Barlow Condensed';font-weight:900;font-size:17px;cursor:pointer;transition:.22s;margin-top:5px;letter-spacing:1px}
 .omodal .submit:hover{background:var(--ord);transform:scale(1.02)}
+.omodal .submit:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .order-success{display:none;text-align:center;padding:16px;background:#E8F5E9;border-radius:14px;color:#2E7D32;font-weight:800;font-size:13px;margin-top:14px;animation:fadeUp .3s ease;line-height:1.7}
 .order-success .suc-ico{font-size:32px;display:block;margin-bottom:7px}
 
 /* LOGIN MODAL */
-.login-modal{background:var(--wh);border-radius:26px;padding:36px 32px;max-width:380px;width:100%;position:relative;animation:popIn .38s cubic-bezier(.34,1.3,.64,1);box-shadow:0 40px 100px rgba(0,0,0,.35)}
-.login-modal h2{font-family:'Bebas Neue';font-size:38px;color:var(--dk);letter-spacing:3px;margin-bottom:4px}
+.login-modal{background:var(--bg-card);border-radius:26px;padding:36px 32px;max-width:380px;width:100%;position:relative;animation:popIn .38s cubic-bezier(.34,1.3,.64,1);box-shadow:0 40px 100px rgba(0,0,0,.35)}
+.login-modal h2{font-family:'Bebas Neue';font-size:38px;color:var(--text-main);letter-spacing:3px;margin-bottom:4px}
 .login-modal h2 em{color:var(--or);font-style:normal}
-.login-modal .lm-sub{font-size:11px;color:var(--gy);font-weight:600;margin-bottom:24px;letter-spacing:.5px}
-.login-modal input{width:100%;padding:14px 18px;border:1.5px solid var(--bd);border-radius:14px;font-family:'Barlow';font-size:13px;outline:none;margin-bottom:12px;background:var(--lt);transition:.25s;color:var(--dk)}
-.login-modal input:focus{border-color:var(--or);background:#fff;box-shadow:0 0 0 4px rgba(255,85,0,.1)}
-.login-modal .lm-btn{width:100%;background:var(--dk);color:#fff;border:none;padding:16px;border-radius:14px;font-family:'Barlow Condensed';font-weight:900;font-size:17px;cursor:pointer;transition:.22s;letter-spacing:1.5px;margin-top:4px}
+.login-modal .lm-sub{font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:24px;letter-spacing:.5px}
+.login-modal input{width:100%;padding:14px 18px;border:1.5px solid var(--border);border-radius:14px;font-family:'Barlow';font-size:13px;outline:none;margin-bottom:12px;background:var(--lt);transition:.25s;color:var(--text-main)}
+.login-modal input:focus{border-color:var(--or);background:var(--bg-card);box-shadow:0 0 0 4px rgba(255,85,0,.1)}
+.login-modal .lm-btn{width:100%;background:var(--dk);color:var(--bg-card);border:none;padding:16px;border-radius:14px;font-family:'Barlow Condensed';font-weight:900;font-size:17px;cursor:pointer;transition:.22s;letter-spacing:1.5px;margin-top:4px}
 .login-modal .lm-btn:hover{background:var(--or);transform:scale(1.02)}
 .lm-error{display:none;text-align:center;padding:10px;background:#FFEBEE;border-radius:10px;color:#C62828;font-weight:800;font-size:12px;margin-top:10px;animation:fadeUp .3s ease}
-.lm-close{position:absolute;top:14px;right:14px;background:var(--lt);color:var(--dk);border:none;border-radius:50%;width:34px;height:34px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
-.lm-close:hover{background:var(--bd);transform:rotate(90deg)}
+.lm-close{position:absolute;top:14px;right:14px;background:var(--lt);color:var(--text-main);border:none;border-radius:50%;width:34px;height:34px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+.lm-close:hover{background:var(--border);transform:rotate(90deg)}
 
-/* ADMIN PANEL MODAL */
-.admin-modal{background:var(--wh);border-radius:26px;max-width:780px;width:100%;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;position:relative;animation:popIn .38s cubic-bezier(.34,1.3,.64,1);box-shadow:0 40px 100px rgba(0,0,0,.4)}
-.admin-header{background:var(--dk);padding:22px 28px;display:flex;align-items:center;gap:14px;flex-shrink:0}
-.admin-header h2{font-family:'Bebas Neue';font-size:32px;color:#fff;letter-spacing:3px;flex:1}
-.admin-header h2 em{color:var(--or);font-style:normal}
-.admin-stats{display:flex;gap:10px}
-.a-stat{background:rgba(255,255,255,.1);border-radius:10px;padding:8px 16px;text-align:center}
-.a-stat-num{font-family:'Bebas Neue';font-size:22px;color:var(--or);line-height:1}
-.a-stat-label{font-size:9px;color:rgba(255,255,255,.6);font-weight:700;text-transform:uppercase;letter-spacing:1px}
-.admin-close{background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;flex-shrink:0}
-.admin-close:hover{background:var(--or);transform:rotate(90deg)}
-.admin-body{overflow-y:auto;flex:1;padding:24px 28px}
-.admin-filter{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
-.af-btn{padding:7px 16px;border-radius:20px;border:1.5px solid var(--bd);background:var(--lt);font-family:'Barlow Condensed';font-size:12px;font-weight:700;cursor:pointer;transition:.2s;letter-spacing:.5px}
+/* ========================
+   ADMIN PANEL — YANGI DIZAYN
+   ======================== */
+.admin-modal{background:var(--bg-card);border-radius:26px;max-width:860px;width:100%;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;position:relative;animation:popIn .38s cubic-bezier(.34,1.3,.64,1);box-shadow:0 40px 100px rgba(0,0,0,.45)}
+
+/* Header */
+.admin-header{background:var(--dk);padding:0 28px;display:flex;align-items:center;gap:16px;flex-shrink:0;height:72px;border-bottom:3px solid var(--or)}
+[data-theme="dark"] .admin-header{background:#161616}
+.admin-header-left{display:flex;align-items:center;gap:12px;flex:1}
+.admin-logo-box{width:42px;height:42px;border-radius:12px;background:var(--or);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.admin-title-wrap{}
+.admin-title-wrap h2{font-family:'Bebas Neue';font-size:28px;color:#fff;letter-spacing:3px;line-height:1}
+.admin-title-wrap h2 em{color:var(--or);font-style:normal}
+.admin-title-wrap p{font-size:10px;color:rgba(255,255,255,.45);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:1px}
+.admin-stats{display:flex;gap:8px}
+.a-stat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:8px 18px;text-align:center;transition:.2s}
+.a-stat:hover{background:rgba(255,85,0,.15);border-color:rgba(255,85,0,.4)}
+.a-stat-num{font-family:'Bebas Neue';font-size:24px;color:var(--or);line-height:1}
+.a-stat-label{font-size:9px;color:rgba(255,255,255,.5);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-top:1px}
+.admin-close{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.15);border-radius:50%;width:38px;height:38px;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.22s;flex-shrink:0;font-family:'Barlow'}
+.admin-close:hover{background:var(--or);color:#fff;border-color:var(--or);transform:rotate(90deg)}
+
+/* Filter row */
+.admin-filter-row{display:flex;align-items:center;gap:8px;padding:14px 28px;border-bottom:1px solid var(--border);background:var(--lt);flex-wrap:wrap;flex-shrink:0}
+[data-theme="dark"] .admin-filter-row{background:#1A1A1A}
+.af-btn{display:flex;align-items:center;gap:7px;padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg-card);font-family:'Barlow Condensed';font-size:12px;font-weight:700;cursor:pointer;transition:.2s;letter-spacing:.5px;color:var(--text-main)}
 .af-btn:hover{border-color:var(--or);color:var(--or)}
 .af-btn.active{background:var(--or);border-color:var(--or);color:#fff}
-.admin-empty{text-align:center;padding:60px 20px;color:var(--gy)}
-.admin-empty span{font-size:48px;display:block;margin-bottom:12px}
-.admin-empty p{font-size:13px;font-weight:600}
-.order-card{background:var(--lt);border-radius:16px;padding:18px;margin-bottom:12px;border:1.5px solid var(--bd);transition:.25s;animation:cardIn .35s ease}
-.order-card:hover{border-color:var(--or);box-shadow:0 8px 24px rgba(255,85,0,.1)}
-.oc-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.oc-num{font-family:'Bebas Neue';font-size:20px;color:var(--or);letter-spacing:1px}
-.oc-date{font-size:10px;color:var(--gy);font-weight:600;margin-left:auto}
-.oc-status{padding:4px 12px;border-radius:20px;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:1px}
-.oc-status.new{background:#E8F5E9;color:#2E7D32}
-.oc-status.pending{background:#FFF3E0;color:#E65100}
-.oc-status.done{background:#E3F2FD;color:#1565C0}
-.oc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-.oc-field{background:var(--wh);border-radius:10px;padding:9px 12px}
-.oc-field-label{font-size:9px;color:var(--gy);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
-.oc-field-val{font-size:12px;color:var(--dk);font-weight:700}
-.oc-product{background:var(--orl);border-radius:10px;padding:9px 12px;border-left:3px solid var(--or);margin-bottom:12px}
-.oc-product-label{font-size:9px;color:var(--or);font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
-.oc-product-val{font-size:12px;color:var(--dk);font-weight:700;line-height:1.5}
-.oc-actions{display:flex;gap:8px}
-.oc-act-btn{flex:1;padding:8px;border:none;border-radius:10px;font-family:'Barlow Condensed';font-size:12px;font-weight:800;cursor:pointer;transition:.2s;letter-spacing:.5px}
-.oc-act-btn:hover{filter:brightness(1.1);transform:scale(1.02)}
-.oc-act-new{background:#E8F5E9;color:#2E7D32}
-.oc-act-done{background:#E3F2FD;color:#1565C0}
-.oc-act-del{background:#FFEBEE;color:#C62828}
+.af-dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0}
+.af-dot.green{background:#2E7D32}
+.af-dot.amber{background:#E65100}
+.af-dot.blue{background:#1565C0}
+.af-refresh{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg-card);font-family:'Barlow Condensed';font-size:12px;font-weight:700;cursor:pointer;transition:.2s;letter-spacing:.5px;color:var(--text-muted);margin-left:auto}
+.af-refresh:hover{border-color:var(--or);color:var(--or)}
+.af-refresh.spinning span{display:inline-block;animation:spin .6s linear infinite}
 
-/* LOGOUT BTN IN HEADER */
-.h-admin-btn{display:flex;align-items:center;gap:6px;padding:9px 18px;border-radius:30px;font-size:11px;font-weight:900;letter-spacing:1px;border:2px solid var(--green);background:var(--green);color:#fff;cursor:pointer;transition:.25s;font-family:'Barlow';text-transform:uppercase}
-.h-admin-btn:hover{background:#00a843;border-color:#00a843;transform:translateY(-2px)}
+/* Body */
+.admin-body{overflow-y:auto;flex:1;padding:20px 28px}
+
+/* Loading / empty */
+.admin-loading{text-align:center;padding:60px 20px;color:var(--text-muted)}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--or);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 14px}
+.admin-loading p{font-size:13px;font-weight:600}
+.admin-empty{text-align:center;padding:60px 20px;color:var(--text-muted)}
+.admin-empty .ae-icon{font-size:52px;display:block;margin-bottom:12px}
+.admin-empty p{font-size:13px;font-weight:600}
+
+/* Order card */
+.order-card{background:var(--bg-card);border-radius:18px;overflow:hidden;border:1.5px solid var(--border);margin-bottom:14px;transition:all .25s;animation:orderCardIn .35s ease both}
+.order-card:hover{border-color:var(--or);box-shadow:0 8px 32px rgba(255,85,0,.12)}
+
+/* Card top bar */
+.oc-topbar{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--lt)}
+[data-theme="dark"] .oc-topbar{background:#1A1A1A}
+.oc-num{font-family:'Bebas Neue';font-size:19px;color:var(--or);letter-spacing:1px;display:flex;align-items:center;gap:5px}
+.oc-status-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-family:'Barlow Condensed';font-size:11px;font-weight:700;letter-spacing:.5px}
+.oc-status-pill.new{background:#E8F5E9;color:#1B5E20}
+.oc-status-pill.pending{background:#FFF3E0;color:#E65100}
+.oc-status-pill.done{background:#E3F2FD;color:#0D47A1}
+.oc-date{font-size:10px;color:var(--text-muted);font-weight:600;margin-left:auto;display:flex;align-items:center;gap:4px}
+
+/* Product strip */
+.oc-product-strip{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--orl);border-bottom:1px solid var(--border)}
+[data-theme="dark"] .oc-product-strip{background:#2A1500}
+.oc-product-icon{font-size:18px;flex-shrink:0}
+.oc-product-label{font-size:9px;color:var(--or);font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
+.oc-product-val{font-size:12px;color:var(--text-main);font-weight:700;line-height:1.4}
+
+/* Body section */
+.oc-body{padding:14px 18px}
+
+/* Image */
+.oc-img-wrap{margin-bottom:14px;border-radius:12px;overflow:hidden;border:1.5px solid var(--border);position:relative}
+.oc-img-wrap img{width:100%;max-height:150px;object-fit:cover;display:block;cursor:zoom-in;transition:transform .3s}
+.oc-img-wrap img:hover{transform:scale(1.02)}
+.oc-img-zoom-tag{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;border-radius:8px;padding:3px 9px;font-size:10px;font-weight:700;pointer-events:none}
+
+/* Fields grid */
+.oc-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.oc-field{background:var(--lt);border-radius:11px;padding:10px 13px;border:1px solid var(--border)}
+[data-theme="dark"] .oc-field{background:#1A1A1A}
+.oc-field-label{font-size:9px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.oc-field-val{font-size:12px;color:var(--text-main);font-weight:800}
+
+/* Actions */
+.oc-actions{display:flex;gap:8px}
+.oc-act-btn{flex:1;padding:10px 6px;border:none;border-radius:11px;font-family:'Barlow Condensed';font-size:12px;font-weight:800;cursor:pointer;transition:all .2s;letter-spacing:.5px;display:flex;align-items:center;justify-content:center;gap:5px}
+.oc-act-btn:hover{transform:translateY(-2px);filter:brightness(.93)}
+.oc-act-btn:active{transform:scale(.96)}
+.oc-act-new{background:#E8F5E9;color:#1B5E20}
+.oc-act-pending{background:#FFF3E0;color:#E65100}
+.oc-act-done{background:#E3F2FD;color:#0D47A1}
+.oc-act-del{background:#FFEBEE;color:#B71C1C}
+
+/* CART MODAL */
+.cart-modal{background:var(--bg-card);border-radius:26px;max-width:500px;width:100%;max-height:85vh;overflow:hidden;display:flex;flex-direction:column;position:relative;animation:popIn .38s cubic-bezier(.34,1.3,.64,1);box-shadow:0 40px 100px rgba(0,0,0,.4)}
+.cart-header{background:linear-gradient(135deg,var(--dk),#333);padding:20px 24px;display:flex;align-items:center;gap:12px}
+[data-theme="dark"] .cart-header{background:linear-gradient(135deg,#1A1A1A,#222);border-bottom:2px solid var(--or)}
+.cart-header h2{font-family:'Bebas Neue';font-size:28px;color:#fff;letter-spacing:2px;flex:1}
+.cart-header h2 em{color:var(--or);font-style:normal}
+.cart-close{background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:50%;width:34px;height:34px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+.cart-close:hover{background:var(--or);transform:rotate(90deg)}
+.cart-body{overflow-y:auto;flex:1;padding:20px}
+.cart-empty{text-align:center;padding:50px 20px;color:var(--text-muted)}
+.cart-empty span{font-size:52px;display:block;margin-bottom:12px}
+.cart-empty p{font-size:13px;font-weight:600}
+.cart-item{display:flex;gap:12px;padding:14px;background:var(--lt);border-radius:14px;margin-bottom:10px;border:1.5px solid var(--border);transition:.2s;animation:cardIn .3s ease}
+.cart-item:hover{border-color:var(--or)}
+.ci-num{font-family:'Bebas Neue';font-size:22px;color:var(--or);flex-shrink:0;line-height:1}
+.ci-info{flex:1}
+.ci-product{font-size:12px;font-weight:800;color:var(--text-main);margin-bottom:3px;line-height:1.4}
+.ci-meta{font-size:10px;color:var(--text-muted);font-weight:600}
+.ci-status{padding:3px 10px;border-radius:10px;font-size:9px;font-weight:900;letter-spacing:.5px;margin-top:5px;display:inline-block}
+.ci-status.new{background:#E8F5E9;color:#2E7D32}
+.ci-status.pending{background:#FFF3E0;color:#E65100}
+.ci-status.done{background:#E3F2FD;color:#1565C0}
+.cart-footer{padding:16px 20px;background:var(--lt);border-top:1px solid var(--border)}
+.cart-notice{background:linear-gradient(135deg,var(--orl),var(--lt));border-radius:14px;padding:14px;border-left:4px solid var(--or);font-size:12px;color:var(--text-main);font-weight:600;line-height:1.8}
+.cart-notice strong{color:var(--or);font-weight:900;display:block;margin-bottom:4px;font-size:13px}
 
 /* REVIEWS */
-.reviews{margin-top:30px;background:var(--wh);border-radius:22px;padding:26px;border:1px solid var(--bd);animation:fadeUp .7s ease}
-.rev-header{font-family:'Bebas Neue';font-size:32px;color:var(--dk);margin-bottom:18px;letter-spacing:1px}
+.reviews{margin-top:30px;background:var(--bg-card);border-radius:22px;padding:26px;border:1px solid var(--border);animation:fadeUp .7s ease}
+.rev-header{font-family:'Bebas Neue';font-size:32px;color:var(--text-main);margin-bottom:18px;letter-spacing:1px}
 .rev-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
 .rev-card{background:var(--lt);border-radius:16px;padding:15px;border-left:4px solid var(--or);transition:.22s}
 .rev-card:hover{background:var(--orl);transform:translateY(-3px)}
-.rev-author{font-weight:900;font-size:13px;margin-bottom:4px;color:var(--dk)}
+.rev-author{font-weight:900;font-size:13px;margin-bottom:4px;color:var(--text-main)}
 .rev-stars{color:#FFB800;font-size:14px;margin-bottom:6px;letter-spacing:1.5px}
-.rev-text{font-size:11px;color:#555;line-height:1.7}
-.rev-form h4{font-weight:900;font-size:14px;margin-bottom:13px;color:var(--dk)}
-.rev-form input,.rev-form textarea{width:100%;padding:12px 15px;border:1.5px solid var(--bd);border-radius:12px;font-family:'Barlow';font-size:13px;outline:none;margin-bottom:10px;background:var(--lt);transition:.25s;color:var(--dk)}
-.rev-form input:focus,.rev-form textarea:focus{border-color:var(--or);background:#fff;box-shadow:0 0 0 4px rgba(255,85,0,.08)}
+.rev-text{font-size:11px;color:var(--text-muted);line-height:1.7}
+.rev-form h4{font-weight:900;font-size:14px;margin-bottom:13px;color:var(--text-main)}
+.rev-form input,.rev-form textarea{width:100%;padding:12px 15px;border:1.5px solid var(--border);border-radius:12px;font-family:'Barlow';font-size:13px;outline:none;margin-bottom:10px;background:var(--lt);transition:.25s;color:var(--text-main)}
+.rev-form input:focus,.rev-form textarea:focus{border-color:var(--or);background:var(--bg-card);box-shadow:0 0 0 4px rgba(255,85,0,.08)}
 .rev-form textarea{height:82px;resize:none}
-.rev-form button{background:var(--dk);color:#fff;border:none;padding:12px 26px;border-radius:12px;font-family:'Barlow Condensed';font-weight:900;font-size:14px;cursor:pointer;transition:.22s}
+.rev-form button{background:var(--dk);color:var(--bg-card);border:none;padding:12px 26px;border-radius:12px;font-family:'Barlow Condensed';font-weight:900;font-size:14px;cursor:pointer;transition:.22s}
+[data-theme="dark"] .rev-form button{background:var(--or);color:#fff}
 .rev-form button:hover{background:var(--or)}
 .rev-success{display:none;text-align:center;padding:11px;background:#E8F5E9;border-radius:11px;color:#2E7D32;font-weight:800;font-size:12px;margin-top:10px}
 
-/* LOADING SPINNER */
-.admin-loading{text-align:center;padding:40px;color:var(--gy)}
-.spinner{width:36px;height:36px;border:3px solid var(--bd);border-top-color:var(--or);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px}
+/* IMAGE FULL */
+.img-full-modal{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px}
+.img-full-modal.open{display:flex}
+.img-full-modal img{max-width:90vw;max-height:85vh;border-radius:12px;object-fit:contain}
+.img-full-close{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:50%;width:42px;height:42px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+.img-full-close:hover{background:var(--or);transform:rotate(90deg)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--dk);color:#fff;padding:14px 20px;border-radius:14px;font-size:12px;font-weight:700;z-index:9999;display:none;gap:10px;align-items:center;animation:notifySlide .35s ease;box-shadow:0 8px 32px rgba(0,0,0,.3);border-left:4px solid var(--or);max-width:320px}
+[data-theme="dark"] .toast{background:#1A1A1A;border:1px solid var(--or)}
+.toast.show{display:flex}
+.toast-icon{font-size:20px;flex-shrink:0}
+.toast-text{line-height:1.5}
 
 @media(max-width:820px){
   .layout{flex-direction:column}
@@ -313,6 +439,9 @@ body{font-family:'Barlow',sans-serif;background:var(--lt);color:var(--dk);overfl
   .o-online{grid-column:auto}
   .h-soc{display:none}
   .h-signup,.h-login{display:none}
+  .ct{padding:14px}
+  .oc-fields{grid-template-columns:1fr}
+  .admin-stats{display:none}
 }
 </style>
 </head>
@@ -353,10 +482,16 @@ body{font-family:'Barlow',sans-serif;background:var(--lt);color:var(--dk);overfl
   <div class="h-right">
     <a class="h-soc h-tg" href="https://t.me/berdaliyew" target="_blank">✈️ Telegram</a>
     <a class="h-soc h-ig" href="https://instagram.com/_bakhromvic" target="_blank">📸 Instagram</a>
-    <!-- Auth buttons — shown/hidden by JS -->
-    <button class="h-signup" id="btn-signup" onclick="openLogin()" style="display:none">🔐 Kirish</button>
+    <button class="dark-toggle" id="dark-toggle" onclick="toggleDark()" title="Qorong'u/Yorug' rejim">
+      <span class="dark-icon sun">☀️</span>
+      <span class="dark-icon moon">🌙</span>
+    </button>
+    <button class="h-signup" id="btn-signup" onclick="openLogin()">🔐 Kirish</button>
     <button class="h-admin-btn" id="btn-admin" onclick="openAdmin()" style="display:none">⚙️ Admin Panel</button>
-    <button class="cart-btn" onclick="showCart()">🛒<span class="cart-count" id="cart-count">0</span></button>
+    <div class="cart-wrap">
+      <button class="cart-btn" id="cart-btn" onclick="openCart()">🛒</button>
+      <span class="cart-count" id="cart-count">0</span>
+    </div>
   </div>
 </header>
 
@@ -379,6 +514,12 @@ body{font-family:'Barlow',sans-serif;background:var(--lt);color:var(--dk);overfl
       <button class="cat-btn" onclick="switchCat('toplar',this)">
         <span class="cat-icon">🔵</span><span class="cat-name">To'plar</span><span class="cat-count">20</span>
       </button>
+      <button class="cat-btn" onclick="switchCat('protein',this)">
+        <span class="cat-icon">💪</span><span class="cat-name">Protein & Sport Ozuqa</span><span class="cat-count">16</span>
+      </button>
+      <button class="cat-btn" onclick="switchCat('sumkalar',this)">
+        <span class="cat-icon">🎒</span><span class="cat-name">Sumkalar</span><span class="cat-count">16</span>
+      </button>
     </div>
 
     <div class="sb-divider"></div>
@@ -387,7 +528,6 @@ body{font-family:'Barlow',sans-serif;background:var(--lt);color:var(--dk);overfl
       <span>👑 Egalar</span><span class="acc-arrow">▼</span>
     </button>
     <div class="acc-panel" id="egalar-panel">
-
       <div class="person-row" onmouseenter="showPersonCard(this,event)" onmouseleave="hidePersonCard(this)">
         <div class="p-avatar">👑</div>
         <div class="p-info">
@@ -396,25 +536,16 @@ body{font-family:'Barlow',sans-serif;background:var(--lt);color:var(--dk);overfl
           <a class="ig-badge" href="https://instagram.com/bahromablanazarov" target="_blank">📸 @bahromablanazarov</a>
         </div>
         <div class="p-card-popup">
-          <div class="pcp-header">
-            <div class="pcp-scan"></div>
-            <div class="pcp-avatar">👑</div>
-            <div class="pcp-fullname">Ablanazarov Bahrom</div>
-            <span class="pcp-role-tag">🏆 Egasi / Asoschisi</span>
-          </div>
+          <div class="pcp-header"><div class="pcp-scan"></div><div class="pcp-avatar">👑</div><div class="pcp-fullname">Ablanazarov Bahrom</div><span class="pcp-role-tag">🏆 Egasi / Asoschisi</span></div>
           <div class="pcp-body">
             <div class="pcp-row"><span class="pcp-icon">🎂</span><div><div class="pcp-label">Tug'ilgan yil</div><div class="pcp-val">1980 • Berdali o'g'li</div></div></div>
             <div class="pcp-row"><span class="pcp-icon">📍</span><div><div class="pcp-label">Manzil</div><div class="pcp-val">Sirdaryo vil. Guliston sh.<br>Bahovut tumani, Anorzor mahallasi</div></div></div>
             <div class="pcp-row"><span class="pcp-icon">📞</span><div><div class="pcp-label">Telefon</div><div class="pcp-val">+998 99 477 68 08</div></div></div>
             <div class="pcp-row"><span class="pcp-icon">📸</span><div><div class="pcp-label">Instagram</div><div class="pcp-val"><a href="https://instagram.com/bahromablanazarov" target="_blank">@bahromablanazarov</a></div></div></div>
           </div>
-          <div class="pcp-footer">
-            <a class="pcp-btn pcp-tg" href="https://t.me/berdaliyew" target="_blank">✈️ Telegram</a>
-            <a class="pcp-btn pcp-ig" href="https://instagram.com/bahromablanazarov" target="_blank">📸 Instagram</a>
-          </div>
+          <div class="pcp-footer"><a class="pcp-btn pcp-tg" href="https://t.me/berdaliyew" target="_blank">✈️ Telegram</a><a class="pcp-btn pcp-ig" href="https://instagram.com/bahromablanazarov" target="_blank">📸 Instagram</a></div>
         </div>
       </div>
-
       <div class="person-row" onmouseenter="showPersonCard(this,event)" onmouseleave="hidePersonCard(this)">
         <div class="p-avatar">👑</div>
         <div class="p-info">
@@ -423,131 +554,78 @@ body{font-family:'Barlow',sans-serif;background:var(--lt);color:var(--dk);overfl
           <a class="ig-badge" href="https://instagram.com/akmal_ablanazarov" target="_blank">📸 @akmal_ablanazarov</a>
         </div>
         <div class="p-card-popup">
-          <div class="pcp-header">
-            <div class="pcp-scan"></div>
-            <div class="pcp-avatar">👑</div>
-            <div class="pcp-fullname">Ablanazarov Akmal</div>
-            <span class="pcp-role-tag">🏆 Egasi / Hamkorchi</span>
-          </div>
+          <div class="pcp-header"><div class="pcp-scan"></div><div class="pcp-avatar">👑</div><div class="pcp-fullname">Ablanazarov Akmal</div><span class="pcp-role-tag">🏆 Egasi / Hamkorchi</span></div>
           <div class="pcp-body">
             <div class="pcp-row"><span class="pcp-icon">🎂</span><div><div class="pcp-label">Tug'ilgan yil</div><div class="pcp-val">1982 • Berdali o'g'li</div></div></div>
             <div class="pcp-row"><span class="pcp-icon">📍</span><div><div class="pcp-label">Manzil</div><div class="pcp-val">Sirdaryo vil. Guliston sh.<br>Bahovut tumani, Anorzor mahallasi</div></div></div>
             <div class="pcp-row"><span class="pcp-icon">📞</span><div><div class="pcp-label">Telefon</div><div class="pcp-val">+998 99 477 07 82</div></div></div>
             <div class="pcp-row"><span class="pcp-icon">📸</span><div><div class="pcp-label">Instagram</div><div class="pcp-val"><a href="https://instagram.com/akmal_ablanazarov" target="_blank">@akmal_ablanazarov</a></div></div></div>
           </div>
-          <div class="pcp-footer">
-            <a class="pcp-btn pcp-ig" href="https://instagram.com/akmal_ablanazarov" target="_blank">📸 Instagram</a>
-          </div>
+          <div class="pcp-footer"><a class="pcp-btn pcp-ig" href="https://instagram.com/akmal_ablanazarov" target="_blank">📸 Instagram</a></div>
         </div>
       </div>
-
     </div>
 
     <button class="acc-btn" id="muta-btn" onclick="toggleAcc('muta-panel','muta-btn')">
       <span>💼 Mutasaddilar</span><span class="acc-arrow">▼</span>
     </button>
     <div class="acc-panel" id="muta-panel">
-
       <div class="person-row" onmouseenter="showPersonCard(this,event)" onmouseleave="hidePersonCard(this)">
         <div class="p-avatar">🧑‍💻</div>
-        <div class="p-info">
-          <div class="p-name">Abdumalik</div>
-          <div class="p-role-tag">💼 Mutasaddi</div>
-          <a class="ig-badge" href="https://instagram.com/_bakhromvic" target="_blank">📸 @_bakhromvic</a>
-        </div>
+        <div class="p-info"><div class="p-name">Abdumalik</div><div class="p-role-tag">💼 Mutasaddi</div><a class="ig-badge" href="https://instagram.com/_bakhromvic" target="_blank">📸 @_bakhromvic</a></div>
         <div class="p-card-popup">
-          <div class="pcp-header">
-            <div class="pcp-scan"></div>
-            <div class="pcp-avatar">🧑‍💻</div>
-            <div class="pcp-fullname">Berdaliyev Abdumalik</div>
-            <span class="pcp-role-tag">💼 Mutasaddi</span>
-          </div>
+          <div class="pcp-header"><div class="pcp-scan"></div><div class="pcp-avatar">🧑‍💻</div><div class="pcp-fullname">Berdaliyev Abdumalik</div><span class="pcp-role-tag">💼 Mutasaddi</span></div>
           <div class="pcp-body">
             <div class="pcp-row"><span class="pcp-icon">🎂</span><div><div class="pcp-label">Tug'ilgan yil</div><div class="pcp-val">2006 • Bahrom o'g'li</div></div></div>
             <div class="pcp-row"><span class="pcp-icon">📍</span><div><div class="pcp-label">Manzil</div><div class="pcp-val">Sirdaryo vil. Guliston sh.<br>Bahovut tumani, Anorzor mahallasi</div></div></div>
             <div class="pcp-row"><span class="pcp-icon">📸</span><div><div class="pcp-label">Instagram</div><div class="pcp-val"><a href="https://instagram.com/_bakhromvic" target="_blank">@_bakhromvic</a></div></div></div>
           </div>
-          <div class="pcp-footer">
-            <a class="pcp-btn pcp-ig" href="https://instagram.com/_bakhromvic" target="_blank">📸 Instagram</a>
-          </div>
+          <div class="pcp-footer"><a class="pcp-btn pcp-ig" href="https://instagram.com/_bakhromvic" target="_blank">📸 Instagram</a></div>
         </div>
       </div>
-
       <div class="person-row" onmouseenter="showPersonCard(this,event)" onmouseleave="hidePersonCard(this)">
         <div class="p-avatar">🧑‍💻</div>
-        <div class="p-info">
-          <div class="p-name">Abdulaziz</div>
-          <div class="p-role-tag">💼 Mutasaddi</div>
-          <a class="ig-badge" href="https://instagram.com/berdaliyev_a" target="_blank">📸 @berdaliyev_a</a>
-        </div>
+        <div class="p-info"><div class="p-name">Abdulaziz</div><div class="p-role-tag">💼 Mutasaddi</div><a class="ig-badge" href="https://instagram.com/berdaliyev_a" target="_blank">📸 @berdaliyev_a</a></div>
         <div class="p-card-popup">
-          <div class="pcp-header">
-            <div class="pcp-scan"></div>
-            <div class="pcp-avatar">🧑‍💻</div>
-            <div class="pcp-fullname">Berdaliyev Abdulaziz</div>
-            <span class="pcp-role-tag">💼 Mutasaddi</span>
-          </div>
+          <div class="pcp-header"><div class="pcp-scan"></div><div class="pcp-avatar">🧑‍💻</div><div class="pcp-fullname">Berdaliyev Abdulaziz</div><span class="pcp-role-tag">💼 Mutasaddi</span></div>
           <div class="pcp-body">
             <div class="pcp-row"><span class="pcp-icon">🎂</span><div><div class="pcp-label">Tug'ilgan yil</div><div class="pcp-val">2009 • Bahrom o'g'li</div></div></div>
-            <div class="pcp-row"><span class="pcp-icon">📍</span><div><div class="pcp-label">Manzil</div><div class="pcp-val">Sirdaryo vil. Guliston sh.<br>Bahovut tumani, Anorzor mahallasi</div></div></div>
+            <div class="pcp-row"><span class="pcp-icon">📍</span><div><div class="pcp-label">Manzil</div><div class="pcp-val">Sirdaryo vil. Guliston sh.</div></div></div>
             <div class="pcp-row"><span class="pcp-icon">📸</span><div><div class="pcp-label">Instagram</div><div class="pcp-val"><a href="https://instagram.com/berdaliyev_a" target="_blank">@berdaliyev_a</a></div></div></div>
           </div>
-          <div class="pcp-footer">
-            <a class="pcp-btn pcp-ig" href="https://instagram.com/berdaliyev_a" target="_blank">📸 Instagram</a>
-          </div>
+          <div class="pcp-footer"><a class="pcp-btn pcp-ig" href="https://instagram.com/berdaliyev_a" target="_blank">📸 Instagram</a></div>
         </div>
       </div>
-
-      <div class="person-row" onmouseenter="showPersonCard(this,event)" onmouseleave="hidePersonCard(this)">
-        <div class="p-avatar">💻</div>
-        <div class="p-info">
-          <div class="p-name">Zuhriddin</div>
-          <div class="p-role-tag">💻 Web Developer</div>
-          <a class="ig-badge" href="https://instagram.com/berdaliyev_z" target="_blank">📸 @berdaliyev_z</a>
-        </div>
-        <div class="p-card-popup">
-          <div class="pcp-header">
-            <div class="pcp-scan"></div>
-            <div class="pcp-avatar">💻</div>
-            <div class="pcp-fullname">Berdaliyev Zuhriddin</div>
-            <span class="pcp-role-tag">💻 Web Developer</span>
-          </div>
-          <div class="pcp-body">
-            <div class="pcp-row"><span class="pcp-icon">🎂</span><div><div class="pcp-label">Tug'ilgan yil</div><div class="pcp-val">2011 • Bahrom o'g'li</div></div></div>
-            <div class="pcp-row"><span class="pcp-icon">📍</span><div><div class="pcp-label">Manzil</div><div class="pcp-val">Sirdaryo vil. Guliston sh.<br>Bahovut tumani, Anorzor mahallasi</div></div></div>
-            <div class="pcp-row"><span class="pcp-icon">📸</span><div><div class="pcp-label">Instagram</div><div class="pcp-val"><a href="https://instagram.com/berdaliyev_z" target="_blank">@berdaliyev_z</a></div></div></div>
-          </div>
-          <div class="pcp-footer">
-            <a class="pcp-btn pcp-ig" href="https://instagram.com/berdaliyev_z" target="_blank">📸 Instagram</a>
-          </div>
-        </div>
-      </div>
-
       <div class="person-row" onmouseenter="showPersonCard(this,event)" onmouseleave="hidePersonCard(this)">
         <div class="p-avatar">🧑‍💻</div>
-        <div class="p-info">
-          <div class="p-name">Salohiddin</div>
-          <div class="p-role-tag">💼 Mutasaddi</div>
-          <a class="ig-badge" href="https://instagram.com/salohiddin.berdaliyev" target="_blank">📸 @salohiddin.berdaliyev</a>
-        </div>
+        <div class="p-info"><div class="p-name">Salohiddin</div><div class="p-role-tag">💼 Mutasaddi</div><a class="ig-badge" href="https://instagram.com/salohiddin.berdaliyev" target="_blank">📸 @salohiddin.b</a></div>
         <div class="p-card-popup">
-          <div class="pcp-header">
-            <div class="pcp-scan"></div>
-            <div class="pcp-avatar">🧑‍💻</div>
-            <div class="pcp-fullname">Berdaliyev Salohiddin</div>
-            <span class="pcp-role-tag">💼 Mutasaddi</span>
-          </div>
+          <div class="pcp-header"><div class="pcp-scan"></div><div class="pcp-avatar">🧑‍💻</div><div class="pcp-fullname">Berdaliyev Salohiddin</div><span class="pcp-role-tag">💼 Mutasaddi</span></div>
           <div class="pcp-body">
             <div class="pcp-row"><span class="pcp-icon">🎂</span><div><div class="pcp-label">Tug'ilgan yil</div><div class="pcp-val">2011 • Bahrom o'g'li</div></div></div>
-            <div class="pcp-row"><span class="pcp-icon">📍</span><div><div class="pcp-label">Manzil</div><div class="pcp-val">Sirdaryo vil. Guliston sh.<br>Bahovut tumani, Anorzor mahallasi</div></div></div>
             <div class="pcp-row"><span class="pcp-icon">📸</span><div><div class="pcp-label">Instagram</div><div class="pcp-val"><a href="https://instagram.com/berdaliyev_s" target="_blank">@berdaliyev_s</a></div></div></div>
           </div>
-          <div class="pcp-footer">
-            <a class="pcp-btn pcp-ig" href="https://instagram.com/berdaliyev_s" target="_blank">📸 Instagram</a>
-          </div>
+          <div class="pcp-footer"><a class="pcp-btn pcp-ig" href="https://instagram.com/berdaliyev_s" target="_blank">📸 Instagram</a></div>
         </div>
       </div>
+    </div>
 
+    <button class="acc-btn" id="dev-btn" onclick="toggleAcc('dev-panel','dev-btn')">
+      <span>💻 Developers</span><span class="acc-arrow">▼</span>
+    </button>
+    <div class="acc-panel" id="dev-panel">
+      <div class="person-row" onmouseenter="showPersonCard(this,event)" onmouseleave="hidePersonCard(this)">
+        <div class="p-avatar">💻</div>
+        <div class="p-info"><div class="p-name">Zuhriddin</div><div class="p-role-tag">💻 Web Developer</div><a class="ig-badge" href="https://instagram.com/justzuxa_" target="_blank">📸 @justzuxa_</a></div>
+        <div class="p-card-popup">
+          <div class="pcp-header"><div class="pcp-scan"></div><div class="pcp-avatar">💻</div><div class="pcp-fullname">Berdaliyev Zuhriddin</div><span class="pcp-role-tag">💻 Web Developer</span></div>
+          <div class="pcp-body">
+            <div class="pcp-row"><span class="pcp-icon">🎂</span><div><div class="pcp-label">Tug'ilgan yil</div><div class="pcp-val">2011 • Bahrom o'g'li</div></div></div>
+            <div class="pcp-row"><span class="pcp-icon">📸</span><div><div class="pcp-label">Instagram</div><div class="pcp-val"><a href="https://instagram.com/justzuxa_" target="_blank">@justzuxa_</a></div></div></div>
+          </div>
+          <div class="pcp-footer"><a class="pcp-btn pcp-ig" href="https://instagram.com/justzuxa_" target="_blank">📸 Instagram</a></div>
+        </div>
+      </div>
     </div>
 
     <div class="sb-divider"></div>
@@ -566,6 +644,7 @@ body{font-family:'Barlow',sans-serif;background:var(--lt);color:var(--dk);overfl
       <div class="trust-card"><span class="trust-ico">🛡️</span><div class="trust-title">Kafolat</div><div class="trust-sub">Sifat kafolati</div></div>
     </div>
     <div class="grid" id="product-grid"></div>
+
     <div class="reviews">
       <div class="rev-header">💬 Mijozlar Fikri</div>
       <div class="rev-grid" id="rev-grid">
@@ -618,8 +697,22 @@ body{font-family:'Barlow',sans-serif;background:var(--lt);color:var(--dk);overfl
     <input type="tel" id="ord-phone" placeholder="Telefon raqam (+998...) *">
     <input type="text" id="ord-city" placeholder="Shahar va manzil">
     <input type="text" id="ord-size" placeholder="O'lcham (40, 41, M, L, XL...)">
-    <button class="submit" onclick="submitOrder()">✅ Zakazni Tasdiqlash</button>
-    <div class="order-success" id="order-success"><span class="suc-ico">🎉</span>Zakazingiz qabul qilindi!<br>Tez orada siz bilan bog'lanamiz!</div>
+    <div id="img-preview-wrap" class="img-preview-wrap">
+      <img id="img-preview" src="" alt="Preview">
+      <button class="img-preview-remove" onclick="removeOrderImg()">✕</button>
+    </div>
+    <div class="img-upload-area" id="upload-area">
+      <input type="file" id="ord-img" accept="image/*" onchange="previewOrderImg(this)">
+      <span class="img-upload-icon">📷</span>
+      <div class="img-upload-label">Rasm yuklang (ixtiyoriy)<br><small style="color:var(--or);font-weight:700">Mahsulot, o'lcham yoki rang rasmini qo'shing</small></div>
+    </div>
+    <button class="submit" id="submit-btn" onclick="submitOrder()">✅ Zakazni Tasdiqlash</button>
+    <div class="order-success" id="order-success">
+      <span class="suc-ico">🎉</span>
+      Zakazingiz qabul qilindi!<br>
+      <strong style="color:#1565C0">Admin tekshirib tasdiqlaydi — tez orada siz bilan bog'lanamiz!</strong><br>
+      <small style="color:#2E7D32">Savatingizda zakazingiz holati ko'rinadi ✅</small>
+    </div>
   </div>
 </div>
 
@@ -636,11 +729,18 @@ body{font-family:'Barlow',sans-serif;background:var(--lt);color:var(--dk);overfl
   </div>
 </div>
 
-<!-- ADMIN PANEL MODAL -->
+<!-- ADMIN PANEL MODAL — YANGI HTML STRUKTURA -->
 <div class="overlay" id="admin-modal" onclick="if(event.target===this)closeAdmin()">
   <div class="admin-modal">
+    <!-- Header -->
     <div class="admin-header">
-      <h2>⚙️ ADMIN <em>PANEL</em></h2>
+      <div class="admin-header-left">
+        <div class="admin-logo-box">⚙️</div>
+        <div class="admin-title-wrap">
+          <h2>ADMIN <em>PANEL</em></h2>
+          <p>SportUp Boshqaruv Tizimi</p>
+        </div>
+      </div>
       <div class="admin-stats">
         <div class="a-stat">
           <div class="a-stat-num" id="stat-total">0</div>
@@ -653,19 +753,50 @@ body{font-family:'Barlow',sans-serif;background:var(--lt);color:var(--dk);overfl
       </div>
       <button class="admin-close" onclick="closeAdmin()">✕</button>
     </div>
-    <div class="admin-body">
-      <div class="admin-filter">
-        <button class="af-btn active" onclick="filterOrders('all',this)">Hammasi</button>
-        <button class="af-btn" onclick="filterOrders('new',this)">🟢 Yangi</button>
-        <button class="af-btn" onclick="filterOrders('pending',this)">🟡 Jarayonda</button>
-        <button class="af-btn" onclick="filterOrders('done',this)">🔵 Bajarildi</button>
-        <button class="af-btn" onclick="refreshOrders()" style="margin-left:auto;background:var(--orl);border-color:var(--or);color:var(--or)">🔄 Yangilash</button>
-      </div>
-      <div id="orders-container">
-        <div class="admin-loading"><div class="spinner"></div><p>Zakazlar yuklanmoqda...</p></div>
+    <!-- Filter row -->
+    <div class="admin-filter-row">
+      <button class="af-btn active" onclick="filterOrders('all',this)">📋 Hammasi</button>
+      <button class="af-btn" onclick="filterOrders('new',this)"><span class="af-dot green"></span> Yangi</button>
+      <button class="af-btn" onclick="filterOrders('pending',this)"><span class="af-dot amber"></span> Jarayonda</button>
+      <button class="af-btn" onclick="filterOrders('done',this)"><span class="af-dot blue"></span> Bajarildi</button>
+      <button class="af-refresh" id="refresh-btn" onclick="refreshOrders()"><span>🔄</span> Yangilash</button>
+    </div>
+    <!-- Body -->
+    <div class="admin-body" id="orders-container">
+      <div class="admin-loading"><div class="spinner"></div><p>Zakazlar yuklanmoqda...</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- CART MODAL -->
+<div class="overlay" id="cart-modal" onclick="if(event.target===this)closeCart()">
+  <div class="cart-modal">
+    <div class="cart-header">
+      <h2>🛒 MENING <em>ZAKAZLARIM</em></h2>
+      <button class="cart-close" onclick="closeCart()">✕</button>
+    </div>
+    <div class="cart-body" id="cart-body">
+      <div class="cart-empty"><span>🛒</span><p>Hali zakaz bermagansiz</p></div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-notice">
+        <strong>📋 Qanday ishlaydi?</strong>
+        Zakaz bergandan so'ng admin tekshiradi va tasdiqlaydi. Tasdiqlanganida siz bilan bog'lanamiz va mahsulotni yetkazib beramiz! 🚚
       </div>
     </div>
   </div>
+</div>
+
+<!-- Full image view -->
+<div class="img-full-modal" id="img-full-modal" onclick="closeFullImg()">
+  <button class="img-full-close" onclick="closeFullImg()">✕</button>
+  <img id="img-full-src" src="" alt="">
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon">✅</span>
+  <span class="toast-text" id="toast-text">Xabar</span>
 </div>
 
 <script>
@@ -740,59 +871,75 @@ var productImages = {
     'https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=500'
   ],
   formalar: [
-    'rasmlar4/fadilasensio4_pindown.io_1780040384.jpg',
-    'rasmlar4/Saad_Zfrn_pindown.io_1780040346.jpg',
-    'rasmlar4/JerzCart_pindown.io_1780040504.jpg',
-    'rasmlar4/depop_pindown.io_1780040602.jpg',
-    'rasmlar4/depop_pindown.io_1780040547.jpg',
-    'rasmlar4/lovellsports1_pindown.io_1780040646.jpg',
-    'rasmlar4/muketes77_pindown.io_1780040694.jpg',
-    'rasmlar4/depop_pindown.io_1780040716.jpg',
-    'rasmlar4/camisasfutfan_pindown.io_1780040795.jpg',
-    'rasmlar4/jerseysfcsoccershop_pindown.io_1780040854.jpg',
-    'rasmlar4/footballfashion_pindown.io_1780041019.jpg',
-    'rasmlar4/fragarafaela2026_pindown.io_1780041091.jpg',
-    'rasmlar4/bywonderspace_pindown.io_1780044673.jpg',
-    'rasmlar4/zalando_pindown.io_1780044752.jpg',
-    'rasmlar4/preview_very_co_uk_pindown.io_1780044854.jpg',
-    'rasmlar4/santiagosolo_pindown.io_1780044961.jpg',
-    'rasmlar4/Football_Style_pindown.io_1780045041.jpg',
-    'rasmlar4/futbolemotiones_pindown.io_1780045080.jpg',
-    'rasmlar4/preview_kickoffshopper_com_pindown.io_1780045224.jpg',
-    'rasmlar4/Football_Style_pindown.io_1780045124.jpg',
+    'rasmlar4/fadilasensio4_pindown.io_1780040384.jpg','rasmlar4/Saad_Zfrn_pindown.io_1780040346.jpg','rasmlar4/JerzCart_pindown.io_1780040504.jpg',
+    'rasmlar4/depop_pindown.io_1780040602.jpg','rasmlar4/depop_pindown.io_1780040547.jpg','rasmlar4/lovellsports1_pindown.io_1780040646.jpg',
+    'rasmlar4/muketes77_pindown.io_1780040694.jpg','rasmlar4/depop_pindown.io_1780040716.jpg','rasmlar4/camisasfutfan_pindown.io_1780040795.jpg',
+    'rasmlar4/jerseysfcsoccershop_pindown.io_1780040854.jpg','rasmlar4/footballfashion_pindown.io_1780041019.jpg','rasmlar4/fragarafaela2026_pindown.io_1780041091.jpg',
+    'rasmlar4/bywonderspace_pindown.io_1780044673.jpg','rasmlar4/zalando_pindown.io_1780044752.jpg','rasmlar4/preview_very_co_uk_pindown.io_1780044854.jpg',
+    'rasmlar4/santiagosolo_pindown.io_1780044961.jpg','rasmlar4/Football_Style_pindown.io_1780045041.jpg','rasmlar4/futbolemotiones_pindown.io_1780045080.jpg',
+    'rasmlar4/preview_kickoffshopper_com_pindown.io_1780045224.jpg','rasmlar4/Football_Style_pindown.io_1780045124.jpg',
   ],
   toplar: [
-    'https://images.pexels.com/photos/47730/the-ball-stadion-football-the-pitch-47730.jpeg?auto=compress&cs=tinysrgb&w=500',
-    'https://images.pexels.com/photos/274506/pexels-photo-274506.jpeg?auto=compress&cs=tinysrgb&w=500',
-    'https://images.pexels.com/photos/10821308/pexels-photo-10821308.jpeg?auto=compress&cs=tinysrgb&w=500',
-    'https://images.pexels.com/photos/186077/pexels-photo-186077.jpeg?auto=compress&cs=tinysrgb&w=500',
-    'https://images.pexels.com/photos/2103949/pexels-photo-2103949.jpeg?auto=compress&cs=tinysrgb&w=500',
-    'https://images.pexels.com/photos/3621091/pexels-photo-3621091.jpeg?auto=compress&cs=tinysrgb&w=500',
-    'https://images.pexels.com/photos/8455350/pexels-photo-8455350.jpeg?auto=compress&cs=tinysrgb&w=500',
-    'https://images.pexels.com/photos/47730/the-ball-stadion-football-the-pitch-47730.jpeg?auto=compress&cs=tinysrgb&w=500',
-    'https://images.pexels.com/photos/274506/pexels-photo-274506.jpeg?auto=compress&cs=tinysrgb&w=500',
-    'https://images.pexels.com/photos/10821308/pexels-photo-10821308.jpeg?auto=compress&cs=tinysrgb&w=500',
-    'https://images.pexels.com/photos/186077/pexels-photo-186077.jpeg?auto=compress&cs=tinysrgb&w=500',
-    'https://images.pexels.com/photos/2103949/pexels-photo-2103949.jpeg?auto=compress&cs=tinysrgb&w=500',
-    'https://images.pexels.com/photos/3621091/pexels-photo-3621091.jpeg?auto=compress&cs=tinysrgb&w=500',
-    'https://images.pexels.com/photos/8455350/pexels-photo-8455350.jpeg?auto=compress&cs=tinysrgb&w=500',
-    'https://images.pexels.com/photos/47730/the-ball-stadion-football-the-pitch-47730.jpeg?auto=compress&cs=tinysrgb&w=500',
-    'https://images.pexels.com/photos/274506/pexels-photo-274506.jpeg?auto=compress&cs=tinysrgb&w=500',
-    'https://images.pexels.com/photos/10821308/pexels-photo-10821308.jpeg?auto=compress&cs=tinysrgb&w=500',
-    'https://images.pexels.com/photos/186077/pexels-photo-186077.jpeg?auto=compress&cs=tinysrgb&w=500',
-    'https://images.pexels.com/photos/2103949/pexels-photo-2103949.jpeg?auto=compress&cs=tinysrgb&w=500',
-    'https://images.pexels.com/photos/3621091/pexels-photo-3621091.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'rasmlar3/sklepsportowyamb_pindown.io_1780398275.jpg',
+    'rasmlar3/prodirectsoccer_pindown.io_1780398345.jpg',
+    'rasmlar3/tahagharbawi_pindown.io_1780398468.jpg',
+    'rasmlar3/clmathias_pindown.io_1780398602.jpg',
+    'rasmlar3/petertspencer_pindown.io_1780398744.jpg',
+    'rasmlar3/preview_proozy_com_pindown.io_1780399025.jpg',
+    'rasmlar3/galaxus_it_pindown.io_1780399177.jpg',
+    'rasmlar3/tahagharbawi_pindown.io_1780399234.jpg',
+    'rasmlar3/baltutisignas_pindown.io_1780399513.jpg',
+    'rasmlar3/tiendasparis_pindown.io_1780399613.jpg',
+    'rasmlar3/Busszerr_pindown.io_1780399685.jpg',
+    'rasmlar3/infinitysportsstore_pindown.io_1780399730.jpg',
+    'rasmlar3/centauroesporte_pindown.io_1780399780.jpg',
+    'rasmlar3/latellamartina_pindown.io_1780399832.jpg',
+    'rasmlar3/takahirodoi_pindown.io_1780399886.jpg',
+    'rasmlar3/martinemanueldevita_pindown.io_1780400022.jpg',
+    'rasmlar3/amazon_pindown.io_1780400058.jpg',
+    'rasmlar3/VincentVisVega_pindown.io_1780400110.jpg',
+    'rasmlar3/apatike_pindown.io_1780400155.jpg',
+  ],
+  protein: [
+    'https://images.pexels.com/photos/3253501/pexels-photo-3253501.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/3757942/pexels-photo-3757942.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/4162449/pexels-photo-4162449.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/1640775/pexels-photo-1640775.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/3759657/pexels-photo-3759657.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/3621097/pexels-photo-3621097.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/3253501/pexels-photo-3253501.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/3757942/pexels-photo-3757942.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/4162449/pexels-photo-4162449.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/1640775/pexels-photo-1640775.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/3759657/pexels-photo-3759657.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/3621097/pexels-photo-3621097.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/3253501/pexels-photo-3253501.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/3757942/pexels-photo-3757942.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/4162449/pexels-photo-4162449.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/1640775/pexels-photo-1640775.jpeg?auto=compress&cs=tinysrgb&w=500',
+  ],
+  sumkalar: [
+    'https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/934070/pexels-photo-934070.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/934070/pexels-photo-934070.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/934070/pexels-photo-934070.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/934070/pexels-photo-934070.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=500',
+    'https://images.pexels.com/photos/934070/pexels-photo-934070.jpeg?auto=compress&cs=tinysrgb&w=500',
   ]
 };
 
-var catEmojis = {butsilar:'⚽', sarakanowka:'🏟️', krasofkalar:'👟', formalar:'👕', toplar:'🔵'};
-var catTitles = {
-  butsilar:'BUT<em>SILAR</em>',
-  sarakanowka:'SARAKA<em>NOWKA</em>',
-  krasofkalar:'KRASOF<em>KALAR</em>',
-  formalar:'FOR<em>MALAR</em>',
-  toplar:"TO'P<em>LAR</em>"
-};
+var catEmojis={butsilar:'⚽',sarakanowka:'🏟️',krasofkalar:'👟',formalar:'👕',toplar:'🔵',protein:'💪',sumkalar:'🎒'};
+var catTitles={butsilar:'BUT<em>SILAR</em>',sarakanowka:'SARAKA<em>NOWKA</em>',krasofkalar:'KRASOF<em>KALAR</em>',formalar:'FOR<em>MALAR</em>',toplar:"TO'P<em>LAR</em>",protein:'PROTEIN & SPORT <em>OZUQA</em>',sumkalar:'SPORT <em>SUMKALAR</em>'};
 
 var products = {
   butsilar:[
@@ -849,7 +996,7 @@ var products = {
     {brand:'Nike',name:'Nike React Infinity Run FK 4',price:'1,050,000 UZS',desc:"Turi: Running. O'lchamlar: 36–46.",badge:'Run',badgeClass:''},
     {brand:'Adidas',name:'Adidas Samba OG White/Black',price:'980,000 UZS',desc:"Turi: Classic. Eng trend model!",badge:'Trend',badgeClass:'new'},
     {brand:'Puma',name:'Puma Suede Classic XXI Black',price:'680,000 UZS',desc:"Turi: Classic. O'lchamlar: 36–46.",badge:'Suede',badgeClass:''},
-    {brand:'Nike',name:'Nike Blazer Mid 77 Vintage White',price:'920,000 UZS',desc:"Turi: Lifestyle. O'lchamlar: 35–46. 1970lardan.",badge:'Vintage',badgeClass:''},
+    {brand:'Nike',name:'Nike Blazer Mid 77 Vintage White',price:'920,000 UZS',desc:"Turi: Lifestyle. O'lchamlar: 35–46.",badge:'Vintage',badgeClass:''},
     {brand:'Adidas',name:'Adidas Gazelle Indoor Gum Sole',price:'890,000 UZS',desc:"Turi: Lifestyle. O'lchamlar: 36–46.",badge:'',badgeClass:''},
     {brand:'New Balance',name:'New Balance 9060 Mushroom',price:'1,150,000 UZS',desc:"Turi: Chunky. O'lchamlar: 36–46.",badge:'Y2K',badgeClass:''},
     {brand:'Nike',name:'Nike Air Jordan 1 Low Bred',price:'1,350,000 UZS',desc:"Turi: Basketball. O'lchamlar: 36–46.",badge:'Jordan',badgeClass:''},
@@ -904,24 +1051,105 @@ var products = {
     {brand:'Nike',name:'Nike Premier League Merlin Official',price:'500,000 UZS',desc:"Liga: Premier League. O'lcham: 5.",badge:'Merlin',badgeClass:''},
     {brand:'Adidas',name:'Adidas Telstar 18 Replica Gold',price:'270,000 UZS',desc:"Turi: Collector. Retro dizayn.",badge:'Retro',badgeClass:''},
     {brand:'Penalty',name:'Penalty S11 R1 Society Ball',price:'240,000 UZS',desc:"Turi: Futsal. Braziliya brendi.",badge:'Brazil',badgeClass:''}
+  ],
+  protein:[
+    {brand:'Optimum Nutrition',name:'Gold Standard 100% Whey Protein — Chocolate',price:'380,000 UZS',desc:"Og'irlik: 2.27 kg. Protein: 24g/serving. 74 porsiya. Laktaza fermenti bilan.",badge:'Bestseller',badgeClass:'new'},
+    {brand:'BSN',name:'Syntha-6 Ultra Premium Protein Matrix',price:'320,000 UZS',desc:"Og'irlik: 2.27 kg. Protein: 22g/serving. 6 turli protein aralashmasi.",badge:'Multi',badgeClass:''},
+    {brand:'Dymatize',name:'ISO 100 Hydrolyzed Protein — Vanilla',price:'420,000 UZS',desc:"Og'irlik: 2.27 kg. Protein: 25g/serving. Tez hazm bo'luvchi.",badge:'ISO',badgeClass:''},
+    {brand:'Muscletech',name:'Nitro Tech Whey Gold — Cookies & Cream',price:'350,000 UZS',desc:"Protein: 24g/serving. Kreatin va glutamin bilan boyitilgan.",badge:'Tech',badgeClass:''},
+    {brand:'Optimum Nutrition',name:'Serious Mass Weight Gainer',price:'290,000 UZS',desc:"Og'irlik: 5.44 kg. Kaloriya: 1250 kcal/serving. Massaga ko'tarish uchun.",badge:'Gainer',badgeClass:''},
+    {brand:'Cellucor',name:'C4 Original Pre-Workout — Fruit Punch',price:'180,000 UZS',desc:"Porsiya: 30 ta. Caffeine: 150mg. Beta-alanine bilan.",badge:'Pre-W',badgeClass:''},
+    {brand:'MusclePharm',name:'Assault Pre-Workout Sport — Blue Raspberry',price:'160,000 UZS',desc:"Porsiya: 30 ta. Citruline malate bilan. Energiya va bardoshlik uchun.",badge:'',badgeClass:''},
+    {brand:'GNC',name:'AMP Gold Series BCAA Advanced',price:'220,000 UZS',desc:"BCAA: 10g/serving. 2:1:1 nisbat. Muskul qayta tiklanishi uchun.",badge:'BCAA',badgeClass:''},
+    {brand:'Scitec Nutrition',name:"100% Creatine Monohydrate — 300g",price:'130,000 UZS',desc:"Kreatin: 3g/serving. 100 porsiya. Kuch va energiya uchun.",badge:'Kreatin',badgeClass:'sale'},
+    {brand:'Now Sports',name:'Glutamine Powder — 500g',price:'140,000 UZS',desc:"Glutamin: 5g/serving. Muskul tiklanishi va immunitet uchun.",badge:'',badgeClass:''},
+    {brand:'Optimum Nutrition',name:'Micronized Creatine Powder',price:'120,000 UZS',desc:"Kreatin: 5g/serving. 60 porsiya. Mikronizatsiya qilingan.",badge:'Arzon',badgeClass:'sale'},
+    {brand:'Biotech USA',name:'Protein Bar — Chocolate Caramel 70g',price:'35,000 UZS',desc:"Protein: 20g. Kaloriya: 235 kcal. Qulay va mazali snack.",badge:'Bar',badgeClass:'new'},
+    {brand:'Quest',name:'Quest Protein Bar — Cookies & Cream',price:'45,000 UZS',desc:"Protein: 21g. Sugar: 1g. Gluten free. Eng mashhur protein bar!",badge:'Quest',badgeClass:''},
+    {brand:'Universal',name:'Animal Pak Training Pack — 44 packs',price:'280,000 UZS',desc:"Vitaminlar va minerallar to'plami. Sportchilar uchun.",badge:'Vitamins',badgeClass:''},
+    {brand:'Cellucor',name:'Super HD Thermogenic Fat Burner',price:'200,000 UZS',desc:"60 kapsula. Termogenik formula. Yog'lar kuydirish uchun.",badge:'Fat Burn',badgeClass:''},
+    {brand:'Dymatize',name:'Super Mass Gainer — Chocolate Fudge 6lbs',price:'340,000 UZS',desc:"Protein: 52g/serving. Kaloriya: 1280. Hajm oshirish uchun.",badge:'Mass',badgeClass:''}
+  ],
+  sumkalar:[
+    {brand:'Adidas',name:'Adidas Tiro League Duffel Bag — Large',price:'280,000 UZS',desc:"Sig'im: 51L. Ajratilgan poyabzal bo'limi. 4 rang variantida.",badge:'Top',badgeClass:'new'},
+    {brand:'Nike',name:'Nike Brasilia 9.5 Training Duffel',price:'260,000 UZS',desc:"Sig'im: 60L. Polyester. Namlangan buyumlar uchun alohida bo'lim.",badge:'Nike',badgeClass:''},
+    {brand:'Puma',name:'Puma Fundamentals Sports Bag',price:'190,000 UZS',desc:"Sig'im: 35L. Engil. Qo'shimcha tashqi cho'ntak.",badge:'Arzon',badgeClass:'sale'},
+    {brand:'Under Armour',name:'UA Undeniable 5.0 Duffle Medium',price:'320,000 UZS',desc:"Sig'im: 58L. Suv o'tkazmaydigan qoplama. Ommabop model.",badge:'UA',badgeClass:''},
+    {brand:'Adidas',name:'Adidas Squad 5 Backpack 24L',price:'220,000 UZS',desc:"Sig'im: 24L. Noutbuk uchun alohida cho'ntak. Polyester.",badge:'Backpack',badgeClass:''},
+    {brand:'Nike',name:'Nike Heritage Eugene Backpack',price:'240,000 UZS',desc:"Sig'im: 25L. Ergonomic back panel. O'zbek sportchilari sevimli.",badge:'',badgeClass:''},
+    {brand:'New Balance',name:'NB Team Medium Duffel Bag',price:'210,000 UZS',desc:"Sig'im: 45L. Tomonidan ushlagichlar. Qizil/qora.",badge:'',badgeClass:''},
+    {brand:'Puma',name:'Puma Challenger Pro Backpack 22L',price:'180,000 UZS',desc:"Sig'im: 22L. Quloqliklar uchun teshik. Suv o'tkazmaydigan.",badge:'',badgeClass:''},
+    {brand:'Adidas',name:'Adidas Defender IV Large Duffel',price:'350,000 UZS',desc:"Sig'im: 84L. Premium model. Poyabzal + kir kiyim bo'limi.",badge:'Large',badgeClass:''},
+    {brand:'Nike',name:'Nike Vapor Speed 2.0 Backpack 28L',price:'270,000 UZS',desc:"Sig'im: 28L. Ichida to'r cho'ntak. Sport uchun ideal.",badge:'Speed',badgeClass:''},
+    {brand:'Hummel',name:'Hummel Core Sports Bag 46L',price:'195,000 UZS',desc:"Sig'im: 46L. Daniya brendi. Uzoq muddatli.",badge:'',badgeClass:''},
+    {brand:'Adidas',name:'Adidas Stadium 3 Backpack',price:'230,000 UZS',desc:"Sig'im: 26L. Admin bo'limi + poyabzal cho'ntagi.",badge:'Stadium',badgeClass:''},
+    {brand:'Nike',name:'Nike Academy Team Backpack 25L',price:'195,000 UZS',desc:"Sig'im: 25L. Arzon va sifatli. Yoshlar uchun ideal.",badge:'Academy',badgeClass:'new'},
+    {brand:'Under Armour',name:'UA Hustle 5.0 Backpack 29L',price:'290,000 UZS',desc:"Sig'im: 29L. Suv o'tkazmaydigan. Noutbuk cho'ntagi.",badge:'Hustle',badgeClass:''},
+    {brand:'Puma',name:'Puma Plus Pro Large Sports Bag',price:'310,000 UZS',desc:"Sig'im: 72L. Jamoalar uchun. Alohida oyabzal bo'limi.",badge:'Pro',badgeClass:''},
+    {brand:'Adidas',name:'Adidas Linear Core Shoebag',price:'80,000 UZS',desc:"Tur: Poyabzal sumkasi. Ajratilgan model. Tezda kiyish/yechish.",badge:'Poyabzal',badgeClass:'sale'}
   ]
 };
+
+var catEmojis2={butsilar:'⚽',sarakanowka:'🏟️',krasofkalar:'👟',formalar:'👕',toplar:'🔵',protein:'💪',sumkalar:'🎒'};
+var catTitles2={butsilar:'BUT<em>SILAR</em>',sarakanowka:'SARAKA<em>NOWKA</em>',krasofkalar:'KRASOF<em>KALAR</em>',formalar:'FOR<em>MALAR</em>',toplar:"TO'P<em>LAR</em>",protein:'PROTEIN & SPORT <em>OZUQA</em>',sumkalar:'SPORT <em>SUMKALAR</em>'};
 
 // ========================
 // STATE
 // ========================
-var cartCount = 0;
 var activeCategory = 'butsilar';
 var activeProd = null;
 var isAdmin = false;
 var allOrders = [];
 var currentFilter = 'all';
+var orderImageData = null;
+var cartItems = [];
+var darkMode = false;
+
+// ========================
+// DARK MODE
+// ========================
+function toggleDark() {
+  darkMode = !darkMode;
+  document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+  try { localStorage.setItem('sportup_dark', darkMode ? '1' : '0'); } catch(e){}
+}
+function loadDarkPref() {
+  try {
+    var d = localStorage.getItem('sportup_dark');
+    if (d === '1') { darkMode = true; document.documentElement.setAttribute('data-theme','dark'); }
+  } catch(e){}
+}
+
+// ========================
+// TOAST
+// ========================
+var toastTimer = null;
+function showToast(icon, msg, duration) {
+  duration = duration || 3500;
+  document.getElementById('toast-icon').innerText = icon;
+  document.getElementById('toast-text').innerText = msg;
+  var t = document.getElementById('toast');
+  t.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('show'); }, duration);
+}
 
 // ========================
 // ADMIN AUTH
 // ========================
 var ADMIN_LOGIN = 'sportupuz1';
 var ADMIN_PASS = 'berdaliyevSPORTUPUZ';
+var LS_ADMIN_KEY = 'sportup_admin_session';
+
+function checkAdminSession() {
+  try {
+    if (localStorage.getItem(LS_ADMIN_KEY) === 'yes') {
+      isAdmin = true;
+      document.getElementById('btn-signup').style.display = 'none';
+      document.getElementById('btn-admin').style.display = 'flex';
+    }
+  } catch(e) {}
+}
 
 function openLogin() {
   document.getElementById('login-modal').classList.add('open');
@@ -940,6 +1168,7 @@ function doLogin() {
   var p = document.getElementById('lm-password').value;
   if (u === ADMIN_LOGIN && p === ADMIN_PASS) {
     isAdmin = true;
+    try { localStorage.setItem(LS_ADMIN_KEY, 'yes'); } catch(e) {}
     closeLogin();
     document.getElementById('btn-signup').style.display = 'none';
     document.getElementById('btn-admin').style.display = 'flex';
@@ -953,23 +1182,23 @@ function doLogin() {
 }
 
 // ========================
-// ORDERS — Artifact Storage
+// ORDERS STORAGE
 // ========================
-var ORDERS_KEY = 'sportup_orders';
+var ORDERS_KEY = 'sportup_orders_v2';
 
 async function saveOrder(order) {
   try {
-    var existing = [];
-    try {
-      var res = await window.storage.get(ORDERS_KEY, true);
-      if (res && res.value) existing = JSON.parse(res.value);
-    } catch(e) { existing = []; }
+    var existing = await loadOrders();
     existing.unshift(order);
-    await window.storage.set(ORDERS_KEY, JSON.stringify(existing), true);
-    return true;
+    var result = await window.storage.set(ORDERS_KEY, JSON.stringify(existing), true);
+    return !!result;
   } catch(e) {
-    console.error('Storage save error:', e);
-    return false;
+    try {
+      var ls = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
+      ls.unshift(order);
+      localStorage.setItem(ORDERS_KEY, JSON.stringify(ls));
+      return true;
+    } catch(e2) { return false; }
   }
 }
 
@@ -977,9 +1206,14 @@ async function loadOrders() {
   try {
     var res = await window.storage.get(ORDERS_KEY, true);
     if (res && res.value) return JSON.parse(res.value);
-    return [];
+    try {
+      var ls = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
+      return ls;
+    } catch(e2) { return []; }
   } catch(e) {
-    return [];
+    try {
+      return JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
+    } catch(e2) { return []; }
   }
 }
 
@@ -990,6 +1224,8 @@ async function updateOrderStatus(id, status) {
     await window.storage.set(ORDERS_KEY, JSON.stringify(orders), true);
     allOrders = orders;
     renderOrders();
+    cartItems = cartItems.map(function(ci){ return ci.id === id ? Object.assign({},ci,{status:status}) : ci; });
+    showToast('✅', 'Zakaz holati yangilandi!');
   } catch(e) {}
 }
 
@@ -1000,6 +1236,7 @@ async function deleteOrder(id) {
     await window.storage.set(ORDERS_KEY, JSON.stringify(orders), true);
     allOrders = orders;
     renderOrders();
+    showToast('🗑️', "Zakaz o'chirildi");
   } catch(e) {}
 }
 
@@ -1016,17 +1253,27 @@ function closeAdmin() {
   document.getElementById('admin-modal').classList.remove('open');
   document.body.style.overflow = '';
 }
+
 async function refreshOrders() {
+  var rb = document.getElementById('refresh-btn');
+  if (rb) rb.classList.add('spinning');
   document.getElementById('orders-container').innerHTML = '<div class="admin-loading"><div class="spinner"></div><p>Zakazlar yuklanmoqda...</p></div>';
-  allOrders = await loadOrders();
+  try {
+    allOrders = await loadOrders();
+  } catch(e) {
+    allOrders = [];
+  }
+  if (rb) rb.classList.remove('spinning');
   renderOrders();
 }
+
 function filterOrders(f, btn) {
   currentFilter = f;
   document.querySelectorAll('.af-btn').forEach(function(b){ b.classList.remove('active'); });
   if (btn) btn.classList.add('active');
   renderOrders();
 }
+
 function renderOrders() {
   var filtered = allOrders.filter(function(o){
     if (currentFilter === 'all') return true;
@@ -1035,30 +1282,80 @@ function renderOrders() {
   var newCount = allOrders.filter(function(o){ return o.status === 'new'; }).length;
   document.getElementById('stat-total').innerText = allOrders.length;
   document.getElementById('stat-new').innerText = newCount;
+
   if (!filtered.length) {
-    document.getElementById('orders-container').innerHTML = '<div class="admin-empty"><span>📭</span><p>Hozircha zakaz yo\'q</p></div>';
+    document.getElementById('orders-container').innerHTML = '<div class="admin-empty"><span class="ae-icon">📭</span><p>Hozircha zakaz yo\'q</p></div>';
     return;
   }
+
   var html = '';
   filtered.forEach(function(o, idx) {
-    var statusLabel = o.status === 'new' ? '<span class="oc-status new">🟢 Yangi</span>' : o.status === 'pending' ? '<span class="oc-status pending">🟡 Jarayonda</span>' : '<span class="oc-status done">🔵 Bajarildi</span>';
-    html += '<div class="order-card">';
-    html += '<div class="oc-top"><span class="oc-num">📦 #' + o.id + '</span>' + statusLabel + '<span class="oc-date">' + o.date + '</span></div>';
-    html += '<div class="oc-product"><div class="oc-product-label">Mahsulot</div><div class="oc-product-val">' + o.product + '</div></div>';
-    html += '<div class="oc-grid">';
-    html += '<div class="oc-field"><div class="oc-field-label">👤 Ism</div><div class="oc-field-val">' + o.name + '</div></div>';
-    html += '<div class="oc-field"><div class="oc-field-label">📞 Telefon</div><div class="oc-field-val">' + o.phone + '</div></div>';
-    if (o.city) html += '<div class="oc-field"><div class="oc-field-label">📍 Manzil</div><div class="oc-field-val">' + o.city + '</div></div>';
-    if (o.size) html += '<div class="oc-field"><div class="oc-field-label">📐 O\'lcham</div><div class="oc-field-val">' + o.size + '</div></div>';
+    var delay = (idx * 0.05).toFixed(2);
+    var statusClass = o.status === 'new' ? 'new' : o.status === 'pending' ? 'pending' : 'done';
+    var statusTxt = o.status === 'new' ? '🟢 Yangi' : o.status === 'pending' ? '🟡 Jarayonda' : '✅ Bajarildi';
+
+    html += '<div class="order-card" style="animation-delay:'+delay+'s">';
+
+    // Top bar
+    html += '<div class="oc-topbar">';
+    html += '<span class="oc-num">📦 #' + o.id + '</span>';
+    html += '<span class="oc-status-pill '+statusClass+'">' + statusTxt + '</span>';
+    html += '<span class="oc-date">🕐 ' + o.date + '</span>';
     html += '</div>';
+
+    // Product strip
+    html += '<div class="oc-product-strip">';
+    html += '<span class="oc-product-icon">🛍️</span>';
+    html += '<div><div class="oc-product-label">Mahsulot</div><div class="oc-product-val">' + escHtml(o.product) + '</div></div>';
+    html += '</div>';
+
+    // Image
+    if (o.image) {
+      html += '<div style="padding:14px 18px 0">';
+      html += '<div class="oc-img-wrap"><img src="' + o.image + '" alt="Zakaz rasmi" onclick="openFullImg(\'' + o.image + '\')" title="Kattalashtirish">';
+      html += '<div class="oc-img-zoom-tag">🔍 Kattalashtirish</div></div></div>';
+    }
+
+    // Body
+    html += '<div class="oc-body">';
+
+    // Fields
+    html += '<div class="oc-fields">';
+    html += '<div class="oc-field"><div class="oc-field-label">👤 Ism</div><div class="oc-field-val">' + escHtml(o.name) + '</div></div>';
+    html += '<div class="oc-field"><div class="oc-field-label">📞 Telefon</div><div class="oc-field-val">' + escHtml(o.phone) + '</div></div>';
+    if (o.city) html += '<div class="oc-field"><div class="oc-field-label">📍 Manzil</div><div class="oc-field-val">' + escHtml(o.city) + '</div></div>';
+    if (o.size) html += '<div class="oc-field"><div class="oc-field-label">📐 O\'lcham</div><div class="oc-field-val">' + escHtml(o.size) + '</div></div>';
+    html += '</div>';
+
+    // Actions
     html += '<div class="oc-actions">';
-    if (o.status !== 'new') html += '<button class="oc-act-btn oc-act-new" onclick="updateOrderStatus(\'' + o.id + '\',\'new\')">🟢 Yangi</button>';
-    if (o.status !== 'pending') html += '<button class="oc-act-btn" style="background:#FFF3E0;color:#E65100" onclick="updateOrderStatus(\'' + o.id + '\',\'pending\')">🟡 Jarayon</button>';
-    if (o.status !== 'done') html += '<button class="oc-act-btn oc-act-done" onclick="updateOrderStatus(\'' + o.id + '\',\'done\')">🔵 Bajarildi</button>';
-    html += '<button class="oc-act-btn oc-act-del" onclick="deleteOrder(\'' + o.id + '\')">🗑️ O\'chirish</button>';
+    if (o.status !== 'new')     html += '<button class="oc-act-btn oc-act-new"     onclick="updateOrderStatus(\''+o.id+'\',\'new\')">🟢 Yangi</button>';
+    if (o.status !== 'pending') html += '<button class="oc-act-btn oc-act-pending" onclick="updateOrderStatus(\''+o.id+'\',\'pending\')">🟡 Jarayon</button>';
+    if (o.status !== 'done')    html += '<button class="oc-act-btn oc-act-done"    onclick="updateOrderStatus(\''+o.id+'\',\'done\')">✅ Tasdiqlash</button>';
+    html += '<button class="oc-act-btn oc-act-del" onclick="deleteOrder(\''+o.id+'\')">🗑️ O\'chirish</button>';
+    html += '</div>';
+
     html += '</div></div>';
   });
+
   document.getElementById('orders-container').innerHTML = html;
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ========================
+// IMAGE FULL
+// ========================
+function openFullImg(src) {
+  document.getElementById('img-full-src').src = src;
+  document.getElementById('img-full-modal').classList.add('open');
+}
+function closeFullImg() {
+  document.getElementById('img-full-modal').classList.remove('open');
+  document.getElementById('img-full-src').src = '';
 }
 
 // ========================
@@ -1115,7 +1412,7 @@ function imgFailed(el, i) {
 // ========================
 function openProd(i, e) {
   if (e) {
-    var card = e.currentTarget || e.target.closest('.pcard');
+    var card = e.currentTarget || (e.target && e.target.closest && e.target.closest('.pcard'));
     if (card) {
       var r = document.createElement('span');
       r.className = 'ripple';
@@ -1169,12 +1466,41 @@ function pmodImgFail() {
 // ========================
 // ORDER FORM
 // ========================
+function previewOrderImg(input) {
+  var file = input.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    alert('❗ Rasm hajmi 2MB dan oshmasin!');
+    input.value = '';
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    orderImageData = e.target.result;
+    var pw = document.getElementById('img-preview-wrap');
+    var pi = document.getElementById('img-preview');
+    pi.src = orderImageData;
+    pw.style.display = 'block';
+    document.getElementById('upload-area').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+function removeOrderImg() {
+  orderImageData = null;
+  document.getElementById('img-preview-wrap').style.display = 'none';
+  document.getElementById('upload-area').style.display = 'block';
+  document.getElementById('ord-img').value = '';
+  document.getElementById('img-preview').src = '';
+}
 function openOrderForm() {
   closeProdModal();
   if (!activeProd) return;
   document.getElementById('order-product-name').innerText = activeProd.brand+' — '+activeProd.name+'\n💰 '+activeProd.price;
   document.getElementById('order-success').style.display = 'none';
+  document.getElementById('submit-btn').disabled = false;
+  document.getElementById('submit-btn').innerText = '✅ Zakazni Tasdiqlash';
   ['ord-name','ord-phone','ord-city','ord-size'].forEach(function(id){ document.getElementById(id).value=''; });
+  removeOrderImg();
   document.getElementById('order-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -1182,31 +1508,88 @@ function closeOrderModal() {
   document.getElementById('order-modal').classList.remove('open');
   document.body.style.overflow = '';
 }
+
 async function submitOrder() {
   var name = document.getElementById('ord-name').value.trim();
   var phone = document.getElementById('ord-phone').value.trim();
   if (!name) { alert('❗ Ism va familiya kiriting!'); return; }
   if (!phone) { alert('❗ Telefon raqam kiriting!'); return; }
+
+  var btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.innerText = '⏳ Saqlanmoqda...';
+
   var now = new Date();
   var dateStr = now.toLocaleDateString('uz-UZ')+' '+now.toLocaleTimeString('uz-UZ',{hour:'2-digit',minute:'2-digit'});
+  var orderId = Date.now().toString().slice(-6);
   var order = {
-    id: Date.now().toString().slice(-6),
+    id: orderId,
     date: dateStr,
     product: (activeProd ? activeProd.brand+' — '+activeProd.name+' ('+activeProd.price+')' : '—'),
     name: name,
     phone: phone,
     city: document.getElementById('ord-city').value.trim(),
     size: document.getElementById('ord-size').value.trim(),
-    status: 'new'
+    status: 'new',
+    image: orderImageData || null
   };
-  await saveOrder(order);
+
+  var saved = await saveOrder(order);
+  cartItems.push(order);
+  updateCartCount();
+
   document.getElementById('order-success').style.display = 'block';
-  cartCount++;
+  btn.innerText = '✅ Saqlandi!';
+
+  if (saved) {
+    showToast('🎉', 'Zakazingiz qabul qilindi! Admin tekshiradi.', 4000);
+  } else {
+    showToast('⚠️', 'Zakaz saqlandi (lokal). Internet tekshiring.', 4000);
+  }
+
+  setTimeout(function(){ closeOrderModal(); }, 3500);
+}
+
+// ========================
+// CART
+// ========================
+function updateCartCount() {
   var cc = document.getElementById('cart-count');
-  cc.innerText = cartCount;
-  cc.style.transform = 'scale(2)';
-  setTimeout(function(){ cc.style.transform = 'scale(1)'; }, 400);
-  setTimeout(function(){ closeOrderModal(); }, 3000);
+  cc.innerText = cartItems.length;
+  cc.classList.remove('bounce');
+  void cc.offsetWidth;
+  cc.classList.add('bounce');
+}
+
+function openCart() {
+  renderCartModal();
+  document.getElementById('cart-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeCart() {
+  document.getElementById('cart-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function renderCartModal() {
+  var body = document.getElementById('cart-body');
+  if (!cartItems.length) {
+    body.innerHTML = '<div class="cart-empty"><span>🛒</span><p>Hali zakaz bermagansiz.<br>Mahsulotni tanlang va "<b>Online Zakaz Berish</b>" tugmasini bosing!</p></div>';
+    return;
+  }
+  var html = '';
+  cartItems.forEach(function(ci, i) {
+    var statusLabel = ci.status === 'done' ? '<span class="ci-status done">✅ Tasdiqlandi — Yetkaziladi!</span>' : ci.status === 'pending' ? '<span class="ci-status pending">🟡 Jarayonda</span>' : '<span class="ci-status new">🟢 Admin tekshirayapti...</span>';
+    html += '<div class="cart-item">';
+    html += '<div class="ci-num">#'+(i+1)+'</div>';
+    html += '<div class="ci-info">';
+    html += '<div class="ci-product">'+escHtml(ci.product)+'</div>';
+    html += '<div class="ci-meta">👤 '+escHtml(ci.name)+' • 📞 '+escHtml(ci.phone)+'</div>';
+    if (ci.city) html += '<div class="ci-meta">📍 '+escHtml(ci.city)+'</div>';
+    if (ci.size) html += '<div class="ci-meta">📐 O\'lcham: '+escHtml(ci.size)+'</div>';
+    html += statusLabel;
+    html += '</div></div>';
+  });
+  body.innerHTML = html;
 }
 
 // ========================
@@ -1224,30 +1607,59 @@ function switchCat(cat, btn) {
 function filterProducts() { render(); }
 
 // ========================
-// CART
+// REVIEWS
 // ========================
-function showCart() {
-  if (cartCount === 0) alert("🛒 Savat bo'sh!\n\nMahsulotlarni ko'rib chiqing!");
-  else alert('🛒 Savat: '+cartCount+' ta buyurtma\n\n✈️ @berdaliyew\n📸 @_bakhromvic');
+var REVIEWS_KEY = 'sportup_reviews_v1';
+
+async function loadReviews() {
+  try {
+    var res = await window.storage.get(REVIEWS_KEY, true);
+    if (res && res.value) return JSON.parse(res.value);
+  } catch(e) {}
+  try { return JSON.parse(localStorage.getItem(REVIEWS_KEY) || '[]'); } catch(e) { return []; }
+}
+async function saveReview(rv) {
+  try {
+    var existing = await loadReviews();
+    existing.unshift(rv);
+    await window.storage.set(REVIEWS_KEY, JSON.stringify(existing), true);
+  } catch(e) {
+    try {
+      var ls = JSON.parse(localStorage.getItem(REVIEWS_KEY) || '[]');
+      ls.unshift(rv);
+      localStorage.setItem(REVIEWS_KEY, JSON.stringify(ls));
+    } catch(e2) {}
+  }
+}
+async function renderStoredReviews() {
+  var rvs = await loadReviews();
+  if (!rvs.length) return;
+  var grid = document.getElementById('rev-grid');
+  rvs.forEach(function(rv) {
+    var card = document.createElement('div');
+    card.className = 'rev-card';
+    card.innerHTML = '<div class="rev-stars">★★★★★</div><div class="rev-author">'+escHtml(rv.name)+'</div><div class="rev-text">'+escHtml(rv.text)+'</div>';
+    grid.prepend(card);
+  });
 }
 
-// ========================
-// REVIEW
-// ========================
-function addReview() {
+async function addReview() {
   var name = document.getElementById('rev-name').value.trim();
   var text = document.getElementById('rev-text-inp').value.trim();
   if (!name || !text) { alert('❗ Ism va fikrni yozing!'); return; }
+  var rv = { name: name, text: text, date: new Date().toLocaleDateString('uz-UZ') };
+  await saveReview(rv);
   var grid = document.getElementById('rev-grid');
   var card = document.createElement('div');
   card.className = 'rev-card';
-  card.innerHTML = '<div class="rev-stars">★★★★★</div><div class="rev-author">'+name+'</div><div class="rev-text">'+text+'</div>';
+  card.innerHTML = '<div class="rev-stars">★★★★★</div><div class="rev-author">'+escHtml(name)+'</div><div class="rev-text">'+escHtml(text)+'</div>';
   grid.prepend(card);
   document.getElementById('rev-name').value = '';
   document.getElementById('rev-text-inp').value = '';
   var suc = document.getElementById('rev-success');
   suc.style.display = 'block';
   setTimeout(function(){ suc.style.display='none'; }, 3000);
+  showToast('💬', 'Fikringiz saqlandi, rahmat!');
 }
 
 // ========================
@@ -1287,16 +1699,18 @@ function hidePersonCard(row) {
 // KEYBOARD
 // ========================
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') { closeProdModal(); closeOrderModal(); closeAdmin(); closeLogin(); }
+  if (e.key === 'Escape') { closeProdModal(); closeOrderModal(); closeAdmin(); closeLogin(); closeFullImg(); closeCart(); }
   if (e.key === 'Enter' && document.getElementById('login-modal').classList.contains('open')) doLogin();
 });
 
 // ========================
 // INIT
 // ========================
-// Show login button to everyone
-document.getElementById('btn-signup').style.display = 'flex';
+loadDarkPref();
+checkAdminSession();
+if (!isAdmin) document.getElementById('btn-signup').style.display = 'flex';
 render();
+renderStoredReviews();
 </script>
 </body>
 </html>
