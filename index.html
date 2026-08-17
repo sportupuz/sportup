@@ -342,7 +342,6 @@ body{font-family:'Barlow',sans-serif;background:var(--bg-page);color:var(--text-
 .ci-status.pending{background:#FFF3E0;color:#E65100}
 .ci-status.done{background:#E3F2FD;color:#1565C0}
 .cart-footer{padding:16px 20px;background:var(--lt);border-top:1px solid var(--border)}
-/* CART NOTICE - yangilangan */
 .cart-notice{background:linear-gradient(135deg,var(--orl),var(--lt));border-radius:14px;padding:16px;border-left:4px solid var(--or);font-size:12px;color:var(--text-main);font-weight:600;line-height:2}
 .cart-notice strong{color:var(--or);font-weight:900;display:block;margin-bottom:6px;font-size:13px}
 .cart-contact-btns{display:flex;gap:8px;margin-top:12px}
@@ -387,6 +386,20 @@ body{font-family:'Barlow',sans-serif;background:var(--bg-page);color:var(--text-
 .toast-icon{font-size:20px;flex-shrink:0}
 .toast-text{line-height:1.5}
 
+/* DISCOUNT BANNER + COUNTDOWN */
+.discount-banner{position:relative;overflow:hidden;background:linear-gradient(120deg,var(--or) 0%,var(--ord) 55%,#B33600 100%);border-radius:22px;padding:24px 28px;margin-bottom:22px;display:flex;align-items:center;gap:22px;flex-wrap:wrap;animation:fadeUp .5s ease;box-shadow:0 16px 40px rgba(255,85,0,.28)}
+.discount-banner::before{content:'';position:absolute;top:-60%;left:-20%;width:160%;height:220%;background:repeating-linear-gradient(45deg,rgba(255,255,255,.06) 0 10px,transparent 10px 22px);pointer-events:none}
+.db-left{position:relative;z-index:2;flex:1;min-width:220px}
+.db-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.22);color:#fff;font-size:10px;font-weight:900;padding:4px 12px;border-radius:20px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;animation:pulse 2s infinite}
+.db-title{font-family:'Bebas Neue';font-size:34px;color:#fff;letter-spacing:1.5px;line-height:1.05;margin-bottom:6px}
+.db-sub{font-size:12px;color:rgba(255,255,255,.9);font-weight:600;line-height:1.6}
+.db-timer{position:relative;z-index:2;display:flex;gap:10px;flex-shrink:0}
+.db-t-box{background:rgba(0,0,0,.28);backdrop-filter:blur(4px);border-radius:14px;padding:10px 14px;text-align:center;min-width:60px;border:1px solid rgba(255,255,255,.25)}
+.db-t-num{font-family:'Bebas Neue';font-size:28px;color:#fff;line-height:1;letter-spacing:1px}
+.db-t-label{font-size:8px;color:rgba(255,255,255,.75);font-weight:800;text-transform:uppercase;letter-spacing:1.5px;margin-top:3px}
+.db-t-sep{font-family:'Bebas Neue';font-size:28px;color:rgba(255,255,255,.6);align-self:center}
+.db-expired{position:relative;z-index:2;font-family:'Bebas Neue';font-size:20px;color:#fff;letter-spacing:1px;background:rgba(0,0,0,.28);padding:12px 20px;border-radius:14px}
+
 @media(max-width:820px){
   .layout{flex-direction:column}
   .sb{width:100%;min-width:unset;height:auto;position:static;padding:12px}
@@ -400,6 +413,8 @@ body{font-family:'Barlow',sans-serif;background:var(--bg-page);color:var(--text-
   .h-soc{display:none}
   .h-signup,.h-login{display:none}
   .ct{padding:14px}
+  .discount-banner{flex-direction:column;align-items:flex-start;padding:20px}
+  .db-timer{width:100%;justify-content:center}
 }
 </style>
 </head>
@@ -570,6 +585,23 @@ body{font-family:'Barlow',sans-serif;background:var(--bg-page);color:var(--text-
   </aside>
 
   <main class="ct" id="main-content">
+    <div class="discount-banner">
+      <div class="db-left">
+        <span class="db-tag">🔥 Chegirma faol</span>
+        <div class="db-title">MAXSUS AKSIYA — Vaqt cheklangan!</div>
+        <div class="db-sub">Tanlangan mahsulotlarga chegirma. Aksiya tugashiga qancha vaqt qolganini kuzatib boring 👇</div>
+      </div>
+      <div class="db-timer" id="db-timer">
+        <div class="db-t-box"><div class="db-t-num" id="db-days">00</div><div class="db-t-label">Kun</div></div>
+        <div class="db-t-sep">:</div>
+        <div class="db-t-box"><div class="db-t-num" id="db-hours">00</div><div class="db-t-label">Soat</div></div>
+        <div class="db-t-sep">:</div>
+        <div class="db-t-box"><div class="db-t-num" id="db-mins">00</div><div class="db-t-label">Daqiqa</div></div>
+        <div class="db-t-sep">:</div>
+        <div class="db-t-box"><div class="db-t-num" id="db-secs">00</div><div class="db-t-label">Soniya</div></div>
+      </div>
+    </div>
+
     <div class="page-header">
       <div class="page-title" id="page-title">BUT<em>SILAR</em></div>
       <span class="count-badge" id="prod-count">20 ta mahsulot</span>
@@ -680,13 +712,14 @@ body{font-family:'Barlow',sans-serif;background:var(--bg-page);color:var(--text-
     <div class="admin-body">
       <div class="admin-notice">
         <strong>⚠️ Muhim: Zakazlar qanday saqlanadi?</strong>
-        Zakazlar ushbu qurilmaning xotirasida saqlanadi. Boshqa qurilmadan ko'rish uchun <b>Telegram Bot</b> orqali bildirishnoma o'rnating — har yangi zakaz Telegram'ga keladi! Bot tokeni qo'shish uchun admin paneldagi sozlamalarni tekshiring.
+        Zakazlar ushbu qurilmaning xotirasida saqlanadi. Boshqa qurilmadan ko'rish uchun quyidagi "Export" tugmasi orqali zakazlarni fayl qilib yuklab oling, yoki Telegram Bot ulang (sozlamalar kodda).
       </div>
       <div class="admin-filter">
         <button class="af-btn active" onclick="filterOrders('all',this)">Hammasi</button>
         <button class="af-btn" onclick="filterOrders('new',this)">🟢 Yangi</button>
         <button class="af-btn" onclick="filterOrders('pending',this)">🟡 Jarayonda</button>
         <button class="af-btn" onclick="filterOrders('done',this)">🔵 Bajarildi</button>
+        <button class="af-btn" onclick="exportOrders()" style="background:#E3F2FD;border-color:#1565C0;color:#1565C0">⬇️ Export (backup)</button>
         <button class="af-btn" onclick="clearDoneOrders()" style="margin-left:auto;background:#FFEBEE;border-color:#E53935;color:#C62828">🗑️ Bajarilganlarni o'chir</button>
         <button class="af-btn" onclick="refreshOrders()" style="background:var(--orl);border-color:var(--or);color:var(--or)">🔄 Yangilash</button>
       </div>
@@ -876,56 +909,50 @@ var productImages = {
 var catEmojis={butsilar:'⚽',sarakanowka:'🏟️',krasofkalar:'👟',formalar:'👕',toplar:'🔵',protein:'💪',sumkalar:'🎒'};
 var catTitles={butsilar:'BUT<em>SILAR</em>',sarakanowka:'SARAKA<em>NOWKA</em>',krasofkalar:'KRASOF<em>KALAR</em>',formalar:'FOR<em>MALAR</em>',toplar:"TO'P<em>LAR</em>",protein:'PROTEIN & SPORT <em>OZUQA</em>',sumkalar:'SPORT <em>SUMKALAR</em>'};
 
-// ============================================================
-// TO'G'IRLANGAN NARXLAR
-// Butsilar: 350,000 – 650,000 UZS
-// Sarakanowka: 300,000 – 420,000 UZS
-// To'plar: 90,000 – 540,000 UZS
-// ============================================================
 var products = {
   butsilar:[
-    {brand:'Puma',name:'Puma Future 7 Ultimate FG/AG',price:'580,000 UZS',desc:"Maydon: FG/AG. Materiali: Flyknit mesh. O'lchamlar: 39–46.",badge:'Yangi',badgeClass:'new'},
-    {brand:'Puma',name:'Puma Ultra Ultimate FG/AG',price:'560,000 UZS',desc:"Maydon: FG. Materiali: Primeknit+. O'lchamlar: 40–46. Neyro-grip texnologiyasi.",badge:'Top',badgeClass:''},
-    {brand:'Puma',name:'Puma King Ultimate FG Brown',price:'520,000 UZS',desc:"Maydon: FG. Ghost lace sistem. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Adidas',name:'Adidas F50 Elite FG White/Gold',price:'620,000 UZS',desc:"Maydon: FG. Sprintskin Ultra-light. O'lchamlar: 40–46. Og'irligi: 155g.",badge:'Yangi',badgeClass:'new'},
-    {brand:'Puma',name:'Puma Future 7 Play FG Orange',price:'490,000 UZS',desc:"Maydon: FG/AG. FUZIONFIT+ sock. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Nike',name:'Nike Tiempo Legend 10 Elite FG',price:'600,000 UZS',desc:"Maydon: FG. Premium teri + ACC texnologiyasi. O'lchamlar: 40–46.",badge:'',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Copa Pure 2 Elite FG',price:'640,000 UZS',desc:"Maydon: FG. Kangaroo leather. O'lchamlar: 40–46.",badge:'Classic',badgeClass:''},
-    {brand:'New Balance',name:'New Balance Furon V7 Pro FG',price:'540,000 UZS',desc:"Maydon: FG. Hypo Knit. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Mizuno',name:'Mizuno Morelia Neo IV JP FG',price:'650,000 UZS',desc:"Maydon: FG. K-Leather. O'lchamlar: 40–45. Yaponiya.",badge:'Premium',badgeClass:''},
-    {brand:'Nike',name:'Nike Mercurial Superfly 10 Club FG',price:'380,000 UZS',desc:"Maydon: FG. Synthetic mesh. O'lchamlar: 38–46.",badge:'Arzon',badgeClass:'sale'},
-    {brand:'Adidas',name:'Adidas X Crazyfast.1 FG Yellow',price:'610,000 UZS',desc:"Maydon: FG. CRAZYRUSH texnologiyasi. O'lchamlar: 39–46.",badge:'Tez',badgeClass:''},
-    {brand:'Puma',name:'Puma King Top FG Black/White',price:'500,000 UZS',desc:"Maydon: FG. Premium teri. O'lchamlar: 40–46.",badge:'Legend',badgeClass:''},
-    {brand:'Nike',name:'Nike Air Zoom Mercurial Vapor 15',price:'630,000 UZS',desc:"Maydon: FG. Nike Air Zoom havo yostiqchasi. O'lchamlar: 40–46.",badge:'Air',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Predator Accuracy.1 Low FG',price:'590,000 UZS',desc:"Maydon: FG. Past kesim dizayni. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'New Balance',name:'New Balance 442 Pro FG White',price:'510,000 UZS',desc:"Maydon: FG. Microfiber upper. O'lchamlar: 39–47.",badge:'',badgeClass:''},
-    {brand:'Asics',name:'Asics DS Light X-Fly 4 FG',price:'530,000 UZS',desc:"Maydon: FG. Microfiber upper. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Nike',name:'Nike Tiempo Legend 10 Club Kids FG',price:'350,000 UZS',desc:"Maydon: FG/MG. Bolalar uchun. O'lchamlar: 28–38.",badge:'Bolalar',badgeClass:'new'},
-    {brand:'Adidas',name:'Adidas Copa Nacional Leather FG',price:'645,000 UZS',desc:"Maydon: FG. Full grain leather. O'lchamlar: 40–46.",badge:'Elite',badgeClass:''},
-    {brand:'Under Armour',name:'UA Magnetico Pro FG',price:'480,000 UZS',desc:"Maydon: FG. UA Microthread texnologiyasi. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Puma',name:'Puma Ultra Ultimate FG Blue/Red',price:'575,000 UZS',desc:"Maydon: FG. MATRYXEVO texnologiyasi. O'lchamlar: 39–46.",badge:'Ultra',badgeClass:''}
+    {brand:'Puma',name:'Puma Future 7 Ultimate FG/AG',price:'480,000 UZS',desc:"Maydon: FG/AG. Materiali: Flyknit mesh. O'lchamlar: 39–46.",badge:'Yangi',badgeClass:'new'},
+    {brand:'Puma',name:'Puma Ultra Ultimate FG/AG',price:'460,000 UZS',desc:"Maydon: FG. Materiali: Primeknit+. O'lchamlar: 40–46. Neyro-grip texnologiyasi.",badge:'Top',badgeClass:''},
+    {brand:'Puma',name:'Puma King Ultimate FG Brown',price:'420,000 UZS',desc:"Maydon: FG. Ghost lace sistem. O'lchamlar: 39–46.",badge:'',badgeClass:''},
+    {brand:'Adidas',name:'Adidas F50 Elite FG White/Gold',price:'500,000 UZS',desc:"Maydon: FG. Sprintskin Ultra-light. O'lchamlar: 40–46. Og'irligi: 155g.",badge:'Yangi',badgeClass:'new'},
+    {brand:'Puma',name:'Puma Future 7 Play FG Orange',price:'390,000 UZS',desc:"Maydon: FG/AG. FUZIONFIT+ sock. O'lchamlar: 39–46.",badge:'',badgeClass:''},
+    {brand:'Nike',name:'Nike Tiempo Legend 10 Elite FG',price:'490,000 UZS',desc:"Maydon: FG. Premium teri + ACC texnologiyasi. O'lchamlar: 40–46.",badge:'',badgeClass:''},
+    {brand:'Adidas',name:'Adidas Copa Pure 2 Elite FG',price:'500,000 UZS',desc:"Maydon: FG. Kangaroo leather. O'lchamlar: 40–46.",badge:'Classic',badgeClass:''},
+    {brand:'New Balance',name:'New Balance Furon V7 Pro FG',price:'440,000 UZS',desc:"Maydon: FG. Hypo Knit. O'lchamlar: 39–46.",badge:'',badgeClass:''},
+    {brand:'Mizuno',name:'Mizuno Morelia Neo IV JP FG',price:'500,000 UZS',desc:"Maydon: FG. K-Leather. O'lchamlar: 40–45. Yaponiya.",badge:'Premium',badgeClass:''},
+    {brand:'Nike',name:'Nike Mercurial Superfly 10 Club FG',price:'310,000 UZS',desc:"Maydon: FG. Synthetic mesh. O'lchamlar: 38–46.",badge:'Arzon',badgeClass:'sale'},
+    {brand:'Adidas',name:'Adidas X Crazyfast.1 FG Yellow',price:'495,000 UZS',desc:"Maydon: FG. CRAZYRUSH texnologiyasi. O'lchamlar: 39–46.",badge:'Tez',badgeClass:''},
+    {brand:'Puma',name:'Puma King Top FG Black/White',price:'410,000 UZS',desc:"Maydon: FG. Premium teri. O'lchamlar: 40–46.",badge:'Legend',badgeClass:''},
+    {brand:'Nike',name:'Nike Air Zoom Mercurial Vapor 15',price:'500,000 UZS',desc:"Maydon: FG. Nike Air Zoom havo yostiqchasi. O'lchamlar: 40–46.",badge:'Air',badgeClass:''},
+    {brand:'Adidas',name:'Adidas Predator Accuracy.1 Low FG',price:'480,000 UZS',desc:"Maydon: FG. Past kesim dizayni. O'lchamlar: 39–46.",badge:'',badgeClass:''},
+    {brand:'New Balance',name:'New Balance 442 Pro FG White',price:'420,000 UZS',desc:"Maydon: FG. Microfiber upper. O'lchamlar: 39–47.",badge:'',badgeClass:''},
+    {brand:'Asics',name:'Asics DS Light X-Fly 4 FG',price:'430,000 UZS',desc:"Maydon: FG. Microfiber upper. O'lchamlar: 39–46.",badge:'',badgeClass:''},
+    {brand:'Nike',name:'Nike Tiempo Legend 10 Club Kids FG',price:'300,000 UZS',desc:"Maydon: FG/MG. Bolalar uchun. O'lchamlar: 28–38.",badge:'Bolalar',badgeClass:'new'},
+    {brand:'Adidas',name:'Adidas Copa Nacional Leather FG',price:'500,000 UZS',desc:"Maydon: FG. Full grain leather. O'lchamlar: 40–46.",badge:'Elite',badgeClass:''},
+    {brand:'Under Armour',name:'UA Magnetico Pro FG',price:'380,000 UZS',desc:"Maydon: FG. UA Microthread texnologiyasi. O'lchamlar: 39–46.",badge:'',badgeClass:''},
+    {brand:'Puma',name:'Puma Ultra Ultimate FG Blue/Red',price:'475,000 UZS',desc:"Maydon: FG. MATRYXEVO texnologiyasi. O'lchamlar: 39–46.",badge:'Ultra',badgeClass:''}
   ],
   sarakanowka:[
-    {brand:'Nike',name:"Nike Mercurial Vapor 16 Club TF",price:'320,000 UZS',desc:"Maydon: Sun'iy maysazor (TF). O'lchamlar: 38–46.",badge:'Yangi',badgeClass:'new'},
-    {brand:'Adidas',name:'Adidas Predator Club TF Black',price:'300,000 UZS',desc:"Maydon: TF. Synthetic upper. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Nike',name:'Nike Phantom GX Club TF White',price:'330,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Puma',name:'Puma Future 7 Play TF Orange',price:'310,000 UZS',desc:"Maydon: TF. FUZIONFIT sock. O'lchamlar: 38–46.",badge:'',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Copa Gloro TF White/Black',price:'295,000 UZS',desc:"Maydon: TF. Synthetic leather. O'lchamlar: 39–46.",badge:'Classic',badgeClass:''},
-    {brand:'Nike',name:'Nike Tiempo Legend 10 Club TF',price:'315,000 UZS',desc:"Maydon: TF. Synthetic leather. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Adidas',name:'Adidas X Crazyfast Club TF',price:'305,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46.",badge:'Tez',badgeClass:''},
-    {brand:'New Balance',name:'New Balance 442 v2 Team TF',price:'290,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Joma',name:'Joma Toledo TF Red/White',price:'220,000 UZS',desc:"Maydon: TF. O'lchamlar: 38–46. Ispaniya brendi.",badge:'Arzon',badgeClass:'sale'},
-    {brand:'Umbro',name:'Umbro Velocita Pro TF',price:'265,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–45.",badge:'',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Predator Accuracy.3 TF',price:'308,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Nike',name:'Nike React Gato IC (Futsal)',price:'340,000 UZS',desc:"Maydon: Futsal (IC). O'lchamlar: 38–46.",badge:'Futsal',badgeClass:'new'},
-    {brand:'Puma',name:'Puma King Top TT',price:'285,000 UZS',desc:"Maydon: TF. Full grain leather. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Lotto',name:'Lotto Solista 300 TF',price:'250,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46. Italiya brendi.",badge:'',badgeClass:''},
-    {brand:'Nike',name:'Nike Jr. Mercurial Vapor TF Kids',price:'240,000 UZS',desc:"Maydon: TF. Bolalar uchun. O'lchamlar: 28–38.",badge:'Bolalar',badgeClass:'new'},
-    {brand:'Adidas',name:'Adidas F50 Club TF Green/Black',price:'312,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Hummel',name:'Hummel Blade TF',price:'270,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46. Daniya brendi.",badge:'',badgeClass:''},
-    {brand:'Diadora',name:'Diadora Brasil Elite 2 TF',price:'280,000 UZS',desc:"Maydon: TF. Kangaroo leather. O'lchamlar: 39–45.",badge:'Premium',badgeClass:''},
-    {brand:'Puma',name:'Puma Future 7 Ultimate TF',price:'335,000 UZS',desc:"Maydon: TF. O'lchamlar: 38–46.",badge:'Elite',badgeClass:''},
-    {brand:'Under Armour',name:'UA Clone Magnetico Pro TF',price:'298,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46.",badge:'',badgeClass:''}
+    {brand:'Nike',name:"Nike Mercurial Vapor 16 Club TF",price:'350,000 UZS',desc:"Maydon: Sun'iy maysazor (TF). O'lchamlar: 38–46.",badge:'Yangi',badgeClass:'new'},
+    {brand:'Adidas',name:'Adidas Predator Club TF Black',price:'320,000 UZS',desc:"Maydon: TF. Synthetic upper. O'lchamlar: 39–46.",badge:'',badgeClass:''},
+    {brand:'Nike',name:'Nike Phantom GX Club TF White',price:'360,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46.",badge:'',badgeClass:''},
+    {brand:'Puma',name:'Puma Future 7 Play TF Orange',price:'330,000 UZS',desc:"Maydon: TF. FUZIONFIT sock. O'lchamlar: 38–46.",badge:'',badgeClass:''},
+    {brand:'Adidas',name:'Adidas Copa Gloro TF White/Black',price:'315,000 UZS',desc:"Maydon: TF. Synthetic leather. O'lchamlar: 39–46.",badge:'Classic',badgeClass:''},
+    {brand:'Nike',name:'Nike Tiempo Legend 10 Club TF',price:'340,000 UZS',desc:"Maydon: TF. Synthetic leather. O'lchamlar: 39–46.",badge:'',badgeClass:''},
+    {brand:'Adidas',name:'Adidas X Crazyfast Club TF',price:'325,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46.",badge:'Tez',badgeClass:''},
+    {brand:'New Balance',name:'New Balance 442 v2 Team TF',price:'305,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46.",badge:'',badgeClass:''},
+    {brand:'Joma',name:'Joma Toledo TF Red/White',price:'300,000 UZS',desc:"Maydon: TF. O'lchamlar: 38–46. Ispaniya brendi.",badge:'Arzon',badgeClass:'sale'},
+    {brand:'Umbro',name:'Umbro Velocita Pro TF',price:'310,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–45.",badge:'',badgeClass:''},
+    {brand:'Adidas',name:'Adidas Predator Accuracy.3 TF',price:'328,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46.",badge:'',badgeClass:''},
+    {brand:'Nike',name:'Nike React Gato IC (Futsal)',price:'400,000 UZS',desc:"Maydon: Futsal (IC). O'lchamlar: 38–46.",badge:'Futsal',badgeClass:'new'},
+    {brand:'Puma',name:'Puma King Top TT',price:'318,000 UZS',desc:"Maydon: TF. Full grain leather. O'lchamlar: 39–46.",badge:'',badgeClass:''},
+    {brand:'Lotto',name:'Lotto Solista 300 TF',price:'302,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46. Italiya brendi.",badge:'',badgeClass:''},
+    {brand:'Nike',name:'Nike Jr. Mercurial Vapor TF Kids',price:'300,000 UZS',desc:"Maydon: TF. Bolalar uchun. O'lchamlar: 28–38.",badge:'Bolalar',badgeClass:'new'},
+    {brand:'Adidas',name:'Adidas F50 Club TF Green/Black',price:'335,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46.",badge:'',badgeClass:''},
+    {brand:'Hummel',name:'Hummel Blade TF',price:'312,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46. Daniya brendi.",badge:'',badgeClass:''},
+    {brand:'Diadora',name:'Diadora Brasil Elite 2 TF',price:'322,000 UZS',desc:"Maydon: TF. Kangaroo leather. O'lchamlar: 39–45.",badge:'Premium',badgeClass:''},
+    {brand:'Puma',name:'Puma Future 7 Ultimate TF',price:'440,000 UZS',desc:"Maydon: TF. O'lchamlar: 38–46.",badge:'Elite',badgeClass:''},
+    {brand:'Under Armour',name:'UA Clone Magnetico Pro TF',price:'308,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46.",badge:'',badgeClass:''}
   ],
   krasofkalar:[
     {brand:'Nike',name:'Nike Air Max 270 White/Black',price:'950,000 UZS',desc:"Turi: Lifestyle. O'lchamlar: 36–46.",badge:'Air Max',badgeClass:''},
@@ -950,26 +977,26 @@ var products = {
     {brand:'Puma',name:'Puma RS-X Speed White/Red',price:'760,000 UZS',desc:"Turi: Chunky running. O'lchamlar: 36–46.",badge:'RS-X',badgeClass:''}
   ],
   formalar:[
-    {brand:'Nike',name:'Real Madrid Home Kit 2024/25',price:'220,000 UZS',desc:"Klub: Real Madrid. Mavsim: 2024/25. O'lchamlar: XS–3XL.",badge:'Madrid',badgeClass:''},
-    {brand:'Adidas',name:'FC Barcelona Away Kit 2024/25',price:'210,000 UZS',desc:"Klub: FC Barcelona. O'lchamlar: XS–3XL.",badge:'Barca',badgeClass:''},
-    {brand:'Nike',name:'PSG Home Kit 2024/25',price:'230,000 UZS',desc:"Klub: PSG. O'lchamlar: XS–3XL.",badge:'PSG',badgeClass:''},
-    {brand:'Adidas',name:'Manchester United Home 2024/25',price:'215,000 UZS',desc:"Klub: Man United. O'lchamlar: XS–3XL.",badge:'ManU',badgeClass:''},
-    {brand:'Nike',name:'Liverpool Home Kit 2024/25',price:'220,000 UZS',desc:"Klub: Liverpool FC. O'lchamlar: XS–3XL.",badge:'LFC',badgeClass:''},
-    {brand:'Adidas',name:'Juventus Away Kit 2024/25',price:'205,000 UZS',desc:"Klub: Juventus. O'lchamlar: XS–3XL.",badge:'Juve',badgeClass:''},
-    {brand:'Nike',name:'Chelsea FC Home Kit 2024/25',price:'215,000 UZS',desc:"Klub: Chelsea FC. O'lchamlar: XS–3XL.",badge:'Chelsea',badgeClass:''},
-    {brand:'Adidas',name:'Arsenal Home Kit 2024/25',price:'210,000 UZS',desc:"Klub: Arsenal FC. O'lchamlar: XS–3XL.",badge:'Arsenal',badgeClass:''},
-    {brand:'Nike',name:'Atletico Madrid Third Kit 24/25',price:'200,000 UZS',desc:"Klub: Atletico Madrid. O'lchamlar: XS–3XL.",badge:'Atleti',badgeClass:''},
-    {brand:'Puma',name:'AC Milan Home Kit 2024/25',price:'225,000 UZS',desc:"Klub: AC Milan. O'lchamlar: XS–3XL.",badge:'Milan',badgeClass:''},
-    {brand:'Adidas',name:"O'zbekiston Milliy Jamoasi",price:'195,000 UZS',desc:"Milliy: O'zbekiston. O'lchamlar: XS–3XL.",badge:"O'zbek",badgeClass:'new'},
-    {brand:'Nike',name:'Brazil National Team Home 2024',price:'240,000 UZS',desc:"Milliy: Braziliya. O'lchamlar: XS–3XL.",badge:'Brazil',badgeClass:''},
-    {brand:'Adidas',name:'Argentina Away Kit 2024',price:'235,000 UZS',desc:"Milliy: Argentina. O'lchamlar: XS–3XL.",badge:'Argentina',badgeClass:''},
-    {brand:'Nike',name:'France National Team Home 2024',price:'225,000 UZS',desc:"Milliy: Fransiya. O'lchamlar: XS–3XL.",badge:'France',badgeClass:''},
-    {brand:'Nike',name:'Manchester City Third Kit 24/25',price:'220,000 UZS',desc:"Klub: Manchester City. O'lchamlar: XS–3XL.",badge:'City',badgeClass:''},
-    {brand:'Adidas',name:'Inter Milan Home Kit 2024/25',price:'215,000 UZS',desc:"Klub: Inter Milan. O'lchamlar: XS–3XL.",badge:'Inter',badgeClass:''},
-    {brand:'Nike',name:'Tottenham Hotspur Away Kit 24/25',price:'210,000 UZS',desc:"Klub: Tottenham. O'lchamlar: XS–3XL.",badge:'Spurs',badgeClass:''},
-    {brand:'Puma',name:'Borussia Dortmund Home 24/25',price:'220,000 UZS',desc:"Klub: Borussia Dortmund. O'lchamlar: XS–3XL.",badge:'BVB',badgeClass:''},
-    {brand:'Adidas',name:'Bayern Munich Home Kit 24/25',price:'230,000 UZS',desc:"Klub: Bayern Munich. O'lchamlar: XS–3XL.",badge:'Bayern',badgeClass:''},
-    {brand:'Nike',name:'Aston Villa Home Kit 2024/25',price:'205,000 UZS',desc:"Klub: Aston Villa. O'lchamlar: XS–3XL.",badge:'Villa',badgeClass:''}
+    {brand:'Nike',name:'Real Madrid Home Kit 2024/25',price:'150,000 UZS',desc:"Klub: Real Madrid. Mavsim: 2024/25. O'lchamlar: XS–3XL.",badge:'Madrid',badgeClass:''},
+    {brand:'Adidas',name:'FC Barcelona Away Kit 2024/25',price:'150,000 UZS',desc:"Klub: FC Barcelona. O'lchamlar: XS–3XL.",badge:'Barca',badgeClass:''},
+    {brand:'Nike',name:'PSG Home Kit 2024/25',price:'150,000 UZS',desc:"Klub: PSG. O'lchamlar: XS–3XL.",badge:'PSG',badgeClass:''},
+    {brand:'Adidas',name:'Manchester United Home 2024/25',price:'150,000 UZS',desc:"Klub: Man United. O'lchamlar: XS–3XL.",badge:'ManU',badgeClass:''},
+    {brand:'Nike',name:'Liverpool Home Kit 2024/25',price:'150,000 UZS',desc:"Klub: Liverpool FC. O'lchamlar: XS–3XL.",badge:'LFC',badgeClass:''},
+    {brand:'Adidas',name:'Juventus Away Kit 2024/25',price:'120,000 UZS',desc:"Klub: Juventus. O'lchamlar: XS–3XL.",badge:'Juve',badgeClass:''},
+    {brand:'Nike',name:'Chelsea FC Home Kit 2024/25',price:'120,000 UZS',desc:"Klub: Chelsea FC. O'lchamlar: XS–3XL.",badge:'Chelsea',badgeClass:''},
+    {brand:'Adidas',name:'Arsenal Home Kit 2024/25',price:'120,000 UZS',desc:"Klub: Arsenal FC. O'lchamlar: XS–3XL.",badge:'Arsenal',badgeClass:''},
+    {brand:'Nike',name:'Atletico Madrid Third Kit 24/25',price:'120,000 UZS',desc:"Klub: Atletico Madrid. O'lchamlar: XS–3XL.",badge:'Atleti',badgeClass:''},
+    {brand:'Puma',name:'AC Milan Home Kit 2024/25',price:'120,000 UZS',desc:"Klub: AC Milan. O'lchamlar: XS–3XL.",badge:'Milan',badgeClass:''},
+    {brand:'Adidas',name:"O'zbekiston Milliy Jamoasi",price:'100,000 UZS',desc:"Milliy: O'zbekiston. O'lchamlar: XS–3XL.",badge:"O'zbek",badgeClass:'new'},
+    {brand:'Nike',name:'Brazil National Team Home 2024',price:'150,000 UZS',desc:"Milliy: Braziliya. O'lchamlar: XS–3XL.",badge:'Brazil',badgeClass:''},
+    {brand:'Adidas',name:'Argentina Away Kit 2024',price:'150,000 UZS',desc:"Milliy: Argentina. O'lchamlar: XS–3XL.",badge:'Argentina',badgeClass:''},
+    {brand:'Nike',name:'France National Team Home 2024',price:'150,000 UZS',desc:"Milliy: Fransiya. O'lchamlar: XS–3XL.",badge:'France',badgeClass:''},
+    {brand:'Nike',name:'Manchester City Third Kit 24/25',price:'150,000 UZS',desc:"Klub: Manchester City. O'lchamlar: XS–3XL.",badge:'City',badgeClass:''},
+    {brand:'Adidas',name:'Inter Milan Home Kit 2024/25',price:'120,000 UZS',desc:"Klub: Inter Milan. O'lchamlar: XS–3XL.",badge:'Inter',badgeClass:''},
+    {brand:'Nike',name:'Tottenham Hotspur Away Kit 24/25',price:'120,000 UZS',desc:"Klub: Tottenham. O'lchamlar: XS–3XL.",badge:'Spurs',badgeClass:''},
+    {brand:'Puma',name:'Borussia Dortmund Home 24/25',price:'120,000 UZS',desc:"Klub: Borussia Dortmund. O'lchamlar: XS–3XL.",badge:'BVB',badgeClass:''},
+    {brand:'Adidas',name:'Bayern Munich Home Kit 24/25',price:'150,000 UZS',desc:"Klub: Bayern Munich. O'lchamlar: XS–3XL.",badge:'Bayern',badgeClass:''},
+    {brand:'Nike',name:'Aston Villa Home Kit 2024/25',price:'100,000 UZS',desc:"Klub: Aston Villa. O'lchamlar: XS–3XL.",badge:'Villa',badgeClass:''}
   ],
   toplar:[
     {brand:'Adidas',name:'Adidas UCL Champions League Pro',price:'420,000 UZS',desc:"Liga: UEFA Champions League. O'lcham: 5.",badge:'UCL',badgeClass:''},
@@ -1044,10 +1071,56 @@ var cartItems = [];
 var darkMode = false;
 
 // ========================
+// DISCOUNT COUNTDOWN TIMER
+// Aksiya avtomatik yangilanadi — tugagach o'zi qayta boshlanadi,
+// shuning uchun banner hech qachon "abadiy tugadi" holida qolmaydi.
+// ========================
+var DISCOUNT_DAYS = 5;
+var DISCOUNT_END_KEY = 'sportup_discount_end';
+function getDiscountEndTime() {
+  try {
+    var saved = parseInt(localStorage.getItem(DISCOUNT_END_KEY), 10);
+    if (saved && saved > Date.now()) return saved;
+    var end = Date.now() + DISCOUNT_DAYS * 24 * 60 * 60 * 1000;
+    localStorage.setItem(DISCOUNT_END_KEY, end);
+    return end;
+  } catch(e) {
+    return Date.now() + DISCOUNT_DAYS * 24 * 60 * 60 * 1000;
+  }
+}
+var discountEndTime = getDiscountEndTime();
+function pad2(n){ return n < 10 ? '0'+n : ''+n; }
+function updateCountdown() {
+  var diff = discountEndTime - Date.now();
+  if (diff <= 0) {
+    // Aksiya muddati tugadi — avtomatik yangi davr boshlanadi (site hech qachon "tugadi" holatida qotib qolmaydi)
+    try { localStorage.removeItem(DISCOUNT_END_KEY); } catch(e){}
+    discountEndTime = getDiscountEndTime();
+    diff = discountEndTime - Date.now();
+  }
+  var d = Math.floor(diff / (1000*60*60*24));
+  var h = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+  var m = Math.floor((diff % (1000*60*60)) / (1000*60));
+  var s = Math.floor((diff % (1000*60)) / 1000);
+  var elD = document.getElementById('db-days');
+  var elH = document.getElementById('db-hours');
+  var elM = document.getElementById('db-mins');
+  var elS = document.getElementById('db-secs');
+  if (elD) elD.innerText = pad2(d);
+  if (elH) elH.innerText = pad2(h);
+  if (elM) elM.innerText = pad2(m);
+  if (elS) elS.innerText = pad2(s);
+}
+setInterval(updateCountdown, 1000);
+
+// ========================
 // TELEGRAM BOT CONFIG
-// Admin zakazlarni Telegram'da ko'rish uchun:
-// 1. @BotFather dan bot yarating
-// 2. Bot tokenini va Chat ID ni quyiga kiriting
+// Tayyor bo'lganingizda shu ikki qatorni to'ldiring — boshqa hech narsa
+// o'zgartirish shart emas, hamma joyi tayyor turadi.
+// 1. @BotFather ga yozing -> /newbot -> nomini bering -> token oling
+// 2. Botga bironta xabar yuboring, keyin shu havolani brauzerda oching:
+//    https://api.telegram.org/bot<TOKEN>/getUpdates
+//    natijada "chat":{"id": ... } qatoridagi raqam sizning Chat ID'ingiz
 // ========================
 var TG_BOT_TOKEN = ''; // Masalan: '1234567890:ABCdefGHIjklMNOpqrSTUvwxYZ'
 var TG_CHAT_ID = '';   // Masalan: '123456789'
@@ -1150,7 +1223,7 @@ function doLogin() {
 }
 
 // ========================
-// ORDERS — localStorage (barcha qurilmada ishlamaydi, Telegram ishlatiladi)
+// ORDERS — localStorage
 // ========================
 var ORDERS_KEY = 'sportup_orders_v3';
 
@@ -1158,7 +1231,6 @@ function saveOrderLocal(order) {
   try {
     var existing = loadOrdersLocal();
     existing.unshift(order);
-    // Faqat oxirgi 100 ta zakazni saqlash
     if (existing.length > 100) existing = existing.slice(0, 100);
     localStorage.setItem(ORDERS_KEY, JSON.stringify(existing));
     return true;
@@ -1189,6 +1261,7 @@ function deleteOrderLocal(id) {
     orders = orders.filter(function(o){ return o.id !== id; });
     localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
     allOrders = orders;
+    cartItems = cartItems.filter(function(ci){ return ci.id !== id; });
     renderOrders();
     showToast('🗑️', "Zakaz o'chirildi");
   } catch(e) {}
@@ -1204,6 +1277,25 @@ function clearDoneOrders() {
     renderOrders();
     showToast('🧹', "Bajarilgan zakazlar o'chirildi");
   } catch(e) {}
+}
+
+// Zakazlarni JSON fayl qilib backup olish (Telegram/backend bo'lmagani uchun
+// admin bu faylni istagan vaqt yuklab, boshqa qurilmadagi buyurtmalarni ham
+// yig'ib borishi mumkin — masalan mijoz screenshot yoki fayl yuborsa)
+function exportOrders() {
+  var orders = loadOrdersLocal();
+  if (!orders.length) { showToast('📭', "Export qilinadigan zakaz yo'q"); return; }
+  var blob = new Blob([JSON.stringify(orders, null, 2)], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  var now = new Date();
+  a.href = url;
+  a.download = 'sportup-zakazlar-' + now.toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('⬇️', 'Zakazlar fayl qilib yuklab olindi');
 }
 
 // ========================
@@ -1222,7 +1314,7 @@ function closeAdmin() {
 function refreshOrders() {
   document.getElementById('orders-container').innerHTML = '<div class="admin-loading"><div class="spinner"></div><p>Zakazlar yuklanmoqda...</p></div>';
   allOrders = loadOrdersLocal();
-  setTimeout(renderOrders, 400);
+  setTimeout(renderOrders, 300);
 }
 function filterOrders(f, btn) {
   currentFilter = f;
@@ -1462,14 +1554,10 @@ async function submitOrder() {
     image: orderImageData || null
   };
 
-  // Mahalliy saqlash
   saveOrderLocal(order);
-
-  // Telegram bildirishnoma yuborish
   sendTelegramNotification(order);
 
-  // Savatchaga qo'shish
-  cartItems.push(order);
+  cartItems.unshift(order);
   updateCartCount();
 
   document.getElementById('order-success').style.display = 'block';
@@ -1481,7 +1569,13 @@ async function submitOrder() {
 
 // ========================
 // CART
+// (mijozning oldingi zakazlari sahifa yangilansa ham localStorage'dan
+// qayta yuklab olinadi — endi hech narsa yo'qolib ketmaydi)
 // ========================
+function loadCartFromStorage() {
+  cartItems = loadOrdersLocal();
+  updateCartCount();
+}
 function updateCartCount() {
   var cc = document.getElementById('cart-count');
   cc.innerText = cartItems.length;
@@ -1632,6 +1726,8 @@ checkAdminSession();
 if (!isAdmin) document.getElementById('btn-signup').style.display = 'flex';
 render();
 loadStoredReviews();
+loadCartFromStorage();
+updateCountdown();
 </script>
 </body>
 </html>
