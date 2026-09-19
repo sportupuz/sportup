@@ -445,6 +445,19 @@ body{font-family:'Barlow',sans-serif;background:var(--bg-page);color:var(--text-
 .db-t-label{font-size:8px;color:rgba(255,255,255,.75);font-weight:800;text-transform:uppercase;letter-spacing:1.5px;margin-top:3px}
 .db-t-sep{font-family:'Bebas Neue';font-size:28px;color:rgba(255,255,255,.6);align-self:center}
 
+/* KO'RINISH TANLASH (PC / Telefon) */
+.view-choice-box{background:var(--bg-card);border-radius:26px;padding:40px 34px;max-width:420px;width:100%;text-align:center;box-shadow:0 40px 100px rgba(0,0,0,.35);animation:popIn .38s cubic-bezier(.34,1.3,.64,1)}
+.vc-logo{font-family:'Bebas Neue';font-size:44px;color:var(--text-main);letter-spacing:3px;margin-bottom:6px}
+.vc-logo em{color:var(--or);font-style:normal}
+.vc-sub{font-size:13px;color:var(--text-muted);font-weight:600;margin-bottom:26px;line-height:1.6}
+.vc-buttons{display:flex;gap:14px}
+.vc-btn{flex:1;background:var(--lt);border:2px solid var(--border);border-radius:18px;padding:24px 12px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:.25s;font-family:'Barlow Condensed';font-weight:800;font-size:13px;color:var(--text-main)}
+.vc-btn .vc-emoji{font-size:38px}
+.vc-btn:hover{border-color:var(--or);background:var(--orl);color:var(--or);transform:translateY(-4px)}
+.view-switch-btn{position:fixed;left:14px;bottom:14px;z-index:500;width:46px;height:46px;border-radius:50%;background:var(--dk);color:#fff;border:none;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.3);transition:.25s}
+[data-theme="dark"] .view-switch-btn{background:var(--or)}
+.view-switch-btn:hover{transform:scale(1.1) rotate(15deg)}
+
 @media(max-width:820px){
   .layout{flex-direction:column}
   .sb{width:100%;min-width:unset;height:auto;position:static;padding:12px}
@@ -909,6 +922,19 @@ body{font-family:'Barlow',sans-serif;background:var(--bg-page);color:var(--text-
   <span class="toast-text" id="toast-text">Xabar</span>
 </div>
 
+<!-- KO'RINISH TANLASH (PC / Telefon) -->
+<div class="overlay view-choice-overlay" id="view-choice-modal" onclick="if(event.target===this) tryCloseViewChoice()">
+  <div class="view-choice-box">
+    <div class="vc-logo">SPORT<em>UP</em></div>
+    <div class="vc-sub">Saytni qanday ko'rinishda ochmoqchisiz?</div>
+    <div class="vc-buttons">
+      <button class="vc-btn" onclick="chooseViewMode('desktop')"><span class="vc-emoji">💻</span><span>Kompyuter uchun</span></button>
+      <button class="vc-btn" onclick="chooseViewMode('mobile')"><span class="vc-emoji">📱</span><span>Telefon uchun</span></button>
+    </div>
+  </div>
+</div>
+<button class="view-switch-btn" id="view-switch-btn" onclick="openViewChoice()" title="Ko'rinishni almashtirish">🔁</button>
+
 <!-- FIREBASE SDK (mahsulot va zakazlarni bulutga saqlash uchun) -->
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
@@ -1109,153 +1135,13 @@ var catTitles={butsilar:'BUT<em>SILAR</em>',sarakanowka:'SARAKA<em>NOWKA</em>',k
 var catNames={butsilar:'Butsilar',sarakanowka:'Sarakanowka',krasofkalar:'Krasofkalar',formalar:'Formalar',toplar:"To'plar",protein:'Protein & Sport Ozuqa',sumkalar:'Sumkalar'};
 
 var products = {
-  butsilar:[
-    {brand:'Puma',name:'Puma Future 7 Ultimate FG/AG',price:'480,000 UZS',desc:"Maydon: FG/AG. Materiali: Flyknit mesh. O'lchamlar: 39–46.",badge:'Yangi',badgeClass:'new'},
-    {brand:'Puma',name:'Puma Ultra Ultimate FG/AG',price:'460,000 UZS',desc:"Maydon: FG. Materiali: Primeknit+. O'lchamlar: 40–46. Neyro-grip texnologiyasi.",badge:'Top',badgeClass:''},
-    {brand:'Puma',name:'Puma King Ultimate FG Brown',price:'420,000 UZS',desc:"Maydon: FG. Ghost lace sistem. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Adidas',name:'Adidas F50 Elite FG White/Gold',price:'500,000 UZS',desc:"Maydon: FG. Sprintskin Ultra-light. O'lchamlar: 40–46. Og'irligi: 155g.",badge:'Yangi',badgeClass:'new'},
-    {brand:'Puma',name:'Puma Future 7 Play FG Orange',price:'390,000 UZS',desc:"Maydon: FG/AG. FUZIONFIT+ sock. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Nike',name:'Nike Tiempo Legend 10 Elite FG',price:'490,000 UZS',desc:"Maydon: FG. Premium teri + ACC texnologiyasi. O'lchamlar: 40–46.",badge:'',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Copa Pure 2 Elite FG',price:'500,000 UZS',desc:"Maydon: FG. Kangaroo leather. O'lchamlar: 40–46.",badge:'Classic',badgeClass:''},
-    {brand:'New Balance',name:'New Balance Furon V7 Pro FG',price:'440,000 UZS',desc:"Maydon: FG. Hypo Knit. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Mizuno',name:'Mizuno Morelia Neo IV JP FG',price:'500,000 UZS',desc:"Maydon: FG. K-Leather. O'lchamlar: 40–45. Yaponiya.",badge:'Premium',badgeClass:''},
-    {brand:'Nike',name:'Nike Mercurial Superfly 10 Club FG',price:'310,000 UZS',desc:"Maydon: FG. Synthetic mesh. O'lchamlar: 38–46.",badge:'Arzon',badgeClass:'sale'},
-    {brand:'Adidas',name:'Adidas X Crazyfast.1 FG Yellow',price:'495,000 UZS',desc:"Maydon: FG. CRAZYRUSH texnologiyasi. O'lchamlar: 39–46.",badge:'Tez',badgeClass:''},
-    {brand:'Puma',name:'Puma King Top FG Black/White',price:'410,000 UZS',desc:"Maydon: FG. Premium teri. O'lchamlar: 40–46.",badge:'Legend',badgeClass:''},
-    {brand:'Nike',name:'Nike Air Zoom Mercurial Vapor 15',price:'500,000 UZS',desc:"Maydon: FG. Nike Air Zoom havo yostiqchasi. O'lchamlar: 40–46.",badge:'Air',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Predator Accuracy.1 Low FG',price:'480,000 UZS',desc:"Maydon: FG. Past kesim dizayni. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'New Balance',name:'New Balance 442 Pro FG White',price:'420,000 UZS',desc:"Maydon: FG. Microfiber upper. O'lchamlar: 39–47.",badge:'',badgeClass:''},
-    {brand:'Asics',name:'Asics DS Light X-Fly 4 FG',price:'430,000 UZS',desc:"Maydon: FG. Microfiber upper. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Nike',name:'Nike Tiempo Legend 10 Club Kids FG',price:'300,000 UZS',desc:"Maydon: FG/MG. Bolalar uchun. O'lchamlar: 28–38.",badge:'Bolalar',badgeClass:'new'},
-    {brand:'Adidas',name:'Adidas Copa Nacional Leather FG',price:'500,000 UZS',desc:"Maydon: FG. Full grain leather. O'lchamlar: 40–46.",badge:'Elite',badgeClass:''},
-    {brand:'Under Armour',name:'UA Magnetico Pro FG',price:'380,000 UZS',desc:"Maydon: FG. UA Microthread texnologiyasi. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Puma',name:'Puma Ultra Ultimate FG Blue/Red',price:'475,000 UZS',desc:"Maydon: FG. MATRYXEVO texnologiyasi. O'lchamlar: 39–46.",badge:'Ultra',badgeClass:''},
-    {brand:'Nike',name:'Nike Vapor 17',price:'475,000 UZS',desc:"Maydon: FG. MATRYXEVO texnologiyasi. O'lchamlar: 39–46.",badge:'Ultra',badgeClass:''}
-  ],
-  sarakanowka:[
-    {brand:'Nike',name:"Nike Mercurial Vapor 16 Club TF",price:'350,000 UZS',desc:"Maydon: Sun'iy maysazor (TF). O'lchamlar: 38–46.",badge:'Yangi',badgeClass:'new'},
-    {brand:'Adidas',name:'Adidas Predator Club TF Black',price:'320,000 UZS',desc:"Maydon: TF. Synthetic upper. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Nike',name:'Nike Phantom GX Club TF White',price:'360,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Puma',name:'Puma Future 7 Play TF Orange',price:'330,000 UZS',desc:"Maydon: TF. FUZIONFIT sock. O'lchamlar: 38–46.",badge:'',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Copa Gloro TF White/Black',price:'315,000 UZS',desc:"Maydon: TF. Synthetic leather. O'lchamlar: 39–46.",badge:'Classic',badgeClass:''},
-    {brand:'Nike',name:'Nike Tiempo Legend 10 Club TF',price:'340,000 UZS',desc:"Maydon: TF. Synthetic leather. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Adidas',name:'Adidas X Crazyfast Club TF',price:'325,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46.",badge:'Tez',badgeClass:''},
-    {brand:'New Balance',name:'New Balance 442 v2 Team TF',price:'305,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Joma',name:'Joma Toledo TF Red/White',price:'300,000 UZS',desc:"Maydon: TF. O'lchamlar: 38–46. Ispaniya brendi.",badge:'Arzon',badgeClass:'sale'},
-    {brand:'Umbro',name:'Umbro Velocita Pro TF',price:'310,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–45.",badge:'',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Predator Accuracy.3 TF',price:'328,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Nike',name:'Nike React Gato IC (Futsal)',price:'400,000 UZS',desc:"Maydon: Futsal (IC). O'lchamlar: 38–46.",badge:'Futsal',badgeClass:'new'},
-    {brand:'Puma',name:'Puma King Top TT',price:'318,000 UZS',desc:"Maydon: TF. Full grain leather. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Lotto',name:'Lotto Solista 300 TF',price:'302,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46. Italiya brendi.",badge:'',badgeClass:''},
-    {brand:'Nike',name:'Nike Jr. Mercurial Vapor TF Kids',price:'300,000 UZS',desc:"Maydon: TF. Bolalar uchun. O'lchamlar: 28–38.",badge:'Bolalar',badgeClass:'new'},
-    {brand:'Adidas',name:'Adidas F50 Club TF Green/Black',price:'335,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46.",badge:'',badgeClass:''},
-    {brand:'Hummel',name:'Hummel Blade TF',price:'312,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46. Daniya brendi.",badge:'',badgeClass:''},
-    {brand:'Diadora',name:'Diadora Brasil Elite 2 TF',price:'322,000 UZS',desc:"Maydon: TF. Kangaroo leather. O'lchamlar: 39–45.",badge:'Premium',badgeClass:''},
-    {brand:'Puma',name:'Puma Future 7 Ultimate TF',price:'440,000 UZS',desc:"Maydon: TF. O'lchamlar: 38–46.",badge:'Elite',badgeClass:''},
-    {brand:'Under Armour',name:'UA Clone Magnetico Pro TF',price:'308,000 UZS',desc:"Maydon: TF. O'lchamlar: 39–46.",badge:'',badgeClass:''}
-  ],
-  krasofkalar:[
-    {brand:'Nike',name:'Nike Air Max 270 White/Black',price:'950,000 UZS',desc:"Turi: Lifestyle. O'lchamlar: 36–46.",badge:'Air Max',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Ultraboost 24 Black',price:'1,200,000 UZS',desc:"Turi: Running. O'lchamlar: 36–46. BOOST texnologiyasi.",badge:'Boost',badgeClass:''},
-    {brand:'Nike',name:'Nike Air Force 1 Low White',price:'850,000 UZS',desc:"Turi: Classic. Full grain leather. O'lchamlar: 35–46.",badge:'Classic',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Stan Smith White/Green',price:'780,000 UZS',desc:"Turi: Classic. Leather upper. O'lchamlar: 36–46.",badge:'Icon',badgeClass:''},
-    {brand:'Nike',name:'Nike Dunk Low Panda Black/White',price:'1,100,000 UZS',desc:"Turi: Lifestyle. O'lchamlar: 36–46.",badge:'Dunk',badgeClass:''},
-    {brand:'New Balance',name:'New Balance 574 Grey/Navy',price:'820,000 UZS',desc:"Turi: Lifestyle. O'lchamlar: 36–46.",badge:'Retro',badgeClass:''},
-    {brand:'Nike',name:'Nike React Infinity Run FK 4',price:'1,050,000 UZS',desc:"Turi: Running. O'lchamlar: 36–46.",badge:'Run',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Samba OG White/Black',price:'980,000 UZS',desc:"Turi: Classic. Eng trend model!",badge:'Trend',badgeClass:'new'},
-    {brand:'Puma',name:'Puma Suede Classic XXI Black',price:'680,000 UZS',desc:"Turi: Classic. O'lchamlar: 36–46.",badge:'Suede',badgeClass:''},
-    {brand:'Nike',name:'Nike Blazer Mid 77 Vintage White',price:'920,000 UZS',desc:"Turi: Lifestyle. O'lchamlar: 35–46.",badge:'Vintage',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Gazelle Indoor Gum Sole',price:'890,000 UZS',desc:"Turi: Lifestyle. O'lchamlar: 36–46.",badge:'',badgeClass:''},
-    {brand:'New Balance',name:'New Balance 9060 Mushroom',price:'1,150,000 UZS',desc:"Turi: Chunky. O'lchamlar: 36–46.",badge:'Y2K',badgeClass:''},
-    {brand:'Nike',name:'Nike Air Jordan 1 Low Bred',price:'1,350,000 UZS',desc:"Turi: Basketball. O'lchamlar: 36–46.",badge:'Jordan',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Ozweego Grey Three',price:'750,000 UZS',desc:"Turi: Chunky. O'lchamlar: 36–46.",badge:'',badgeClass:''},
-    {brand:'Converse',name:'Converse Chuck Taylor All Star',price:'580,000 UZS',desc:"Turi: Classic. Canvas upper. O'lchamlar: 35–46.",badge:'All Star',badgeClass:''},
-    {brand:'Vans',name:'Vans Old Skool Black/White',price:'620,000 UZS',desc:"Turi: Skate. O'lchamlar: 35–46.",badge:'Skate',badgeClass:''},
-    {brand:'Nike',name:'Nike Air Max 90 White/Grey',price:'1,000,000 UZS',desc:"Turi: Lifestyle. O'lchamlar: 36–46.",badge:'AM90',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Forum Low White/Blue',price:'870,000 UZS',desc:"Turi: Basketball. O'lchamlar: 36–46.",badge:'',badgeClass:''},
-    {brand:'Reebok',name:'Reebok Classic Leather Beige',price:'690,000 UZS',desc:"Turi: Classic. Full grain leather. O'lchamlar: 36–46.",badge:'Classic',badgeClass:''},
-    {brand:'Puma',name:'Puma RS-X Speed White/Red',price:'760,000 UZS',desc:"Turi: Chunky running. O'lchamlar: 36–46.",badge:'RS-X',badgeClass:''}
-  ],
-  formalar:[
-    {brand:'Nike',name:'Real Madrid Home Kit 2024/25',price:'150,000 UZS',desc:"Klub: Real Madrid. Mavsim: 2024/25. O'lchamlar: XS–3XL.",badge:'Madrid',badgeClass:''},
-    {brand:'Adidas',name:'FC Barcelona Away Kit 2024/25',price:'150,000 UZS',desc:"Klub: FC Barcelona. O'lchamlar: XS–3XL.",badge:'Barca',badgeClass:''},
-    {brand:'Nike',name:'PSG Home Kit 2024/25',price:'150,000 UZS',desc:"Klub: PSG. O'lchamlar: XS–3XL.",badge:'PSG',badgeClass:''},
-    {brand:'Adidas',name:'Manchester United Home 2024/25',price:'150,000 UZS',desc:"Klub: Man United. O'lchamlar: XS–3XL.",badge:'ManU',badgeClass:''},
-    {brand:'Nike',name:'Liverpool Home Kit 2024/25',price:'150,000 UZS',desc:"Klub: Liverpool FC. O'lchamlar: XS–3XL.",badge:'LFC',badgeClass:''},
-    {brand:'Adidas',name:'Juventus Away Kit 2024/25',price:'120,000 UZS',desc:"Klub: Juventus. O'lchamlar: XS–3XL.",badge:'Juve',badgeClass:''},
-    {brand:'Nike',name:'Chelsea FC Home Kit 2024/25',price:'120,000 UZS',desc:"Klub: Chelsea FC. O'lchamlar: XS–3XL.",badge:'Chelsea',badgeClass:''},
-    {brand:'Adidas',name:'Arsenal Home Kit 2024/25',price:'120,000 UZS',desc:"Klub: Arsenal FC. O'lchamlar: XS–3XL.",badge:'Arsenal',badgeClass:''},
-    {brand:'Nike',name:'Atletico Madrid Third Kit 24/25',price:'120,000 UZS',desc:"Klub: Atletico Madrid. O'lchamlar: XS–3XL.",badge:'Atleti',badgeClass:''},
-    {brand:'Puma',name:'AC Milan Home Kit 2024/25',price:'120,000 UZS',desc:"Klub: AC Milan. O'lchamlar: XS–3XL.",badge:'Milan',badgeClass:''},
-    {brand:'Adidas',name:"O'zbekiston Milliy Jamoasi",price:'100,000 UZS',desc:"Milliy: O'zbekiston. O'lchamlar: XS–3XL.",badge:"O'zbek",badgeClass:'new'},
-    {brand:'Nike',name:'Brazil National Team Home 2024',price:'150,000 UZS',desc:"Milliy: Braziliya. O'lchamlar: XS–3XL.",badge:'Brazil',badgeClass:''},
-    {brand:'Adidas',name:'Argentina Away Kit 2024',price:'150,000 UZS',desc:"Milliy: Argentina. O'lchamlar: XS–3XL.",badge:'Argentina',badgeClass:''},
-    {brand:'Nike',name:'France National Team Home 2024',price:'150,000 UZS',desc:"Milliy: Fransiya. O'lchamlar: XS–3XL.",badge:'France',badgeClass:''},
-    {brand:'Nike',name:'Manchester City Third Kit 24/25',price:'150,000 UZS',desc:"Klub: Manchester City. O'lchamlar: XS–3XL.",badge:'City',badgeClass:''},
-    {brand:'Adidas',name:'Inter Milan Home Kit 2024/25',price:'120,000 UZS',desc:"Klub: Inter Milan. O'lchamlar: XS–3XL.",badge:'Inter',badgeClass:''},
-    {brand:'Nike',name:'Tottenham Hotspur Away Kit 24/25',price:'120,000 UZS',desc:"Klub: Tottenham. O'lchamlar: XS–3XL.",badge:'Spurs',badgeClass:''},
-    {brand:'Puma',name:'Borussia Dortmund Home 24/25',price:'120,000 UZS',desc:"Klub: Borussia Dortmund. O'lchamlar: XS–3XL.",badge:'BVB',badgeClass:''},
-    {brand:'Adidas',name:'Bayern Munich Home Kit 24/25',price:'150,000 UZS',desc:"Klub: Bayern Munich. O'lchamlar: XS–3XL.",badge:'Bayern',badgeClass:''},
-    {brand:'Nike',name:'Aston Villa Home Kit 2024/25',price:'100,000 UZS',desc:"Klub: Aston Villa. O'lchamlar: XS–3XL.",badge:'Villa',badgeClass:''}
-  ],
-  toplar:[
-    {brand:'Adidas',name:'Adidas UCL Champions League Pro',price:'420,000 UZS',desc:"Liga: UEFA Champions League. O'lcham: 5.",badge:'UCL',badgeClass:''},
-    {brand:'Nike',name:'Nike Flight Premier League 2024/25',price:'390,000 UZS',desc:"Liga: Premier League. O'lcham: 5.",badge:'PL',badgeClass:''},
-    {brand:'Adidas',name:'Adidas La Liga Conext 24',price:'400,000 UZS',desc:"Liga: La Liga. O'lcham: 5.",badge:'La Liga',badgeClass:''},
-    {brand:'Adidas',name:'Adidas FIFA World Cup Replica',price:'300,000 UZS',desc:"Musobaqa: FIFA. O'lcham: 4, 5.",badge:'FIFA',badgeClass:''},
-    {brand:'Nike',name:'Nike Pitch Training Ball Orange',price:'90,000 UZS',desc:"Turi: Trenirovka. O'lcham: 3, 4, 5.",badge:'Mashq',badgeClass:'sale'},
-    {brand:'Puma',name:'Puma Orbita 5 Pro Bundesliga 24/25',price:'410,000 UZS',desc:"Liga: Bundesliga. O'lcham: 5.",badge:'Bundesliga',badgeClass:''},
-    {brand:'Select',name:'Select Brilliant Super FIFA Pro',price:'480,000 UZS',desc:"O'lcham: 5. FIFA PRO sertifikati.",badge:'FIFA Pro',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Jabulani Replica Classic',price:'220,000 UZS',desc:"Turi: Collector. 2010 JCH rasmiy to'pi nusxasi.",badge:'Collector',badgeClass:''},
-    {brand:'Nike',name:'Nike Charge Training Ball Blue',price:'100,000 UZS',desc:"Turi: Trenirovka. Bolalar uchun.",badge:'Bolalar',badgeClass:'new'},
-    {brand:'Molten',name:'Molten F5V5000 Futsal Ball',price:'290,000 UZS',desc:"Turi: Futsal. O'lcham: 4. FIFA sertifikati.",badge:'Futsal',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Tiro Club Ball White',price:'95,000 UZS',desc:"Turi: Trenirovka. O'lcham: 3, 4, 5.",badge:'Arzon',badgeClass:'sale'},
-    {brand:'Nike',name:'Nike Academy Team Ball Size 4',price:'130,000 UZS',desc:"Turi: Trenirovka. O'lcham: 4.",badge:'',badgeClass:''},
-    {brand:'Puma',name:'Puma Big Cat Training Ball',price:'120,000 UZS',desc:"Turi: Trenirovka. O'lcham: 5.",badge:'',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Finale UCL Match Ball',price:'450,000 UZS',desc:"Turi: UCL Final uchun. O'lcham: 5.",badge:'Final',badgeClass:''},
-    {brand:'Select',name:'Select Numero 10 Indoor',price:'270,000 UZS',desc:"Turi: Indoor/zal. O'lcham: 4.",badge:'Indoor',badgeClass:''},
-    {brand:'Uhlsport',name:'Uhlsport Elysia Pro Match Ball',price:'340,000 UZS',desc:"Turi: Match. O'lcham: 5. Nemis brendi.",badge:'Pro',badgeClass:''},
-    {brand:'Mikasa',name:'Mikasa FT5 Goal Master',price:'320,000 UZS',desc:"Turi: Training. O'lcham: 5. Yapon brendi.",badge:'Japan',badgeClass:''},
-    {brand:'Nike',name:'Nike Premier League Merlin Official',price:'500,000 UZS',desc:"Liga: Premier League. O'lcham: 5.",badge:'Merlin',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Telstar 18 Replica Gold',price:'200,000 UZS',desc:"Turi: Collector. Retro dizayn.",badge:'Retro',badgeClass:''},
-    {brand:'Penalty',name:'Penalty S11 R1 Society Ball',price:'185,000 UZS',desc:"Turi: Futsal. Braziliya brendi.",badge:'Brazil',badgeClass:''}
-  ],
-  protein:[
-    {brand:'Optimum Nutrition',name:'Gold Standard 100% Whey Protein — Chocolate',price:'380,000 UZS',desc:"Og'irlik: 2.27 kg. Protein: 24g/serving. 74 porsiya.",badge:'Bestseller',badgeClass:'new'},
-    {brand:'BSN',name:'Syntha-6 Ultra Premium Protein Matrix',price:'320,000 UZS',desc:"Og'irlik: 2.27 kg. Protein: 22g/serving. 6 turli protein.",badge:'Multi',badgeClass:''},
-    {brand:'Dymatize',name:'ISO 100 Hydrolyzed Protein — Vanilla',price:'420,000 UZS',desc:"Og'irlik: 2.27 kg. Protein: 25g/serving. Tez hazm.",badge:'ISO',badgeClass:''},
-    {brand:'Muscletech',name:'Nitro Tech Whey Gold',price:'350,000 UZS',desc:"Protein: 24g/serving. Kreatin va glutamin bilan.",badge:'Tech',badgeClass:''},
-    {brand:'Optimum Nutrition',name:'Serious Mass Weight Gainer',price:'290,000 UZS',desc:"Og'irlik: 5.44 kg. Kaloriya: 1250 kcal/serving.",badge:'Gainer',badgeClass:''},
-    {brand:'Cellucor',name:'C4 Original Pre-Workout — Fruit Punch',price:'180,000 UZS',desc:"Porsiya: 30 ta. Caffeine: 150mg. Beta-alanine bilan.",badge:'Pre-W',badgeClass:''},
-    {brand:'MusclePharm',name:'Assault Pre-Workout Sport',price:'160,000 UZS',desc:"Porsiya: 30 ta. Citruline malate bilan.",badge:'',badgeClass:''},
-    {brand:'GNC',name:'AMP Gold Series BCAA Advanced',price:'220,000 UZS',desc:"BCAA: 10g/serving. 2:1:1 nisbat.",badge:'BCAA',badgeClass:''},
-    {brand:'Scitec Nutrition',name:'100% Creatine Monohydrate — 300g',price:'130,000 UZS',desc:"Kreatin: 3g/serving. 100 porsiya.",badge:'Kreatin',badgeClass:'sale'},
-    {brand:'Now Sports',name:'Glutamine Powder — 500g',price:'140,000 UZS',desc:"Glutamin: 5g/serving.",badge:'',badgeClass:''},
-    {brand:'Optimum Nutrition',name:'Micronized Creatine Powder',price:'120,000 UZS',desc:"Kreatin: 5g/serving. 60 porsiya.",badge:'Arzon',badgeClass:'sale'},
-    {brand:'Biotech USA',name:'Protein Bar — Chocolate Caramel 70g',price:'35,000 UZS',desc:"Protein: 20g. Kaloriya: 235 kcal.",badge:'Bar',badgeClass:'new'},
-    {brand:'Quest',name:'Quest Protein Bar — Cookies & Cream',price:'45,000 UZS',desc:"Protein: 21g. Sugar: 1g. Gluten free.",badge:'Quest',badgeClass:''},
-    {brand:'Universal',name:'Animal Pak Training Pack — 44 packs',price:'280,000 UZS',desc:"Vitaminlar va minerallar to'plami.",badge:'Vitamins',badgeClass:''},
-    {brand:'Cellucor',name:'Super HD Thermogenic Fat Burner',price:'200,000 UZS',desc:"60 kapsula. Termogenik formula.",badge:'Fat Burn',badgeClass:''},
-    {brand:'Dymatize',name:'Super Mass Gainer — Chocolate Fudge 6lbs',price:'340,000 UZS',desc:"Protein: 52g/serving. Kaloriya: 1280.",badge:'Mass',badgeClass:''}
-  ],
-  sumkalar:[
-    {brand:'Adidas',name:'Adidas Tiro League Duffel Bag — Large',price:'280,000 UZS',desc:"Sig'im: 51L. Ajratilgan poyabzal bo'limi.",badge:'Top',badgeClass:'new'},
-    {brand:'Nike',name:'Nike Brasilia 9.5 Training Duffel',price:'260,000 UZS',desc:"Sig'im: 60L. Namlangan buyumlar uchun alohida bo'lim.",badge:'Nike',badgeClass:''},
-    {brand:'Puma',name:'Puma Fundamentals Sports Bag',price:'190,000 UZS',desc:"Sig'im: 35L. Engil. Qo'shimcha tashqi cho'ntak.",badge:'Arzon',badgeClass:'sale'},
-    {brand:'Under Armour',name:'UA Undeniable 5.0 Duffle Medium',price:'320,000 UZS',desc:"Sig'im: 58L. Suv o'tkazmaydigan qoplama.",badge:'UA',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Squad 5 Backpack 24L',price:'220,000 UZS',desc:"Sig'im: 24L. Noutbuk uchun alohida cho'ntak.",badge:'Backpack',badgeClass:''},
-    {brand:'Nike',name:'Nike Heritage Eugene Backpack',price:'240,000 UZS',desc:"Sig'im: 25L. Ergonomic back panel.",badge:'',badgeClass:''},
-    {brand:'New Balance',name:'NB Team Medium Duffel Bag',price:'210,000 UZS',desc:"Sig'im: 45L. Qizil/qora.",badge:'',badgeClass:''},
-    {brand:'Puma',name:'Puma Challenger Pro Backpack 22L',price:'180,000 UZS',desc:"Sig'im: 22L. Suv o'tkazmaydigan.",badge:'',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Defender IV Large Duffel',price:'350,000 UZS',desc:"Sig'im: 84L. Premium model.",badge:'Large',badgeClass:''},
-    {brand:'Nike',name:'Nike Vapor Speed 2.0 Backpack 28L',price:'270,000 UZS',desc:"Sig'im: 28L. Ichida to'r cho'ntak.",badge:'Speed',badgeClass:''},
-    {brand:'Hummel',name:'Hummel Core Sports Bag 46L',price:'195,000 UZS',desc:"Sig'im: 46L. Daniya brendi.",badge:'',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Stadium 3 Backpack',price:'230,000 UZS',desc:"Sig'im: 26L. Poyabzal cho'ntagi.",badge:'Stadium',badgeClass:''},
-    {brand:'Nike',name:'Nike Academy Team Backpack 25L',price:'195,000 UZS',desc:"Sig'im: 25L. Yoshlar uchun ideal.",badge:'Academy',badgeClass:'new'},
-    {brand:'Under Armour',name:'UA Hustle 5.0 Backpack 29L',price:'290,000 UZS',desc:"Sig'im: 29L. Noutbuk cho'ntagi.",badge:'Hustle',badgeClass:''},
-    {brand:'Puma',name:'Puma Plus Pro Large Sports Bag',price:'310,000 UZS',desc:"Sig'im: 72L. Jamoalar uchun.",badge:'Pro',badgeClass:''},
-    {brand:'Adidas',name:'Adidas Linear Core Shoebag',price:'80,000 UZS',desc:"Tur: Poyabzal sumkasi.",badge:'Poyabzal',badgeClass:'sale'}
-  ]
+  butsilar: [],
+  sarakanowka: [],
+  krasofkalar: [],
+  formalar: [],
+  toplar: [],
+  protein: [],
+  sumkalar: []
 };
 
 /* =======================================================================
@@ -1353,6 +1239,38 @@ function updateCountdown(){
   var e=document.getElementById('db-secs'); if(e)e.innerText=pad2(s);
 }
 setInterval(updateCountdown,1000);
+
+/* =======================================================================
+   5.5-QISM — KO'RINISH TANLASH (Kompyuter / Telefon)
+   Har bir qurilma/brauzer birinchi marta ochganda tanlov so'raladi,
+   keyin tanlov shu qurilmada eslab qolinadi. "PC" tanlansa — telefonda
+   ham to'liq kompyuter dizayni ko'rinadi (viewport kengligi o'zgartiriladi).
+   ======================================================================= */
+var VIEW_MODE_KEY='sportup_view_mode';
+function applyViewMode(mode){
+  var vp=document.querySelector('meta[name="viewport"]');
+  if(vp) vp.setAttribute('content', mode==='desktop' ? 'width=1400' : 'width=device-width, initial-scale=1.0');
+  document.body.setAttribute('data-view', mode);
+}
+function chooseViewMode(mode){
+  try{ localStorage.setItem(VIEW_MODE_KEY, mode); }catch(e){}
+  applyViewMode(mode);
+  document.getElementById('view-choice-modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+function openViewChoice(){
+  document.getElementById('view-choice-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function tryCloseViewChoice(){
+  var saved=null; try{ saved=localStorage.getItem(VIEW_MODE_KEY); }catch(e){}
+  if(saved){ document.getElementById('view-choice-modal').classList.remove('open'); document.body.style.overflow=''; }
+}
+function initViewMode(){
+  var saved=null; try{ saved=localStorage.getItem(VIEW_MODE_KEY); }catch(e){}
+  if(saved==='desktop'||saved==='mobile'){ applyViewMode(saved); }
+  else { openViewChoice(); }
+}
 
 /* =======================================================================
    6-QISM — DARK MODE / TOAST
@@ -1521,17 +1439,39 @@ function updateDeliveryInfo(){
     +'<br>💵 To\'lov: kuryerga qo\'lma-qo\'l yoki karta orqali.';
   box.style.display='block';
 }
+/* Rasmni avtomatik kichraytirib-siqib beradi — sayt tezroq ishlashi
+   va Firebase'ga tez yuklanishi uchun (sifat deyarli sezilmaydi). */
+function compressImageFile(file, maxSize, quality){
+  maxSize=maxSize||900; quality=quality||0.72;
+  return new Promise(function(resolve,reject){
+    var rd=new FileReader();
+    rd.onload=function(e){
+      var img=new Image();
+      img.onload=function(){
+        var w=img.width, h=img.height;
+        if(w>h){ if(w>maxSize){ h=Math.round(h*maxSize/w); w=maxSize; } }
+        else { if(h>maxSize){ w=Math.round(w*maxSize/h); h=maxSize; } }
+        var canvas=document.createElement('canvas');
+        canvas.width=w; canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        resolve(canvas.toDataURL('image/jpeg',quality));
+      };
+      img.onerror=function(){ reject(new Error('img load fail')); };
+      img.src=e.target.result;
+    };
+    rd.onerror=function(){ reject(new Error('file read fail')); };
+    rd.readAsDataURL(file);
+  });
+}
 function previewOrderImg(input){
   var f=input.files[0]; if(!f) return;
-  if(f.size>2*1024*1024){ alert('❗ Rasm hajmi 2MB dan oshmasin!'); input.value=''; return; }
-  var rd=new FileReader();
-  rd.onload=function(e){
-    orderImageData=e.target.result;
+  if(f.size>8*1024*1024){ alert('❗ Rasm hajmi juda katta. Kichikroq rasm tanlang.'); input.value=''; return; }
+  compressImageFile(f,900,0.72).then(function(dataUrl){
+    orderImageData=dataUrl;
     document.getElementById('img-preview').src=orderImageData;
     document.getElementById('img-preview-wrap').style.display='block';
     document.getElementById('upload-area').style.display='none';
-  };
-  rd.readAsDataURL(f);
+  }).catch(function(){ alert('❗ Rasmni o\'qib bo\'lmadi. Boshqa rasm tanlang.'); input.value=''; });
 }
 function removeOrderImg(){
   orderImageData=null;
@@ -1780,15 +1720,13 @@ function closeProductForm(){
 }
 function previewProductImg(input){
   var f=input.files[0]; if(!f) return;
-  if(f.size>2*1024*1024){ alert('❗ Rasm 2MB dan katta. Kichikroq rasm tanlang.'); input.value=''; return; }
-  var rd=new FileReader();
-  rd.onload=function(e){
-    productImageData=e.target.result;
+  if(f.size>8*1024*1024){ alert('❗ Rasm hajmi juda katta. Kichikroq rasm tanlang.'); input.value=''; return; }
+  compressImageFile(f,900,0.72).then(function(dataUrl){
+    productImageData=dataUrl;
     document.getElementById('pf-img-preview').src=productImageData;
     document.getElementById('pf-img-preview-wrap').style.display='block';
     document.getElementById('pf-upload-area').style.display='none';
-  };
-  rd.readAsDataURL(f);
+  }).catch(function(){ alert('❗ Rasmni o\'qib bo\'lmadi. Boshqa rasm tanlang.'); input.value=''; });
 }
 function removeProductImg(){
   productImageData=null;
@@ -2214,7 +2152,7 @@ function hidePersonCard(row){
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){
     closeProdModal(); closeOrderModal(); closeAdmin(); closeLogin();
-    closeFullImg(); closeCart(); closeProductForm();
+    closeFullImg(); closeCart(); closeProductForm(); tryCloseViewChoice();
   }
   if(e.key==='Enter'&&document.getElementById('login-modal').classList.contains('open')){
     if(document.getElementById('lm-step2').style.display==='block') verifyCode(); else doLogin();
@@ -2224,6 +2162,7 @@ document.addEventListener('keydown',function(e){
 /* =======================================================================
    17-QISM — ISHGA TUSHIRISH
    ======================================================================= */
+initViewMode();
 loadDarkPref();
 checkAdminSession();
 if(!isAdmin) document.getElementById('btn-signup').style.display='flex';
