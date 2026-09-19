@@ -218,7 +218,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg-page);color:var(--text-
 .own-tag{position:absolute;top:11px;right:11px;background:var(--dk);color:#fff;font-size:8px;font-weight:900;padding:3px 9px;border-radius:20px;letter-spacing:1px;z-index:6}
 [data-theme="dark"] .own-tag{background:var(--or)}
 .card-admin-bar{display:flex;gap:6px;margin-top:8px}
-.card-admin-bar button{flex:1;padding:7px;border:none;border-radius:9px;font-family:'Barlow Condensed';font-size:11px;font-weight:800;cursor:pointer;letter-spacing:.5px}
+.card-admin-bar button{flex:1;padding:7px;border:none;border-radius:9px;font-family:'Barlow Condensed';font-size:11px;font-weight:800;cursor:pointer}
 .cab-edit{background:#FFF3E0;color:#E65100}
 .cab-del{background:#FFEBEE;color:#C62828}
 
@@ -823,9 +823,9 @@ body{font-family:'Barlow',sans-serif;background:var(--bg-page);color:var(--text-
     <div class="admin-body" id="admin-body-products" style="display:none">
       <div class="admin-notice">
         <strong>🛍️ Mahsulot qo'shish</strong>
-        Bu yerda qo'shilgan mahsulotlar saytda darhol ko'rinadi. Ular brauzer xotirasida saqlanadi —
-        <b>hamma mijozlarda ham chiqishi uchun</b> "Faylga chiqarish" tugmasidan JSON olib, saytni yangilab qo'ying
-        (pastda qadamlari yozilgan).
+        Bu yerda qo'shilgan mahsulotlar <b>Firebase bulutiga</b> saqlanadi va darhol
+        <b>hamma mijozning telefonida</b> — sayt qayerdan ochilmasin — ko'rinadi. Hech qanday
+        qo'shimcha qadam kerak emas.
       </div>
       <div class="admin-filter">
         <button class="af-btn" style="background:var(--or);border-color:var(--or);color:#fff" onclick="openProductForm()">➕ Yangi mahsulot qo'shish</button>
@@ -909,6 +909,10 @@ body{font-family:'Barlow',sans-serif;background:var(--bg-page);color:var(--text-
   <span class="toast-text" id="toast-text">Xabar</span>
 </div>
 
+<!-- FIREBASE SDK (mahsulot va zakazlarni bulutga saqlash uchun) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
+
 <script>
 /* =======================================================================
    ⚙️ 1-QISM — SOZLAMALAR (faqat shu yerni to'ldirasiz)
@@ -935,6 +939,11 @@ var EMAIL_ENABLED = true;
 var ADMIN_LOGIN = 'sp_2CV2QC';
 var ADMIN_PASS  = 'RWhA7j#9EcagC!hrv5';
 
+/* --- FIREBASE (mahsulot va zakazlar BULUTDA — barcha qurilmalarda, barcha mijozlarda ko'rinadi) --- */
+var FIREBASE_URL   = 'https://sportup-61694-default-rtdb.europe-west1.firebasedatabase.app';
+var PRODUCTS_PATH  = 'products_a7f3k9';
+var ORDERS_PATH    = 'orders_m4q8p2';
+
 /* --- YETKAZIB BERISH (viloyat bo'yicha) --- */
 var DELIVERY = {
   "Toshkent shahri":{d:"1 kun",p:"Bepul"},
@@ -953,12 +962,9 @@ var DELIVERY = {
   "Qoraqalpog'iston":{d:"4-5 kun",p:"50 000 so'm"}
 };
 
-/* --- ABADIY MAHSULOTLAR (hamma mijozda ko'rinadi) ---
-   Admin panelda mahsulot qo'shganingizdan keyin "⬇️ Faylga chiqarish" ni bosing.
-   Yuklangan sportup-mahsulotlar.json faylini oching, ichidagi { ... } ni
-   nusxalab, pastdagi bo'sh { } o'rniga qo'ying va faylni saytga qayta yuklang.
-   Shundan keyin mahsulotlar HAMMA odamning telefonida ko'rinadi va hech qachon o'chmaydi. */
-var EXTRA_PRODUCTS = {};
+/* Firebasega ulanish */
+firebase.initializeApp({ databaseURL: FIREBASE_URL });
+var db = firebase.database();
 
 /* =======================================================================
    2-QISM — SAYTDAGI ASOSIY MAHSULOTLAR (kod ichida turadi, hech kim o'chira olmaydi)
@@ -1258,15 +1264,18 @@ var products = {
 var activeCategory='butsilar', activeProd=null, isAdmin=false;
 var allOrders=[], currentFilter='all', orderImageData=null, cartItems=[], darkMode=false;
 var currentList=[];              // ekranda ko'rinayotgan mahsulotlar
-var customProducts={};           // admin qo'shgan mahsulotlar
+var customProducts={};           // Firebasedan kelgan admin qo'shgan mahsulotlar
 var productImageData=null;       // yangi mahsulot rasmi
 var editingPid=null;             // tahrirlanayotgan mahsulot
+var editingOldCat=null;          // tahrirlashda eski kategoriya (kategoriya almashsa ko'chirish uchun)
+var editingOldImg=null;          // tahrirlashda rasm o'zgarmasa saqlab qolish uchun
+var editingCreatedAt=null;
 var pendingCode=null, codeExpiry=0, codeTimerInt=null;
+var firebaseReady=false;
 
-var ORDERS_KEY='sportup_orders_v3';
-var CUSTOM_KEY='sportup_products_v1';
 var REVIEWS_KEY='sportup_reviews_v2';
 var LS_ADMIN_KEY='sportup_admin_session';
+var MY_ORDERS_KEY='sportup_my_order_ids';
 
 /* =======================================================================
    4-QISM — XABARNOMALAR: TELEGRAM + GMAIL
@@ -1371,35 +1380,31 @@ function escHtml(s){
 }
 
 /* =======================================================================
-   7-QISM — ADMIN QO'SHGAN MAHSULOTLAR
+   7-QISM — MAHSULOTLAR — FIREBASE BULUTIDAN REAL VAQTDA
+   Har bir admin qo'shgan/tahrirlagan/o'chirgan mahsulot darhol
+   Firebase Realtime Database'ga yoziladi va SAYTNI OCHGAN HAR BIR
+   MIJOZ QURILMASIDA avtomatik yangilanadi (localStorage kerak emas).
    ======================================================================= */
-function loadCustomProducts(){
-  try{ customProducts=JSON.parse(localStorage.getItem(CUSTOM_KEY)||'{}'); }
-  catch(e){ customProducts={}; }
-  if(typeof EXTRA_PRODUCTS!=='undefined'&&EXTRA_PRODUCTS){
-    // Fayl ichiga "abadiy" yozib qo'yilgan mahsulotlar — hamma mijozda ko'rinadi
-    Object.keys(EXTRA_PRODUCTS).forEach(function(c){
-      var baked=(EXTRA_PRODUCTS[c]||[]).map(function(p){
-        var o=Object.assign({},p); o.baked=true; return o;
+function setupProductsListener(){
+  db.ref(PRODUCTS_PATH).on('value', function(snap){
+    var data=snap.val()||{};
+    var built={};
+    Object.keys(data).forEach(function(cat){
+      var catData=data[cat]||{};
+      built[cat]=Object.keys(catData).map(function(pid){
+        var p=catData[pid]||{};
+        p.pid=pid;
+        return p;
       });
-      var ids={}; baked.forEach(function(p){ ids[p.pid]=1; });
-      var local=(customProducts[c]||[]).filter(function(p){ return !ids[p.pid]; });
-      customProducts[c]=baked.concat(local);
+      built[cat].sort(function(a,b){ return (b.createdAt||0)-(a.createdAt||0); });
     });
-  }
-}
-function saveCustomProducts(){
-  try{
-    var clean={};
-    Object.keys(customProducts).forEach(function(c){
-      clean[c]=(customProducts[c]||[]).filter(function(p){ return !p.baked; });
-    });
-    localStorage.setItem(CUSTOM_KEY,JSON.stringify(clean));
-    return true;
-  }catch(e){
-    alert("❗ Xotira to'ldi. Rasmlarni kichikroq (1MB gacha) yuklang yoki eski mahsulotlarni o'chiring.");
-    return false;
-  }
+    customProducts=built;
+    render();
+    if(document.getElementById('admin-modal').classList.contains('open')) renderProductAdmin();
+  }, function(err){
+    console.error('Firebase (products) xato:',err);
+    showToast('⚠️','Bulutga ulanishda xatolik. Internetni tekshiring.',5000);
+  });
 }
 function countCustom(){
   return Object.keys(customProducts).reduce(function(s,c){ return s+(customProducts[c]||[]).length; },0);
@@ -1567,9 +1572,13 @@ async function submitOrder(){
   btn.disabled=true; btn.innerText='⏳ Yuborilmoqda...';
 
   var dl=DELIVERY[region]||{d:'-',p:'-'};
+  var pushRef=db.ref(ORDERS_PATH).push();
+  var orderId=pushRef.key;
   var order={
-    id:Date.now().toString().slice(-6),
+    id:orderId,
+    num:orderId.slice(-6).toUpperCase(),
     date:nowStr(),
+    createdAt:Date.now(),
     product:(activeProd?activeProd.brand+' — '+activeProd.name+' ('+activeProd.price+')':'—'),
     name:name, phone:phone, email:email, region:region, city:addr,
     size:document.getElementById('ord-size').value.trim(),
@@ -1578,9 +1587,16 @@ async function submitOrder(){
     image:orderImageData||null
   };
 
-  saveOrderLocal(order);
+  try{
+    await pushRef.set(order);
+    addMyOrderId(orderId);
+  }catch(e){
+    btn.disabled=false; btn.innerText='✅ Zakazni Tasdiqlash';
+    alert('❗ Internet bilan bog\'lanishda xatolik yuz berdi. Qaytadan urinib ko\'ring.');
+    return;
+  }
 
-  var msg='🛒 YANGI ZAKAZ  #'+order.id+'\n\n'
+  var msg='🛒 YANGI ZAKAZ  #'+order.num+'\n\n'
     +'📦 '+order.product+'\n'
     +'👤 '+order.name+'\n'
     +'📞 '+order.phone+'\n'
@@ -1594,10 +1610,8 @@ async function submitOrder(){
   var tgOk=false;
   if(order.image) tgOk=await tgSendPhoto(order.image,msg);
   if(!tgOk) tgOk=await tgSendMessage(msg);
-  sendEmail('🛒 SportUp — yangi zakaz #'+order.id, msg);
+  sendEmail('🛒 SportUp — yangi zakaz #'+order.num, msg);
 
-  cartItems.unshift(order);
-  updateCartCount();
   document.getElementById('order-success').style.display='block';
   btn.innerText='✅ Yuborildi!';
   showToast('🎉','Zakazingiz qabul qilindi! Admin tez orada bog\'lanadi.',4500);
@@ -1605,48 +1619,59 @@ async function submitOrder(){
 }
 
 /* =======================================================================
-   11-QISM — ZAKAZLARNI SAQLASH
+   11-QISM — ZAKAZLAR — FIREBASE BULUTIDAN REAL VAQTDA
+   Barcha zakazlar bulutga yoziladi. Admin panel — real vaqtda barcha
+   zakazlarni ko'radi. Mijoz esa faqat "Mening zakazlarim" savatida
+   o'zi bergan zakazlarni ko'radi (qurilmada saqlangan ID lar orqali).
    ======================================================================= */
-function loadOrdersLocal(){
-  try{ return JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]'); }catch(e){ return []; }
+function setupOrdersListener(){
+  db.ref(ORDERS_PATH).on('value', function(snap){
+    var data=snap.val()||{};
+    allOrders=Object.keys(data).map(function(id){
+      var o=data[id]||{}; o.id=o.id||id; o.num=o.num||id.slice(-6).toUpperCase(); return o;
+    });
+    allOrders.sort(function(a,b){ return (b.createdAt||0)-(a.createdAt||0); });
+    refreshCartFromAllOrders();
+    if(document.getElementById('admin-modal').classList.contains('open')) renderOrders();
+  }, function(err){
+    console.error('Firebase (orders) xato:',err);
+  });
 }
-function saveOrderLocal(o){
-  try{
-    var ex=loadOrdersLocal(); ex.unshift(o);
-    if(ex.length>100) ex=ex.slice(0,100);
-    localStorage.setItem(ORDERS_KEY,JSON.stringify(ex)); return true;
-  }catch(e){ return false; }
+function getMyOrderIds(){
+  try{ return JSON.parse(localStorage.getItem(MY_ORDERS_KEY)||'[]'); }catch(e){ return []; }
 }
-function updateOrderStatusLocal(id,status){
+function addMyOrderId(id){
   try{
-    var o=loadOrdersLocal().map(function(x){ return x.id===id?Object.assign({},x,{status:status}):x; });
-    localStorage.setItem(ORDERS_KEY,JSON.stringify(o));
-    allOrders=o;
-    cartItems=cartItems.map(function(c){ return c.id===id?Object.assign({},c,{status:status}):c; });
-    renderOrders(); showToast('✅','Zakaz holati yangilandi');
+    var ids=getMyOrderIds(); ids.unshift(id);
+    if(ids.length>50) ids=ids.slice(0,50);
+    localStorage.setItem(MY_ORDERS_KEY,JSON.stringify(ids));
   }catch(e){}
 }
-function deleteOrderLocal(id){
+async function updateOrderStatusLocal(id,status){
+  try{
+    await db.ref(ORDERS_PATH+'/'+id+'/status').set(status);
+    showToast('✅','Zakaz holati yangilandi');
+  }catch(e){ showToast('⚠️','Internet xatoligi, qaytadan urinib ko\'ring'); }
+}
+async function deleteOrderLocal(id){
   if(!confirm('Bu zakaz o\'chirilsinmi?')) return;
   try{
-    var o=loadOrdersLocal().filter(function(x){ return x.id!==id; });
-    localStorage.setItem(ORDERS_KEY,JSON.stringify(o));
-    allOrders=o; cartItems=cartItems.filter(function(c){ return c.id!==id; });
-    renderOrders(); showToast('🗑️','Zakaz o\'chirildi');
-  }catch(e){}
+    await db.ref(ORDERS_PATH+'/'+id).remove();
+    showToast('🗑️','Zakaz o\'chirildi');
+  }catch(e){ showToast('⚠️','Internet xatoligi, qaytadan urinib ko\'ring'); }
 }
-function clearDoneOrders(){
+async function clearDoneOrders(){
   if(!confirm('Barcha "Bajarildi" zakazlar o\'chirilsinmi?')) return;
+  var done=allOrders.filter(function(o){ return o.status==='done'; });
+  if(!done.length){ showToast('📭','Bajarilgan zakaz yo\'q'); return; }
   try{
-    var o=loadOrdersLocal().filter(function(x){ return x.status!=='done'; });
-    localStorage.setItem(ORDERS_KEY,JSON.stringify(o));
-    allOrders=o; renderOrders(); showToast('🧹','Bajarilganlar o\'chirildi');
-  }catch(e){}
+    await Promise.all(done.map(function(o){ return db.ref(ORDERS_PATH+'/'+o.id).remove(); }));
+    showToast('🧹','Bajarilganlar o\'chirildi');
+  }catch(e){ showToast('⚠️','Internet xatoligi, qaytadan urinib ko\'ring'); }
 }
 function exportOrders(){
-  var o=loadOrdersLocal();
-  if(!o.length){ showToast('📭','Export qilinadigan zakaz yo\'q'); return; }
-  downloadJson(o,'sportup-zakazlar-'+new Date().toISOString().slice(0,10)+'.json');
+  if(!allOrders.length){ showToast('📭','Export qilinadigan zakaz yo\'q'); return; }
+  downloadJson(allOrders,'sportup-zakazlar-'+new Date().toISOString().slice(0,10)+'.json');
   showToast('⬇️','Zakazlar faylga yuklandi');
 }
 function downloadJson(obj,filename){
@@ -1665,17 +1690,17 @@ function openAdmin(){
   document.body.style.overflow='hidden';
   updateTgStatus();
   switchAdminTab('orders');
-  refreshOrders();
+  renderOrders();
 }
 function closeAdmin(){ document.getElementById('admin-modal').classList.remove('open'); document.body.style.overflow=''; }
 function updateTgStatus(){
   var box=document.getElementById('tg-status-box'), t=document.getElementById('tg-status-text');
   if(tgReady()){
     t.innerHTML='✅ Ulangan — har bir yangi zakaz <b>@'+TG_BOT_USERNAME+'</b> ga darhol keladi. '
-      +'Admin panelga kirish ham endi <b>kod bilan himoyalangan</b>.'
+      +'Admin panelga kirish ham endi <b>kod bilan himoyalangan</b>. Mahsulot va zakazlar <b>Firebase bulutida</b> — barcha qurilmalarda sinxron.'
       +(EMAIL_ENABLED?'<br>📧 Gmail xabarnoma ham yoqilgan: <b>'+ADMIN_EMAIL+'</b>':'');
   }else{
-    t.innerHTML='⚠️ <b>Telegram bot ulanmagan.</b> Zakazlar faqat shu qurilmada ko\'rinadi va '
+    t.innerHTML='⚠️ <b>Telegram bot ulanmagan.</b> Zakazlar Firebase bulutida saqlanadi (barcha qurilmalarda ko\'rinadi), lekin '
       +'admin panelga kirish <b>kod so\'ramaydi</b> (faqat parol tekshiriladi).<br>'
       +'Haqiqiy himoya uchun fayldagi <b>TG_BOT_TOKEN</b> va <b>TG_CHAT_ID</b> ni to\'ldiring.';
   }
@@ -1690,8 +1715,7 @@ function switchAdminTab(tab){
 }
 function refreshOrders(){
   document.getElementById('orders-container').innerHTML='<div class="admin-loading"><div class="spinner"></div><p>Yuklanmoqda...</p></div>';
-  allOrders=loadOrdersLocal();
-  setTimeout(renderOrders,250);
+  setTimeout(renderOrders,200);
 }
 function filterOrders(f,btn){
   currentFilter=f;
@@ -1714,7 +1738,7 @@ function renderOrders(){
       :o.status==='pending'?'<span class="oc-status pending">🟡 Jarayonda</span>'
       :'<span class="oc-status done">🔵 Bajarildi</span>';
     html+='<div class="order-card">';
-    html+='<div class="oc-top"><span class="oc-num">📦 #'+o.id+'</span>'+st+'<span class="oc-date">'+escHtml(o.date)+'</span></div>';
+    html+='<div class="oc-top"><span class="oc-num">📦 #'+escHtml(o.num||o.id)+'</span>'+st+'<span class="oc-date">'+escHtml(o.date)+'</span></div>';
     html+='<div class="oc-product"><div class="oc-product-label">Mahsulot</div><div class="oc-product-val">'+escHtml(o.product)+'</div></div>';
     if(o.image) html+='<div class="oc-img-wrap"><img src="'+o.image+'" alt="Zakaz rasmi" onclick="openFullImg(\''+o.image+'\')"></div>';
     html+='<div class="oc-grid">';
@@ -1737,11 +1761,11 @@ function renderOrders(){
 }
 
 /* =======================================================================
-   13-QISM — MAHSULOT QO'SHISH / TAHRIRLASH
+   13-QISM — MAHSULOT QO'SHISH / TAHRIRLASH (FIREBASE)
    ======================================================================= */
 function openProductForm(cat){
   if(!isAdmin){ openLogin(); return; }
-  editingPid=null; productImageData=null;
+  editingPid=null; editingOldCat=null; editingOldImg=null; editingCreatedAt=null; productImageData=null;
   document.getElementById('pf-title').innerText='➕ Yangi mahsulot';
   document.getElementById('pf-cat').value=(typeof cat==='string'?cat:activeCategory);
   ['pf-brand','pf-name','pf-price','pf-desc','pf-badge'].forEach(function(id){ document.getElementById(id).value=''; });
@@ -1778,7 +1802,7 @@ function formatPrice(v){
   if(!n) return '';
   return n.replace(/\B(?=(\d{3})+(?!\d))/g,',')+' UZS';
 }
-function saveProduct(){
+async function saveProduct(){
   var cat=document.getElementById('pf-cat').value;
   var brand=document.getElementById('pf-brand').value.trim();
   var name=document.getElementById('pf-name').value.trim();
@@ -1788,35 +1812,35 @@ function saveProduct(){
   if(!price.replace(/\D/g,'')){ alert('❗ Narxini raqam bilan yozing'); return; }
 
   var badge=document.getElementById('pf-badge').value.trim();
-  var item={
-    pid: editingPid||('p'+Date.now().toString(36)),
-    brand:brand, name:name,
-    price:/[a-zA-Z]/.test(price)?price:formatPrice(price),
-    desc:document.getElementById('pf-desc').value.trim()||'Batafsil ma\'lumot uchun biz bilan bog\'laning',
-    badge:badge, badgeClass:/chegirma|arzon|sale/i.test(badge)?'sale':/yangi|new/i.test(badge)?'new':'',
-    img:productImageData||''
-  };
-  if(!customProducts[cat]) customProducts[cat]=[];
-  if(editingPid){
-    var found=false;
-    Object.keys(customProducts).forEach(function(c){
-      customProducts[c]=(customProducts[c]||[]).filter(function(p){
-        if(p.pid===editingPid){ if(!item.img) item.img=p.img; found=true; return false; }
-        return true;
-      });
-    });
-    customProducts[cat].unshift(item);
-  }else{
-    customProducts[cat].unshift(item);
+  var btn=document.getElementById('pf-submit');
+  btn.disabled=true; btn.innerText='⏳ Saqlanmoqda...';
+
+  try{
+    var pid=editingPid||db.ref(PRODUCTS_PATH+'/'+cat).push().key;
+    var item={
+      pid: pid,
+      brand:brand, name:name,
+      price:/[a-zA-Z]/.test(price)?price:formatPrice(price),
+      desc:document.getElementById('pf-desc').value.trim()||'Batafsil ma\'lumot uchun biz bilan bog\'laning',
+      badge:badge, badgeClass:/chegirma|arzon|sale/i.test(badge)?'sale':/yangi|new/i.test(badge)?'new':'',
+      img:productImageData||editingOldImg||'',
+      createdAt: editingCreatedAt||Date.now()
+    };
+    if(editingPid&&editingOldCat&&editingOldCat!==cat){
+      await db.ref(PRODUCTS_PATH+'/'+editingOldCat+'/'+editingPid).remove();
+    }
+    await db.ref(PRODUCTS_PATH+'/'+cat+'/'+pid).set(item);
+
+    closeProductForm();
+    activeCategory=cat;
+    document.querySelectorAll('.cat-btn').forEach(function(b){ b.classList.toggle('active',b.getAttribute('data-cat')===cat); });
+    document.getElementById('page-title').innerHTML=catTitles[cat]||cat;
+    showToast('🎉',(editingPid?'Mahsulot yangilandi':'Mahsulot qo\'shildi')+': '+name,4000);
+  }catch(e){
+    alert('❗ Internet bilan bog\'lanishda xatolik. Qaytadan urinib ko\'ring.');
   }
-  if(!saveCustomProducts()) return;
-  closeProductForm();
-  activeCategory=cat;
-  document.querySelectorAll('.cat-btn').forEach(function(b){ b.classList.toggle('active',b.getAttribute('data-cat')===cat); });
-  document.getElementById('page-title').innerHTML=catTitles[cat]||cat;
-  render(); renderProductAdmin();
-  showToast('🎉',(editingPid?'Mahsulot yangilandi':'Mahsulot qo\'shildi')+': '+name,4000);
-  editingPid=null;
+  btn.disabled=false; btn.innerText=editingPid?'💾 O\'zgarishni saqlash':'💾 Saqlash';
+  editingPid=null; editingOldCat=null; editingOldImg=null; editingCreatedAt=null;
 }
 function editProduct(pid){
   var found=null,fcat=null;
@@ -1826,6 +1850,9 @@ function editProduct(pid){
   if(!found) return;
   openProductForm(fcat);
   editingPid=pid;
+  editingOldCat=fcat;
+  editingOldImg=found.img||null;
+  editingCreatedAt=found.createdAt||null;
   document.getElementById('pf-title').innerText='✏️ Mahsulotni tahrirlash';
   document.getElementById('pf-brand').value=found.brand;
   document.getElementById('pf-name').value=found.name;
@@ -1833,25 +1860,31 @@ function editProduct(pid){
   document.getElementById('pf-desc').value=found.desc||'';
   document.getElementById('pf-badge').value=found.badge||'';
   if(found.img){
-    productImageData=found.img;
+    productImageData=null; // faqat o'zgartirilsa yangi rasm yuborilsin, aks holda editingOldImg ishlatiladi
     document.getElementById('pf-img-preview').src=found.img;
     document.getElementById('pf-img-preview-wrap').style.display='block';
     document.getElementById('pf-upload-area').style.display='none';
   }
   document.getElementById('pf-submit').innerText='💾 O\'zgarishni saqlash';
 }
-function deleteProduct(pid){
+async function deleteProduct(pid){
   if(!confirm('Bu mahsulot o\'chirilsinmi?')) return;
+  var fcat=null;
   Object.keys(customProducts).forEach(function(c){
-    customProducts[c]=(customProducts[c]||[]).filter(function(p){ return p.pid!==pid; });
+    (customProducts[c]||[]).forEach(function(p){ if(p.pid===pid) fcat=c; });
   });
-  saveCustomProducts(); render(); renderProductAdmin();
-  showToast('🗑️','Mahsulot o\'chirildi');
+  if(!fcat) return;
+  try{
+    await db.ref(PRODUCTS_PATH+'/'+fcat+'/'+pid).remove();
+    showToast('🗑️','Mahsulot o\'chirildi');
+  }catch(e){ showToast('⚠️','Internet xatoligi, qaytadan urinib ko\'ring'); }
 }
-function clearAllCustomProducts(){
+async function clearAllCustomProducts(){
   if(!confirm('Siz qo\'shgan BARCHA mahsulotlar o\'chadi. Davom etamizmi?')) return;
-  customProducts={}; saveCustomProducts(); render(); renderProductAdmin();
-  showToast('🧹','Hammasi o\'chirildi');
+  try{
+    await db.ref(PRODUCTS_PATH).remove();
+    showToast('🧹','Hammasi o\'chirildi');
+  }catch(e){ showToast('⚠️','Internet xatoligi, qaytadan urinib ko\'ring'); }
 }
 function renderProductAdmin(){
   var box=document.getElementById('products-container');
@@ -1882,20 +1915,25 @@ function renderProductAdmin(){
 function exportProducts(){
   if(!countCustom()){ showToast('📭','Chiqariladigan mahsulot yo\'q'); return; }
   downloadJson(customProducts,'sportup-mahsulotlar.json');
-  showToast('⬇️','Fayl yuklandi — saytga qo\'shish uchun ishlating');
+  showToast('⬇️','Fayl yuklandi');
 }
-function importProducts(input){
+async function importProducts(input){
   var f=input.files[0]; if(!f) return;
   var rd=new FileReader();
-  rd.onload=function(e){
+  rd.onload=async function(e){
     try{
       var data=JSON.parse(e.target.result);
+      var writes=[];
       Object.keys(data).forEach(function(c){
-        customProducts[c]=(customProducts[c]||[]).concat(data[c]||[]);
+        (data[c]||[]).forEach(function(p){
+          var pid=p.pid||db.ref(PRODUCTS_PATH+'/'+c).push().key;
+          var item=Object.assign({},p,{pid:pid,createdAt:p.createdAt||Date.now()});
+          writes.push(db.ref(PRODUCTS_PATH+'/'+c+'/'+pid).set(item));
+        });
       });
-      saveCustomProducts(); render(); renderProductAdmin();
-      showToast('⬆️','Mahsulotlar yuklandi');
-    }catch(err){ alert('❗ Fayl noto\'g\'ri. Faqat shu saytdan chiqarilgan JSON faylni yuklang.'); }
+      await Promise.all(writes);
+      showToast('⬆️','Mahsulotlar bulutga yuklandi');
+    }catch(err){ alert('❗ Fayl noto\'g\'ri yoki internet xatoligi. Faqat shu saytdan chiqarilgan JSON faylni yuklang.'); }
     input.value='';
   };
   rd.readAsText(f);
@@ -2068,13 +2106,18 @@ function logoutAdmin(){
 }
 
 /* =======================================================================
-   15-QISM — SAVAT (mijozning zakazlari)
+   15-QISM — SAVAT (mijozning o'z zakazlari — Firebasedan filtrlab olinadi)
    ======================================================================= */
-function loadCartFromStorage(){ cartItems=loadOrdersLocal(); updateCartCount(); }
 function updateCartCount(){
   var cc=document.getElementById('cart-count');
   cc.innerText=cartItems.length;
   cc.classList.remove('bounce'); void cc.offsetWidth; cc.classList.add('bounce');
+}
+function refreshCartFromAllOrders(){
+  var ids=getMyOrderIds();
+  cartItems=allOrders.filter(function(o){ return ids.indexOf(o.id)>-1; });
+  updateCartCount();
+  if(document.getElementById('cart-modal').classList.contains('open')) renderCartModal();
 }
 function openCart(){ renderCartModal(); document.getElementById('cart-modal').classList.add('open'); document.body.style.overflow='hidden'; }
 function closeCart(){ document.getElementById('cart-modal').classList.remove('open'); document.body.style.overflow=''; }
@@ -2182,13 +2225,13 @@ document.addEventListener('keydown',function(e){
    17-QISM — ISHGA TUSHIRISH
    ======================================================================= */
 loadDarkPref();
-loadCustomProducts();
 checkAdminSession();
 if(!isAdmin) document.getElementById('btn-signup').style.display='flex';
 render();
 loadStoredReviews();
-loadCartFromStorage();
 updateCountdown();
+setupProductsListener();   // mahsulotlarni Firebase bulutidan real vaqtda kuzatish
+setupOrdersListener();     // zakazlarni Firebase bulutidan real vaqtda kuzatish
 </script>
 </body>
 </html>
