@@ -727,8 +727,6 @@ body{font-family:'Barlow',sans-serif;background:var(--bg-page);color:var(--text-
     <div class="omod-product" id="order-product-name"></div>
     <input type="text" id="ord-name" placeholder="Ism va familiya *">
     <input type="tel" id="ord-phone" placeholder="Telefon raqam (+998...) *">
-    <input type="email" id="ord-email" placeholder="Gmail / email manzilingiz *">
-    <div class="field-hint">Zakaz tasdiqi va aloqa uchun ishlatiladi</div>
     <select id="ord-region" onchange="updateDeliveryInfo()">
       <option value="">Viloyatni tanlang *</option>
       <option>Toshkent shahri</option>
@@ -1486,7 +1484,7 @@ function openOrderForm(){
   document.getElementById('order-product-name').innerText=activeProd.brand+' — '+activeProd.name+'\n💰 '+activeProd.price;
   document.getElementById('order-success').style.display='none';
   var b=document.getElementById('submit-btn'); b.disabled=false; b.innerText='✅ Zakazni Tasdiqlash';
-  ['ord-name','ord-phone','ord-email','ord-city','ord-size'].forEach(function(id){ document.getElementById(id).value=''; });
+  ['ord-name','ord-phone','ord-city','ord-size'].forEach(function(id){ document.getElementById(id).value=''; });
   document.getElementById('ord-region').value='';
   document.getElementById('delivery-box').style.display='none';
   removeOrderImg();
@@ -1498,13 +1496,11 @@ function closeOrderModal(){ document.getElementById('order-modal').classList.rem
 async function submitOrder(){
   var name=document.getElementById('ord-name').value.trim();
   var phone=document.getElementById('ord-phone').value.trim();
-  var email=document.getElementById('ord-email').value.trim();
   var region=document.getElementById('ord-region').value;
   var addr=document.getElementById('ord-city').value.trim();
 
   if(!name){ alert('❗ Ism va familiyangizni kiriting'); return; }
   if(phone.replace(/\D/g,'').length<9){ alert('❗ Telefon raqamni to\'liq kiriting (+998...)'); return; }
-  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ alert('❗ Email manzilni to\'g\'ri kiriting (masalan: ism@gmail.com)'); return; }
   if(!region){ alert('❗ Viloyatingizni tanlang'); return; }
   if(!addr){ alert('❗ To\'liq manzilni yozing: tuman, ko\'cha, uy'); return; }
 
@@ -1520,7 +1516,7 @@ async function submitOrder(){
     date:nowStr(),
     createdAt:Date.now(),
     product:(activeProd?activeProd.brand+' — '+activeProd.name+' ('+activeProd.price+')':'—'),
-    name:name, phone:phone, email:email, region:region, city:addr,
+    name:name, phone:phone, region:region, city:addr,
     size:document.getElementById('ord-size').value.trim(),
     delivery:dl.d+' / '+dl.p,
     status:'new',
@@ -1540,7 +1536,6 @@ async function submitOrder(){
     +'📦 '+order.product+'\n'
     +'👤 '+order.name+'\n'
     +'📞 '+order.phone+'\n'
-    +'📧 '+order.email+'\n'
     +'🗺 '+order.region+'\n'
     +'📍 '+order.city+'\n'
     +(order.size?'📐 O\'lcham: '+order.size+'\n':'')
@@ -1684,7 +1679,6 @@ function renderOrders(){
     html+='<div class="oc-grid">';
     html+='<div class="oc-field"><div class="oc-field-label">👤 Ism</div><div class="oc-field-val">'+escHtml(o.name)+'</div></div>';
     html+='<div class="oc-field"><div class="oc-field-label">📞 Telefon</div><div class="oc-field-val"><a href="tel:'+escHtml(o.phone)+'" style="color:var(--or)">'+escHtml(o.phone)+'</a></div></div>';
-    if(o.email) html+='<div class="oc-field"><div class="oc-field-label">📧 Email</div><div class="oc-field-val"><a href="mailto:'+escHtml(o.email)+'" style="color:var(--or)">'+escHtml(o.email)+'</a></div></div>';
     if(o.region) html+='<div class="oc-field"><div class="oc-field-label">🗺 Viloyat</div><div class="oc-field-val">'+escHtml(o.region)+'</div></div>';
     if(o.city) html+='<div class="oc-field"><div class="oc-field-label">📍 Manzil</div><div class="oc-field-val">'+escHtml(o.city)+'</div></div>';
     if(o.size) html+='<div class="oc-field"><div class="oc-field-label">📐 O\'lcham</div><div class="oc-field-val">'+escHtml(o.size)+'</div></div>';
