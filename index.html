@@ -1,8 +1,25 @@
 <!DOCTYPE html>
 <html lang="uz" data-theme="light">
 <head>
+<script id="mb-perf">
+/* TELEFON TEZLIGI: og'ir doimiy sikllarni (zarracha, 3D tilt, kursor) o'chiradi */
+(function(){
+var raf=window.requestAnimationFrame.bind(window),bad=/clearRect|boot\.style|b1\.style|su-ring|trail/,m=new WeakMap();
+window.requestAnimationFrame=function(f){
+  var v=m.get(f); if(v===undefined){v=bad.test(Function.prototype.toString.call(f)); m.set(f,v);}
+  return v?0:raf(f);
+};
+var si=window.setInterval.bind(window);
+window.setInterval=function(f,t){
+  if(typeof f==='function'&&t<100&&/trail/.test(Function.prototype.toString.call(f)))return 0;
+  return si.apply(window,arguments);
+};
+})();
+</script>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#05060f">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>SportUp — Halollik Foydadan Ustun!</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23FF5500'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white' font-family='Arial' font-weight='900'>S</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -717,6 +734,12 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 #su-chart .lg{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-size:12px;font-weight:700;color:#cfd7ff}
 #su-chart .lg b{font-family:'Bebas Neue';font-size:20px;letter-spacing:.05em}
 </style>
+<style>
+.oc-when{font-size:16px;font-weight:900;color:var(--text-main);background:var(--orl);border-left:4px solid var(--or);border-radius:10px;padding:9px 12px;margin:8px 0 10px;letter-spacing:.2px}
+.ci-when{font-weight:800}
+.ci-status.new{background:#FFF8E1;color:#8D6E00}
+.oc-status.new{white-space:nowrap}
+</style>
 </head>
 <body>
 
@@ -754,7 +777,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
   </div>
   <div class="h-right">
     <a class="h-soc h-tg" href="https://t.me/berdaliyew" target="_blank">✈️ Telegram</a>
-    <a class="h-soc h-ig" href="https://instagram.com/_bakhromvic" target="_blank">📸 Instagram</a>
+    <a class="h-soc h-ig" href="https://instagram.com/sportup_uz" target="_blank">📸 Instagram</a>
     <button class="dark-toggle" id="dark-toggle" onclick="toggleDark()" title="Qorong'u/Yorug' rejim">
       <span class="dark-icon sun">☀️</span>
       <span class="dark-icon moon">🌙</span>
@@ -947,7 +970,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
       <div class="order-label">📦 Buyurtma usulini tanlang:</div>
       <div class="order-grid">
         <a class="order-btn o-tg" id="mod-tg-link" href="https://t.me/berdaliyew" target="_blank">✈️ Telegram</a>
-        <a class="order-btn o-ig" id="mod-ig-link" href="https://instagram.com/_bakhromvic" target="_blank">📸 Instagram</a>
+        <a class="order-btn o-ig" id="mod-ig-link" href="https://instagram.com/sportup_uz" target="_blank">📸 Instagram</a>
         <button class="order-btn o-online" onclick="openOrderForm()">🛒 Online Zakaz Berish</button>
       </div>
     </div>
@@ -960,27 +983,9 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
     <button class="omod-close" onclick="closeOrderModal()">✕</button>
     <h3>📦 Online Zakaz</h3>
     <div class="omod-product" id="order-product-name"></div>
-    <input type="text" id="ord-name" placeholder="Ism va familiya *">
-    <input type="tel" id="ord-phone" placeholder="Telefon raqam (+998...) *">
-    <select id="ord-region" onchange="updateDeliveryInfo()">
-      <option value="">Viloyatni tanlang *</option>
-      <option>Toshkent shahri</option>
-      <option>Toshkent viloyati</option>
-      <option>Samarqand</option>
-      <option>Buxoro</option>
-      <option>Andijon</option>
-      <option>Farg'ona</option>
-      <option>Namangan</option>
-      <option>Qashqadaryo</option>
-      <option>Surxondaryo</option>
-      <option>Jizzax</option>
-      <option>Sirdaryo</option>
-      <option>Navoiy</option>
-      <option>Xorazm</option>
-      <option>Qoraqalpog'iston</option>
-    </select>
-    <div class="delivery-box" id="delivery-box"></div>
-    <textarea id="ord-city" placeholder="To'liq manzil: tuman, ko'cha, uy raqami *"></textarea>
+    <input type="text" id="ord-name" placeholder="Ism va familiya * (masalan: Aziz Karimov)" maxlength="60" autocomplete="name">
+    <input type="tel" id="ord-phone" placeholder="+998 __ ___ __ __ *" inputmode="numeric" maxlength="17" autocomplete="tel">
+        <textarea id="ord-city" placeholder="To'liq manzil: viloyat, tuman, ko'cha, uy raqami *"></textarea>
     <input type="text" id="ord-size" placeholder="O'lcham (40, 41, M, L, XL...)">
     <div id="img-preview-wrap" class="img-preview-wrap">
       <img id="img-preview" src="" alt="Preview">
@@ -1134,7 +1139,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 <div class="overlay" id="cart-modal" onclick="if(event.target===this)closeCart()">
   <div class="cart-modal">
     <div class="cart-header">
-      <h2>🛒 MENING <em>ZAKAZLARIM</em></h2>
+      <span class="ch-ico">🛒</span><h2>MENING <em>ZAKAZLARIM</em></h2><span class="ch-count" id="ch-count">0</span>
       <button class="cart-close" onclick="closeCart()">✕</button>
     </div>
     <div class="cart-body" id="cart-body">
@@ -1215,23 +1220,6 @@ var FIREBASE_URL   = 'https://sportup-61694-default-rtdb.europe-west1.firebaseda
 var PRODUCTS_PATH  = 'products_a7f3k9';
 var ORDERS_PATH    = 'orders_m4q8p2';
 
-/* --- YETKAZIB BERISH (viloyat bo'yicha) --- */
-var DELIVERY = {
-  "Toshkent shahri":{d:"1 kun",p:"Bepul"},
-  "Toshkent viloyati":{d:"1-2 kun",p:"25 000 so'm"},
-  "Samarqand":{d:"2 kun",p:"30 000 so'm"},
-  "Buxoro":{d:"2-3 kun",p:"35 000 so'm"},
-  "Andijon":{d:"2-3 kun",p:"35 000 so'm"},
-  "Farg'ona":{d:"2-3 kun",p:"35 000 so'm"},
-  "Namangan":{d:"2-3 kun",p:"35 000 so'm"},
-  "Qashqadaryo":{d:"3 kun",p:"40 000 so'm"},
-  "Surxondaryo":{d:"3-4 kun",p:"45 000 so'm"},
-  "Jizzax":{d:"2 kun",p:"30 000 so'm"},
-  "Sirdaryo":{d:"2 kun",p:"30 000 so'm"},
-  "Navoiy":{d:"2-3 kun",p:"35 000 so'm"},
-  "Xorazm":{d:"3-4 kun",p:"45 000 so'm"},
-  "Qoraqalpog'iston":{d:"4-5 kun",p:"50 000 so'm"}
-};
 
 /* Firebasega ulanish */
 firebase.initializeApp({ databaseURL: FIREBASE_URL });
@@ -1456,11 +1444,34 @@ function deviceInfo(){
   var os=/Android/i.test(ua)?'Android':/iPhone|iPad/i.test(ua)?'iPhone/iPad':/Windows/i.test(ua)?'Windows':/Mac/i.test(ua)?'Mac':/Linux/i.test(ua)?'Linux':'Nomalum';
   return os+' • '+screen.width+'x'+screen.height+' • '+(navigator.language||'-');
 }
-function nowStr(){
-  var n=new Date();
-  return n.toLocaleDateString('uz-UZ')+' '+n.toLocaleTimeString('uz-UZ',{hour:'2-digit',minute:'2-digit'});
-}
 function pad2(n){ return n<10?'0'+n:''+n; }
+function fmtDT(ts){
+  var d=new Date(ts);
+  return pad2(d.getDate())+'.'+pad2(d.getMonth()+1)+'.'+d.getFullYear()+' '+pad2(d.getHours())+':'+pad2(d.getMinutes());
+}
+function nowStr(){ return fmtDT(Date.now()); }
+function timeAgo(ts){
+  var s=Math.floor((Date.now()-ts)/1000);
+  if(s<60) return 'hozirgina';
+  var m=Math.floor(s/60); if(m<60) return m+' daqiqa oldin';
+  var h=Math.floor(m/60); if(h<24) return h+' soat oldin';
+  var d=Math.floor(h/24); if(d<30) return d+' kun oldin';
+  return Math.floor(d/30)+' oy oldin';
+}
+function whenText(o){
+  if(o&&o.createdAt) return fmtDT(o.createdAt)+' • '+timeAgo(o.createdAt);
+  return (o&&o.date)||'';
+}
+function fmtPhone(p){
+  var d=String(p||'').replace(/\D/g,'');
+  if(d.length===12&&d.indexOf('998')===0) return '+998 '+d.slice(3,5)+' '+d.slice(5,8)+' '+d.slice(8,10)+' '+d.slice(10,12);
+  return p||'';
+}
+setInterval(function(){
+  document.querySelectorAll('[data-ts]').forEach(function(el){
+    var t=parseInt(el.getAttribute('data-ts'),10); if(t) el.textContent='🕐 '+fmtDT(t)+' • '+timeAgo(t);
+  });
+},30000);
 
 /* =======================================================================
    5.5-QISM — KO'RINISH TANLASH (Kompyuter / Telefon)
@@ -1468,7 +1479,7 @@ function pad2(n){ return n<10?'0'+n:''+n; }
 var VIEW_MODE_KEY='sportup_view_mode';
 function applyViewMode(mode){
   var vp=document.querySelector('meta[name="viewport"]');
-  if(vp) vp.setAttribute('content', mode==='desktop' ? 'width=1400' : 'width=device-width, initial-scale=1.0');
+  if(vp) vp.setAttribute('content','width=device-width, initial-scale=1.0, viewport-fit=cover'); mode='mobile';
   document.body.setAttribute('data-view', mode);
 }
 function chooseViewMode(mode){
@@ -1477,7 +1488,7 @@ function chooseViewMode(mode){
   document.getElementById('view-choice-modal').classList.remove('open');
   document.body.style.overflow='';
 }
-function openViewChoice(){
+function openViewChoice(){ chooseViewMode('mobile'); return;
   document.getElementById('view-choice-modal').classList.add('open');
   document.body.style.overflow='hidden';
 }
@@ -1728,13 +1739,88 @@ function pmodImgFail(){ document.getElementById('pmod-img').style.display='none'
 /* =======================================================================
    10-QISM — ONLINE ZAKAZ FORMASI
    ======================================================================= */
-function updateDeliveryInfo(){
-  var r=document.getElementById('ord-region').value;
-  var box=document.getElementById('delivery-box');
-  if(!r||!DELIVERY[r]){ box.style.display='none'; return; }
-  box.innerHTML='🚚 <b>'+r+'</b> ga yetkazish: <b>'+DELIVERY[r].d+'</b> • Dostavka: <b>'+DELIVERY[r].p+'</b>'
-    +'<br>💵 To\'lov: kuryerga qo\'lma-qo\'l yoki karta orqali.';
-  box.style.display='block';
+/* ---------- ISM / TELEFON TEKSHIRUVI ---------- */
+function normName(s){
+  return String(s||'').replace(/[\u2018\u2019\u02BB\u02BC`\u00B4]/g,"'").replace(/\s+/g,' ').trim();
+}
+function validateName(raw){
+  var s=normName(raw);
+  if(!s) return 'Ism va familiyangizni kiriting';
+  if(/[^A-Za-z\u0400-\u04FF' \-]/.test(s)) return "Ismda faqat harf bo'lishi kerak (raqam va belgilar mumkin emas)";
+  var words=s.split(' ');
+  if(words.length<2) return 'Ism va familiyani birga yozing (masalan: Aziz Karimov)';
+  if(words.length>4) return 'Ism juda uzun, faqat ism va familiyani yozing';
+  var low=s.toLowerCase(), seen={};
+  for(var i=0;i<words.length;i++){
+    var w=words[i].toLowerCase(), letters=w.replace(/[^a-z\u0400-\u04ff]/g,'');
+    if(letters.length<2) return "Ism va familiya kamida 2 harfdan iborat bo'lishi kerak";
+    if(letters.length>25) return "So'z juda uzun, ismni to'g'ri yozing";
+    if(!/[aeiou\u0430\u0435\u0451\u0438\u043e\u0443\u044b\u044d\u044e\u044f\u045e]/.test(letters)) return "Ismni to'g'ri yozing (haqiqiy ism va familiya)";
+    if(/(.)\1\1/.test(letters)) return "Ismni to'g'ri yozing (haqiqiy ism va familiya)";
+    if(/[bcdfghjklmnpqrstvwxz]{4,}/.test(letters)) return "Ismni to'g'ri yozing (haqiqiy ism va familiya)";
+    seen[letters]=1;
+  }
+  if(Object.keys(seen).length<2) return 'Ism va familiya bir xil bo\'lishi mumkin emas';
+  if(/qwert|asdf|zxcv|xcvb|sdfg|dfgh|hjkl|wasd|qaz|wsx/.test(low.replace(/[^a-z]/g,''))) return "Ismni to'g'ri yozing (haqiqiy ism va familiya)";
+  return '';
+}
+var UZ_CODES=['20','33','50','55','77','88','90','91','93','94','95','97','98','99'];
+function phone9(raw){
+  var d=String(raw||'').replace(/\D/g,'');
+  if(d.length===12&&d.indexOf('998')===0) d=d.slice(3);
+  return d;
+}
+function validatePhone(raw){
+  var d=String(raw||'').replace(/\D/g,'').replace(/^998/,'');
+  if(!d) return 'Telefon raqamni kiriting';
+  d=phone9(raw);
+  if(d.length!==9) return "Telefon raqam to'liq bo'lishi kerak: 9 ta raqam (masalan: +998 90 123 45 67)";
+  if(UZ_CODES.indexOf(d.slice(0,2))<0) return "Operator kodi noto'g'ri (masalan: 90, 91, 93, 94, 97, 99, 33, 88)";
+  var sub=d.slice(2), cnt={}, i;
+  for(i=0;i<sub.length;i++) cnt[sub[i]]=(cnt[sub[i]]||0)+1;
+  var maxc=Math.max.apply(null,Object.keys(cnt).map(function(k){return cnt[k];}));
+  var alt=true; for(i=0;i<sub.length-2;i++){ if(sub[i]!==sub[i+2]) alt=false; }
+  if(maxc>=6||alt||'01234567890'.indexOf(sub)>-1||'09876543210'.indexOf(sub)>-1) return "Bu raqam soxta ko'rinadi. Haqiqiy telefon raqamingizni kiriting";
+  return '';
+}
+function normPhone(raw){ return '+998'+phone9(raw); }
+function formatPhoneInput(el){
+  var v=el.value, d=v.replace(/\D/g,'');
+  if(d.indexOf('998')===0&&(d.length>9||v.indexOf('+')>-1)) d=d.slice(3);
+  d=d.slice(0,9);
+  var out='+998 '+d.slice(0,2)+(d.length>2?' '+d.slice(2,5):'')+(d.length>5?' '+d.slice(5,7):'')+(d.length>7?' '+d.slice(7,9):'');
+  if(el.value!==out) el.value=out;
+}
+(function(){
+  var ph=document.getElementById('ord-phone'), nm=document.getElementById('ord-name');
+  if(ph){
+    ph.addEventListener('focus',function(){ if(!ph.value) ph.value='+998 '; });
+    ph.addEventListener('input',function(){ formatPhoneInput(ph); });
+    ph.addEventListener('blur',function(){ if(ph.value.replace(/\D/g,'').replace(/^998/,'')==='') ph.value=''; });
+  }
+  if(nm){
+    nm.addEventListener('input',function(){
+      var c=nm.value.replace(/[^A-Za-z\u0400-\u04FF\u2018\u2019\u02BB\u02BC'`\- ]/g,'');
+      if(c!==nm.value) nm.value=c;
+    });
+  }
+})();
+/* ---------- BIR XIL ZAKAZNI TAKRORLASHDAN HIMOYA (3 daqiqa) ---------- */
+var DUP_MS=3*60*1000, DUP_KEY='sportup_recent_orders', orderSending=false;
+function recentKeys(){ try{ return JSON.parse(localStorage.getItem(DUP_KEY)||'{}'); }catch(e){ return {}; } }
+function rememberOrderKey(k){
+  try{
+    var o=recentKeys(), now=Date.now();
+    Object.keys(o).forEach(function(x){ if(now-o[x]>DUP_MS) delete o[x]; });
+    o[k]=now; localStorage.setItem(DUP_KEY,JSON.stringify(o));
+  }catch(e){}
+}
+function isDuplicateOrder(k,p9,prod){
+  var now=Date.now(), o=recentKeys();
+  if(o[k]&&now-o[k]<DUP_MS) return true;
+  return (allOrders||[]).some(function(x){
+    return x.createdAt&&now-x.createdAt<DUP_MS&&x.phone&&String(x.phone).replace(/\D/g,'').slice(-9)===p9&&x.product===prod;
+  });
 }
 /* Rasmni avtomatik kichraytirib-siqib beradi */
 function compressImageFile(file, maxSize, quality){
@@ -1783,8 +1869,6 @@ function openOrderForm(){
   document.getElementById('order-success').style.display='none';
   var b=document.getElementById('submit-btn'); b.disabled=false; b.innerText='✅ Zakazni Tasdiqlash';
   ['ord-name','ord-phone','ord-city','ord-size'].forEach(function(id){ document.getElementById(id).value=''; });
-  document.getElementById('ord-region').value='';
-  document.getElementById('delivery-box').style.display='none';
   removeOrderImg();
   document.getElementById('order-modal').classList.add('open');
   document.body.style.overflow='hidden';
@@ -1792,20 +1876,26 @@ function openOrderForm(){
 function closeOrderModal(){ document.getElementById('order-modal').classList.remove('open'); document.body.style.overflow=''; }
 
 async function submitOrder(){
-  var name=document.getElementById('ord-name').value.trim();
-  var phone=document.getElementById('ord-phone').value.trim();
-  var region=document.getElementById('ord-region').value;
-  var addr=document.getElementById('ord-city').value.trim();
+  if(orderSending) return;
+  var name=normName(document.getElementById('ord-name').value);
+  var phoneRaw=document.getElementById('ord-phone').value;
+  var addr=document.getElementById('ord-city').value.trim().replace(/\s+/g,' ');
 
-  if(!name){ alert('❗ Ism va familiyangizni kiriting'); return; }
-  if(phone.replace(/\D/g,'').length<9){ alert('❗ Telefon raqamni to\'liq kiriting (+998...)'); return; }
-  if(!region){ alert('❗ Viloyatingizni tanlang'); return; }
-  if(!addr){ alert('❗ To\'liq manzilni yozing: tuman, ko\'cha, uy'); return; }
+  var e1=validateName(name); if(e1){ alert('❗ '+e1); return; }
+  var e2=validatePhone(phoneRaw); if(e2){ alert('❗ '+e2); return; }
+  if(addr.length<8){ alert("❗ To'liq manzilni yozing: viloyat, tuman, ko'cha, uy (kamida 8 belgi)"); return; }
+  var phone=normPhone(phoneRaw);
 
+  var prodStr=(activeProd?activeProd.brand+' — '+activeProd.name+' ('+activeProd.price+')'+((parseInt(activeProd.discount,10)||0)>0?' [-'+(parseInt(activeProd.discount,10)||0)+'% chegirma]':''):'—');
+  var dupKey=phone9(phone)+'|'+prodStr;
+  if(isDuplicateOrder(dupKey,phone9(phone),prodStr)){
+    alert("⚠️ Bu raqamdan shu mahsulotga zakaz yaqinda yuborilgan.\nIltimos, 3 daqiqadan keyin qayta urinib ko'ring yoki Savatni tekshiring.");
+    return;
+  }
+
+  orderSending=true;
   var btn=document.getElementById('submit-btn');
   btn.disabled=true; btn.innerText='⏳ Yuborilmoqda...';
-
-  var dl=DELIVERY[region]||{d:'-',p:'-'};
   var pushRef=db.ref(ORDERS_PATH).push();
   var orderId=pushRef.key;
   var disc=activeProd?(parseInt(activeProd.discount,10)||0):0;
@@ -1815,9 +1905,8 @@ async function submitOrder(){
     date:nowStr(),
     createdAt:Date.now(),
     product:(activeProd?activeProd.brand+' — '+activeProd.name+' ('+activeProd.price+')'+(disc>0?' [-'+disc+'% chegirma]':''):'—'),
-    name:name, phone:phone, region:region, city:addr,
+    name:name, phone:phone, city:addr,
     size:document.getElementById('ord-size').value.trim(),
-    delivery:dl.d+' / '+dl.p,
     status:'new',
     image:orderImageData||null
   };
@@ -1825,9 +1914,11 @@ async function submitOrder(){
   try{
     await pushRef.set(order);
     addMyOrderId(orderId);
+    rememberOrderKey(dupKey);
     if(!allOrders.some(function(o){return o.id===orderId;})) allOrders.unshift(order);
     refreshCartFromAllOrders();
   }catch(e){
+    orderSending=false;
     btn.disabled=false; btn.innerText='✅ Zakazni Tasdiqlash';
     alert('❗ Internet bilan bog\'lanishda xatolik yuz berdi. Qaytadan urinib ko\'ring.');
     return;
@@ -1837,10 +1928,8 @@ async function submitOrder(){
     +'📦 '+order.product+'\n'
     +'👤 '+order.name+'\n'
     +'📞 '+order.phone+'\n'
-    +'🗺 '+order.region+'\n'
     +'📍 '+order.city+'\n'
     +(order.size?'📐 O\'lcham: '+order.size+'\n':'')
-    +'🚚 Yetkazish: '+order.delivery+'\n'
     +'🕐 '+order.date;
 
   var tgOk=false;
@@ -1851,7 +1940,7 @@ async function submitOrder(){
   document.getElementById('order-success').style.display='block';
   btn.innerText='✅ Yuborildi!';
   showToast('🎉','Zakazingiz qabul qilindi! Admin tez orada bog\'lanadi.',4500);
-  setTimeout(closeOrderModal,3500);
+  setTimeout(function(){ orderSending=false; closeOrderModal(); },3500);
 }
 
 /* =======================================================================
@@ -1967,16 +2056,17 @@ function renderOrders(){
   }
   var html='';
   fl.forEach(function(o){
-    var st=o.status==='new'?'<span class="oc-status new">🟢 Yangi</span>'
+    var st=o.status==='new'?'<span class="oc-status new">🟢 Yangi — kutilmoqda</span>'
       :o.status==='pending'?'<span class="oc-status pending">🟡 Jarayonda</span>'
       :'<span class="oc-status done">🔵 Bajarildi</span>';
     html+='<div class="order-card">';
-    html+='<div class="oc-top"><span class="oc-num">📦 #'+escHtml(o.num||o.id)+'</span>'+st+'<span class="oc-date">'+escHtml(o.date)+'</span></div>';
+    html+='<div class="oc-top"><span class="oc-num">📦 #'+escHtml(o.num||o.id)+'</span>'+st+'</div>';
+    html+='<div class="oc-when"'+(o.createdAt?' data-ts="'+o.createdAt+'"':'')+'>🕐 '+escHtml(whenText(o))+'</div>';
     html+='<div class="oc-product"><div class="oc-product-label">Mahsulot</div><div class="oc-product-val">'+escHtml(o.product)+'</div></div>';
     if(o.image) html+='<div class="oc-img-wrap"><img src="'+o.image+'" alt="Zakaz rasmi" onclick="openFullImg(\''+o.image+'\')"></div>';
     html+='<div class="oc-grid">';
     html+='<div class="oc-field"><div class="oc-field-label">👤 Ism</div><div class="oc-field-val">'+escHtml(o.name)+'</div></div>';
-    html+='<div class="oc-field"><div class="oc-field-label">📞 Telefon</div><div class="oc-field-val"><a href="tel:'+escHtml(o.phone)+'" style="color:var(--or)">'+escHtml(o.phone)+'</a></div></div>';
+    html+='<div class="oc-field"><div class="oc-field-label">📞 Telefon</div><div class="oc-field-val"><a href="tel:'+escHtml(o.phone)+'" style="color:var(--or)">'+escHtml(fmtPhone(o.phone))+'</a></div></div>';
     if(o.region) html+='<div class="oc-field"><div class="oc-field-label">🗺 Viloyat</div><div class="oc-field-val">'+escHtml(o.region)+'</div></div>';
     if(o.city) html+='<div class="oc-field"><div class="oc-field-label">📍 Manzil</div><div class="oc-field-val">'+escHtml(o.city)+'</div></div>';
     if(o.size) html+='<div class="oc-field"><div class="oc-field-label">📐 O\'lcham</div><div class="oc-field-val">'+escHtml(o.size)+'</div></div>';
@@ -2370,27 +2460,50 @@ function refreshCartFromAllOrders(){
   updateCartCount();
   if(document.getElementById('cart-modal').classList.contains('open')) renderCartModal();
 }
-function openCart(){ renderCartModal(); document.getElementById('cart-modal').classList.add('open'); document.body.style.overflow='hidden'; }
+function openCart(){
+  var cb=document.getElementById('cart-body'); cb.classList.add('anim');
+  renderCartModal(); document.getElementById('cart-modal').classList.add('open'); document.body.style.overflow='hidden';
+  cb.scrollTop=0; setTimeout(function(){ cb.classList.remove('anim'); },1400);
+}
 function closeCart(){ document.getElementById('cart-modal').classList.remove('open'); document.body.style.overflow=''; }
 function renderCartModal(){
   var body=document.getElementById('cart-body');
+  var hc=document.getElementById('ch-count'); if(hc) hc.textContent=cartItems.length;
   if(!cartItems.length){
-    body.innerHTML='<div class="cart-empty"><span>🛒</span><p>Hali zakaz bermagansiz.<br>Mahsulotni tanlang va "<b>Online Zakaz Berish</b>" tugmasini bosing!</p></div>';
+    body.innerHTML='<div class="cart-empty"><div class="ce-orbit"><span>🛒</span></div><h4>Savat hozircha bo\'sh</h4><p>Mahsulotni tanlang va "<b>Online Zakaz Berish</b>" tugmasini bosing — zakazingiz va uning holati shu yerda ko\'rinadi!</p></div>';
     return;
   }
-  var html='';
+  var cn=0,cp=0,cd=0;
+  cartItems.forEach(function(c){ if(c.status==='done') cd++; else if(c.status==='pending') cp++; else cn++; });
+  var html='<div class="cart-sum">'
+    +'<span class="cs-chip cs-new">⏳ Kutilmoqda <b>'+cn+'</b></span>'
+    +'<span class="cs-chip cs-pend">🔎 Jarayonda <b>'+cp+'</b></span>'
+    +'<span class="cs-chip cs-done">✅ Tasdiqlangan <b>'+cd+'</b></span></div>';
   cartItems.forEach(function(ci,i){
-    var st=ci.status==='done'?'<span class="ci-status done">✅ Tasdiqlandi — yetkazilmoqda</span>'
-      :ci.status==='pending'?'<span class="ci-status pending">🟡 Jarayonda — admin ko\'rib chiqayapti</span>'
-      :'<span class="ci-status new">🟢 Qabul qilindi — ozgina sabr qiling</span>';
-    html+='<div class="cart-item"><div class="ci-num">#'+(i+1)+'</div><div class="ci-info">';
-    html+='<div class="ci-product">'+escHtml(ci.product)+'</div>';
-    html+='<div class="ci-meta">👤 '+escHtml(ci.name)+' • 📞 '+escHtml(ci.phone)+'</div>';
+    var a=ci.status==='done'?2:ci.status==='pending'?1:0;
+    var stCls=ci.status==='done'?'done':ci.status==='pending'?'pending':'new';
+    var badge=ci.status==='done'?'<span class="ci-status done"><span class="ci-ico">✅</span> Tasdiqlandi — yetkazilmoqda</span>'
+      :ci.status==='pending'?'<span class="ci-status pending"><span class="ci-ico">🔎</span> Jarayonda — admin ko\'rib chiqayapti</span>'
+      :'<span class="ci-status new"><span class="ci-ico">⏳</span> Kutilmoqda — admin hali qabul qilmadi</span>';
+    var steps=[['📨','Yuborildi'],['🔎','Ko\'rib chiqish'],['✅','Tasdiqlandi']], tr='';
+    steps.forEach(function(sp,k){
+      tr+='<div class="ci-step '+(k<=a?'on':'off')+(k===a?' cur':'')+'"><i>'+sp[0]+'</i><b>'+sp[1]+'</b></div>';
+      if(k<2) tr+='<div class="ci-line '+(k<a?'on':(k===a&&ci.status!=='done'?'flow':''))+'"></div>';
+    });
+    html+='<div class="cart-item st-'+stCls+'" style="animation-delay:'+(i*80)+'ms">';
+    html+='<div class="ci-top"><div class="ci-num">'+(i+1)+'</div><div class="ci-head"><div class="ci-product">'+escHtml(ci.product)+'</div>'
+      +'<div class="ci-no">Zakaz #'+escHtml(ci.num||ci.id)+'</div></div>';
+    if(ci.image) html+='<img class="ci-thumb" src="'+ci.image+'" alt="Zakaz rasmi" onclick="openFullImg(this.src)">';
+    html+='</div>';
+    html+='<div class="ci-track">'+tr+'</div>';
+    html+='<div class="ci-info">';
+    html+='<div class="ci-meta">👤 '+escHtml(ci.name)+' • 📞 '+escHtml(fmtPhone(ci.phone))+'</div>';
     if(ci.region) html+='<div class="ci-meta">🗺 '+escHtml(ci.region)+'</div>';
     if(ci.city) html+='<div class="ci-meta">📍 '+escHtml(ci.city)+'</div>';
     if(ci.delivery) html+='<div class="ci-meta">🚚 '+escHtml(ci.delivery)+'</div>';
     if(ci.size) html+='<div class="ci-meta">📐 O\'lcham: '+escHtml(ci.size)+'</div>';
-    html+=st+'</div></div>';
+    html+='<div class="ci-meta ci-when"'+(ci.createdAt?' data-ts="'+ci.createdAt+'"':'')+'>🕐 '+escHtml(whenText(ci))+'</div>';
+    html+=badge+'</div></div>';
   });
   body.innerHTML=html;
 }
@@ -2476,7 +2589,8 @@ document.addEventListener('keydown',function(e){
 /* =======================================================================
    17-QISM — ISHGA TUSHIRISH
    ======================================================================= */
-initViewMode();
+(function(){var s=null;try{s=localStorage.getItem(VIEW_MODE_KEY)}catch(e){}
+if(!s&&matchMedia('(pointer:coarse)').matches&&Math.min(screen.width,screen.height)<820){chooseViewMode('mobile')}else{initViewMode()}})();
 loadDarkPref();
 checkAdminSession();
 if(!isAdmin) document.getElementById('btn-signup').style.display='flex';
@@ -2565,13 +2679,13 @@ const cc=$('#cart-count'),cb=$('#cart-btn');if(cc&&cb)new MutationObserver(()=>{
 const w=document.querySelector('#su-foot .w');if(w){w.innerHTML=[...w.textContent].map((c,i)=>`<span style="animation-delay:${i*.15}s">${c}</span>`).join('')}
 })();</script>
 <script>(function(){const o=window.submitOrder;if(typeof o!=='function')return;
-const rules=[['ord-name',v=>v.trim().length>0,'Ism va familiyangizni kiriting'],['ord-phone',v=>v.replace(/\D/g,'').length>=9,"Telefon raqamni to'liq kiriting (+998...)"],['ord-region',v=>!!v,'Viloyatingizni tanlang'],['ord-city',v=>v.trim().length>0,"To'liq manzilni yozing: tuman, ko'cha, uy"]];
+const rules=[['ord-name',v=>!validateName(v),v=>validateName(v)],['ord-phone',v=>!validatePhone(v),v=>validatePhone(v)],['ord-city',v=>v.trim().length>=8,"To'liq manzilni yozing: viloyat, tuman, ko'cha, uy (kamida 8 belgi)"]];
 function clear(el){el.classList.remove('su-bad');const m=el.nextElementSibling;if(m&&m.classList.contains('su-msg')){m.classList.add('out');setTimeout(()=>m.remove(),350)}}
 function bad(el,msg,first){el.classList.remove('su-bad');void el.offsetWidth;el.classList.add('su-bad');
 if(first){const m=document.createElement('div');m.className='su-msg';m.textContent='❗ '+msg;el.insertAdjacentElement('afterend',m);setTimeout(()=>clear(el),3500);el.focus();el.scrollIntoView({block:'center',behavior:'smooth'})}
 const f=()=>{clear(el);el.removeEventListener('input',f);el.removeEventListener('change',f)};el.addEventListener('input',f);el.addEventListener('change',f)}
 window.submitOrder=function(){let first=true,fail=false;
-rules.forEach(([id,ok,msg])=>{const el=document.getElementById(id);if(!el)return;if(!ok(el.value)){fail=true;bad(el,msg,first);first=false}});
+rules.forEach(([id,ok,msg])=>{const el=document.getElementById(id);if(!el)return;if(!ok(el.value)){fail=true;bad(el,typeof msg==='function'?msg(el.value):msg,first);first=false}});
 if(fail){if(navigator.vibrate)navigator.vibrate([80,40,80]);return}
 return o.apply(this,arguments)}})();</script>
 <script>(function(){const $=s=>document.querySelector(s),l=$('.layout');if(!l)return;
@@ -2587,7 +2701,7 @@ l.insertAdjacentHTML('afterend',`<section id="su-why"><div class="su-sh su-rv"><
 <div class="su-sh su-rv" style="margin-top:80px"><small>★ SAVOLLAR</small><h2>KO'P BERILADIGAN <span>SAVOLLAR</span></h2></div>
 <div class="su-faq"><div class="su-q su-rv"><button>Mahsulotlar originalmi?<span>+</span></button><div><p>Ha, barcha mahsulotlar 100% original va sertifikatlangan.</p></div></div>
 <div class="su-q su-rv"><button>Mahsulotni qaytarsam bo'ladimi?<span>+</span></button><div><p>Ha, 7 kun ichida qaytarish imkoniyati mavjud.</p></div></div>
-<div class="su-q su-rv"><button>Qayerga yetkazib berasiz?<span>+</span></button><div><p>O'zbekiston bo'yicha. Zakaz berishda viloyatingizni tanlaysiz.</p></div></div>
+<div class="su-q su-rv"><button>Qayerga yetkazib berasiz?<span>+</span></button><div><p>O'zbekiston bo'yicha. Zakaz berishda to'liq manzilingizni (viloyat, tuman, ko'cha, uy) yozasiz.</p></div></div>
 <div class="su-q su-rv"><button>Qanday bog'lansam bo'ladi?<span>+</span></button><div><p>Telegram yoki Instagram orqali yozing, tugmalar sahifa pastida.</p></div></div></div></section>`);
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15});
 document.querySelectorAll('.su-rv').forEach(e=>io.observe(e));
@@ -3300,7 +3414,7 @@ setTimeout(function(){ initTilt(); initReveal(); }, 1500);
     tools.innerHTML='<input id="su-ord-search" type="search" placeholder="🔎 Ism, telefon yoki mahsulot bo\'yicha qidirish..."><span class="su-chip" id="su-c1"></span><span class="su-chip" id="su-c2"></span><span class="su-chip" id="su-c3"></span>';
     cont.parentNode.insertBefore(tools,cont);
     function chips(){var a=window.allOrders||[],td=new Date().toLocaleDateString('ru-RU');
-      var today=a.filter(function(o){return (o.date||'').indexOf(td)>-1}).length;
+      var t0=new Date();t0.setHours(0,0,0,0);var today=a.filter(function(o){return o.createdAt&&o.createdAt>=t0.getTime()}).length;
       $('#su-c1').textContent='📅 Bugun: '+today;$('#su-c2').textContent='🟡 Jarayonda: '+a.filter(function(o){return o.status==='pending'}).length;$('#su-c3').textContent='✅ Bajarilgan: '+a.filter(function(o){return o.status==='done'}).length}
     function applySearch(){var q=($('#su-ord-search').value||'').toLowerCase();document.querySelectorAll('#orders-container .order-card').forEach(function(c){c.style.display=!q||c.textContent.toLowerCase().indexOf(q)>-1?'':'none'})}
     $('#su-ord-search').addEventListener('input',applySearch);
@@ -3365,6 +3479,454 @@ setTimeout(function(){ initTilt(); initReveal(); }, 1500);
     if(typeof refreshOrders==='function')setInterval(function(){var m=document.getElementById('admin-modal');if(m&&m.classList.contains('open'))try{refreshOrders()}catch(e){}},30000);
   }
 })();
+</script>
+<style id="cart-pro">
+/* ===== SAVAT — PRO DIZAYN ===== */
+.cart-modal{max-width:520px!important;background:linear-gradient(160deg,#0f1330,#0a0c1e)!important;border:1px solid rgba(255,255,255,.13);color:#eef1ff;box-shadow:0 30px 90px rgba(0,0,0,.65),0 0 70px rgba(255,85,0,.2)!important;max-height:88vh}
+.cart-header{position:relative;overflow:hidden;background:linear-gradient(110deg,#ff5500,#ff8a3d 45%,#ff5500 90%)!important;background-size:220% 100%!important;animation:chShine 6s linear infinite;border-bottom:none!important;padding:18px 20px!important}
+.cart-header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,transparent,#fff,transparent);opacity:.7;animation:chLine 2.4s ease-in-out infinite}
+@keyframes chShine{to{background-position:-220% 0}}
+@keyframes chLine{0%,100%{transform:translateX(-60%)}50%{transform:translateX(60%)}}
+.ch-ico{font-size:30px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35));animation:chFloat 2.6s ease-in-out infinite}
+@keyframes chFloat{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-5px) rotate(6deg)}}
+.cart-header h2{color:#fff!important;text-shadow:0 2px 10px rgba(0,0,0,.3);font-size:24px!important;letter-spacing:1.5px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cart-header h2 em{color:#0d0d0d!important;text-shadow:none}
+.ch-count{background:#fff;color:#ff5500;font-weight:900;font-size:15px;min-width:34px;height:34px;border-radius:17px;padding:0 10px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 0 rgba(255,255,255,.7);animation:chPulse 2s infinite}
+@keyframes chPulse{70%{box-shadow:0 0 0 12px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+.cart-close{background:rgba(0,0,0,.25)!important}
+.cart-body{padding:16px!important;scrollbar-width:thin;scrollbar-color:#ff5500 transparent}
+.cart-body::-webkit-scrollbar{width:6px}.cart-body::-webkit-scrollbar-thumb{background:#ff5500;border-radius:6px}
+
+/* jami chiplar */
+.cart-sum{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.cs-chip{font-size:11px;font-weight:800;padding:6px 11px;border-radius:20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#cfd6ff}
+.cs-chip b{margin-left:4px;color:#fff;background:rgba(255,255,255,.14);border-radius:10px;padding:1px 7px}
+.cs-new{color:#ffd54f;border-color:rgba(255,213,79,.35)}.cs-pend{color:#ffab5e;border-color:rgba(255,138,61,.4)}.cs-done{color:#69f0ae;border-color:rgba(105,240,174,.4)}
+
+/* zakaz kartasi */
+.cart-body .cart-item{--c:#ffb300;position:relative;display:block;overflow:hidden;padding:14px 14px 14px 16px!important;margin-bottom:14px!important;background:linear-gradient(145deg,rgba(255,255,255,.07),rgba(255,255,255,.025))!important;border:1px solid rgba(255,255,255,.1)!important;border-left:4px solid var(--c)!important;border-radius:18px!important;animation:none;transition:transform .3s cubic-bezier(.34,1.4,.64,1),box-shadow .3s,border-color .3s!important}
+.cart-body .cart-item.st-pending{--c:#ff7a1a}
+.cart-body .cart-item.st-done{--c:#00e676;box-shadow:0 0 0 1px rgba(0,230,118,.22),0 10px 34px rgba(0,230,118,.12)}
+.cart-body .cart-item:hover{transform:translateY(-4px) scale(1.01);box-shadow:0 14px 34px rgba(0,0,0,.45),0 0 26px color-mix(in srgb,var(--c) 35%,transparent)}
+.cart-body .cart-item::before{content:"";position:absolute;top:0;left:-70%;width:45%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.1),transparent);transform:skewX(-20deg);pointer-events:none}
+.cart-body .cart-item:hover::before{animation:ciSweep .9s ease}
+.cart-body .cart-item.st-done::before{animation:ciSweep 3.8s ease-in-out infinite 1s}
+@keyframes ciSweep{to{left:130%}}
+.cart-body.anim .cart-item{animation:ciIn .6s cubic-bezier(.2,.9,.3,1.15) both}
+@keyframes ciIn{from{opacity:0;transform:translateX(60px) scale(.9)}to{opacity:1;transform:none}}
+.ci-top{display:flex;align-items:center;gap:11px}
+.cart-body .ci-num{width:34px;height:34px;border-radius:50%;background:var(--c);color:#111;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:20px;flex-shrink:0;box-shadow:0 0 14px color-mix(in srgb,var(--c) 55%,transparent)}
+.ci-head{flex:1;min-width:0}
+.cart-body .ci-product{font-size:14px!important;font-weight:800;color:#fff!important;line-height:1.35;margin:0!important}
+.ci-no{font-size:10px;font-weight:800;letter-spacing:1px;color:#9aa6d6;margin-top:2px}
+.ci-thumb{width:46px;height:46px;border-radius:12px;object-fit:cover;border:2px solid rgba(255,255,255,.2);cursor:zoom-in;transition:.25s}
+.ci-thumb:hover{transform:scale(1.15) rotate(3deg);border-color:#ff5500}
+
+/* jarayon chizig'i */
+.ci-track{display:flex;align-items:center;margin:14px 2px 12px}
+.ci-step{display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0;min-width:58px}
+.ci-step i{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:15px;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.15);filter:grayscale(1) opacity(.55);transition:.4s}
+.ci-step b{font-size:9px;font-weight:800;color:#7f8ab8;letter-spacing:.3px;text-align:center}
+.ci-step.on i{background:linear-gradient(135deg,#ff5500,#ffb300);border-color:transparent;filter:none;box-shadow:0 0 14px rgba(255,120,0,.5)}
+.ci-step.on b{color:#eef1ff}
+.st-done .ci-step.on i{background:linear-gradient(135deg,#00c853,#69f0ae)!important;box-shadow:0 0 14px rgba(0,230,118,.5)!important}
+.ci-step.cur i{animation:ciRing 1.8s infinite}
+.st-done .ci-step.cur i{animation:ciPop .7s cubic-bezier(.34,1.8,.64,1) both}
+@keyframes ciRing{0%{box-shadow:0 0 0 0 rgba(255,140,40,.65)}80%,100%{box-shadow:0 0 0 13px rgba(255,140,40,0)}}
+@keyframes ciPop{0%{transform:scale(.4)}100%{transform:scale(1)}}
+.ci-line{flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,.1);margin:0 -2px 17px;overflow:hidden;position:relative}
+.ci-line.on{background:linear-gradient(90deg,#ff8a3d,#ffb300)}
+.st-done .ci-line.on{background:linear-gradient(90deg,#00c853,#69f0ae)}
+.ci-line.flow{background:repeating-linear-gradient(110deg,rgba(255,170,60,.9) 0 8px,rgba(255,170,60,.18) 8px 16px);background-size:32px 100%;animation:ciFlow .8s linear infinite}
+@keyframes ciFlow{to{background-position:32px 0}}
+
+/* ma'lumot qatorlari */
+.cart-body .ci-info{display:block}
+.cart-body .ci-meta{font-size:11.5px!important;color:#c3cbf5!important;font-weight:600;background:rgba(255,255,255,.05);border-radius:9px;padding:5px 10px;margin-top:5px}
+.cart-body .ci-when{color:#fff!important;font-weight:800;background:rgba(255,85,0,.14);border:1px solid rgba(255,85,0,.3)}
+
+/* holat nishoni */
+.cart-body .ci-status{display:inline-flex;align-items:center;gap:7px;padding:7px 13px!important;border-radius:20px!important;font-size:11px!important;margin-top:10px!important;letter-spacing:.3px}
+.cart-body .ci-status.new{background:rgba(255,213,79,.14)!important;color:#ffd54f!important;border:1px solid rgba(255,213,79,.4)}
+.cart-body .ci-status.pending{background:rgba(255,138,61,.15)!important;color:#ffab5e!important;border:1px solid rgba(255,138,61,.45)}
+.cart-body .ci-status.done{background:rgba(0,230,118,.14)!important;color:#69f0ae!important;border:1px solid rgba(0,230,118,.45)}
+.ci-ico{display:inline-block}
+.new .ci-ico{animation:icoSwing 2s ease-in-out infinite;transform-origin:50% 20%}
+.pending .ci-ico{animation:icoSpin 2.2s ease-in-out infinite}
+.done .ci-ico{animation:icoBeat 1.6s ease-in-out infinite}
+@keyframes icoSwing{0%,100%{transform:rotate(-18deg)}50%{transform:rotate(18deg)}}
+@keyframes icoSpin{0%,100%{transform:rotate(-12deg) scale(1)}50%{transform:rotate(12deg) scale(1.25)}}
+@keyframes icoBeat{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+
+/* bo'sh savat */
+.cart-empty{padding:34px 16px!important;color:#9aa6d6!important}
+.ce-orbit{width:110px;height:110px;margin:0 auto 16px;border-radius:50%;border:2px dashed rgba(255,85,0,.55);display:flex;align-items:center;justify-content:center;animation:ceSpin 14s linear infinite}
+.ce-orbit span{font-size:50px!important;margin:0!important;animation:ceSpinBack 14s linear infinite,chFloat 2.6s ease-in-out infinite}
+@keyframes ceSpin{to{transform:rotate(360deg)}}
+@keyframes ceSpinBack{to{transform:rotate(-360deg)}}
+.cart-empty h4{font-family:'Bebas Neue';font-size:24px;letter-spacing:2px;color:#fff;margin-bottom:8px}
+
+/* pastki qism */
+.cart-footer{background:rgba(0,0,0,.28)!important;border-top:1px solid rgba(255,255,255,.1)!important;padding:14px 16px!important}
+.cart-notice{background:linear-gradient(135deg,rgba(255,85,0,.16),rgba(255,255,255,.04))!important;border:1px solid rgba(255,85,0,.3);border-left:4px solid #ff5500!important;color:#dfe4ff!important;line-height:1.7!important;font-size:12px!important}
+.cart-notice strong{color:#ff8a3d!important}
+.cart-notice span[style]{color:#ff8a80!important}
+.cart-contact-btn{position:relative;overflow:hidden;color:#fff!important;border-radius:12px!important;padding:12px!important;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.cart-contact-btn.ccb-tg{background:linear-gradient(135deg,#29b6f6,#0277bd)!important}
+.cart-contact-btn.ccb-ig{background:linear-gradient(135deg,#f09433,#dc2743 55%,#bc1888)!important}
+.cart-contact-btn::after{content:"";position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.4),transparent);transform:skewX(-20deg);animation:ccSweep 3.2s ease-in-out infinite}
+.cart-contact-btn.ccb-ig::after{animation-delay:1.6s}
+@keyframes ccSweep{0%{left:-80%}60%,100%{left:140%}}
+.cart-contact-btn:hover{transform:translateY(-3px) scale(1.03)!important;opacity:1!important}
+@media(max-width:480px){.cart-modal{border-radius:22px!important}.ci-step{min-width:50px}.ci-thumb{width:40px;height:40px}.cart-header h2{font-size:21px!important}}
+@media(prefers-reduced-motion:reduce){.cart-modal *,.cart-modal *::before,.cart-modal *::after{animation:none!important}}
+</style>
+<style id="mb-pro">
+/* ===== SPORTUP — MOBILE PRO LAYER ===== */
+
+/* --- Umumiy tuzatishlar (hamma ekranda) --- */
+*{-webkit-tap-highlight-color:transparent}
+button,a,.pcard,.cat-btn{touch-action:manipulation}
+/* Admin paneldagi chiplar hero chiplari bilan aralashib ketgan edi */
+#su-adm-tools .su-chip{position:static!important;transform:none!important;animation:none!important;backdrop-filter:none!important;display:inline-block!important;letter-spacing:0!important;font-size:12px!important;padding:9px 14px!important;background:var(--orl)!important;border:1.5px solid var(--or)!important;border-radius:12px!important;color:var(--or)!important}
+#mb-nav{display:none}
+
+@media all{
+
+/* --- Og'ir effektlarni o'chirish (telefon tez ishlashi uchun) --- */
+#su-cv,#su-particles,#su-glow,.su-blob,.su-beam,#su-ring,.su-cursor,.su-cursor-trail,.su-ball,.su-giant,
+#su-prog,.su-scroll-bar,.su-top,#su-tg,#su-loader{display:none!important}
+.pcard,.trust-card,.filter-bar,.rev-card,.sp-box,.su-q,.su-flip>div,.a-stat,.order-card{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.cat-btn.active,.trust-ico,.cat-icon{animation:none!important}
+.overlay{backdrop-filter:blur(6px)!important;animation:fadeIn .2s ease both!important;align-items:flex-end!important;padding:0!important}
+.overlay.open{animation:fadeIn .2s ease both!important}
+#view-choice-modal{align-items:center!important;padding:16px!important}
+
+html,body{max-width:100%;overflow-x:hidden}
+body{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+
+/* --- Ticker --- */
+.ticker{height:30px}
+.ticker-inner span{font-size:10px;padding:0 18px;letter-spacing:1.5px}
+
+/* --- Header: 2 qator (logo + tugmalar / qidiruv) --- */
+.header{height:auto!important;flex-wrap:wrap;gap:8px 8px;padding:8px 12px 10px!important;border-bottom-width:2px}
+.logo{font-size:30px;letter-spacing:2px}
+.logo-tagline{display:none}
+.h-right{margin-left:auto;gap:7px}
+.search-wrap{order:3;flex:1 1 100%;max-width:none}
+.search-wrap input{font-size:16px;padding:10px 16px 10px 42px}
+.search-icon{left:15px;font-size:16px}
+.dark-toggle{width:44px;height:24px}
+.dark-toggle::after{width:18px;height:18px}
+[data-theme="dark"] .dark-toggle::after{left:23px}
+.cart-btn,.sale-btn{width:40px;height:40px;font-size:18px}
+.h-signup,.h-admin-btn{font-size:0!important;width:40px;height:40px;padding:0!important;border-radius:50%;justify-content:center}
+.h-signup::before{content:'🔐';font-size:17px}
+.h-admin-btn::before{content:'⚙️';font-size:17px}
+.su-sale-banner{position:static!important;font-size:10px!important;padding:6px!important;letter-spacing:1px!important}
+
+/* --- Hero --- */
+.su-hero{min-height:auto!important;padding:5vh 18px 7vh!important;gap:22px!important;perspective:none}
+.su-hl small{font-size:10px;padding:6px 12px;margin-bottom:16px;letter-spacing:.2em}
+.su-hl h1{font-size:clamp(46px,15vw,84px)!important}
+.su-hl p{font-size:14px;margin-top:14px;max-width:none}
+.su-btns{gap:10px;margin-top:20px}
+.su-btns a{flex:1 1 100%;text-align:center;padding:15px 20px;font-size:12px}
+.su-tabs{margin-top:18px;gap:8px}
+.su-tabs button{flex:1;padding:11px 10px;font-size:11px}
+#su-b{transform:none!important}
+.su-ring{display:none}
+.su-boot img{border-radius:18px}
+.su-hero .su-chip{display:none!important}
+.su-tape{margin:-8px -4vw 18px!important}
+.su-tape div{font-size:18px;padding:10px 0;gap:26px}
+
+/* --- Layout: oyna scrolli (ichki scroll yo'q) --- */
+.layout{display:flex;flex-direction:column;min-height:0}
+.sb{display:contents}
+.sb-label,.sb-divider{display:none}
+.cat-scroll{order:1;position:sticky;top:var(--hh,100px);z-index:350;display:flex!important;overflow-x:auto;gap:8px;padding:9px 12px!important;margin:0;
+  background:rgba(5,6,15,.94);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08);
+  scroll-snap-type:x proximity;scrollbar-width:none;transition:top .45s cubic-bezier(.2,.8,.2,1)}
+.cat-scroll::-webkit-scrollbar{display:none}
+body:has(.header.su-h) .cat-scroll{top:0}
+.cat-btn{flex:0 0 auto;width:auto;margin:0;padding:10px 14px;border-radius:30px;white-space:nowrap;scroll-snap-align:center;font-size:14px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+.cat-btn:hover{transform:none}
+.cat-btn:active{transform:scale(.95)}
+.cat-btn::before{display:none}
+.cat-name{flex:none}
+.cat-icon{width:auto;font-size:16px}
+.ct{order:2;max-height:none!important;overflow:visible!important;padding:14px 12px 10px!important}
+.acc-btn,.acc-panel,.sb-soc{order:3}
+.acc-btn{width:auto;margin:0 12px 8px;padding:14px}
+.acc-panel{margin:0 12px 10px}
+.sb-soc{margin:6px 12px 14px;padding:13px;justify-content:center;font-size:13px}
+.person-row .p-card-popup{display:none!important}
+.p-avatar{width:42px;height:42px}
+
+/* --- Sarlavha, ishonch bloki, filtr --- */
+.page-header{flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.page-title{font-size:30px}
+.count-badge{font-size:9px;padding:5px 12px}
+.header-add-btn{padding:8px 14px;font-size:12px}
+.su-sh{margin:2px 0 14px}
+.su-sh small{font-size:9px;padding:5px 11px}
+.su-sh h2{font-size:clamp(32px,10vw,56px)!important;margin-top:8px}
+.trust-bar{grid-template-columns:repeat(2,1fr)!important;gap:10px!important;margin-bottom:16px}
+.trust-card{padding:12px 8px!important;border-radius:16px!important}
+.trust-ico{font-size:22px!important;margin-bottom:3px}
+.trust-title{font-size:10px}.trust-sub{font-size:9px}
+.filter-bar{gap:8px;padding:10px 12px!important;border-radius:16px!important;margin-bottom:14px}
+.filter-label{display:none}
+.filter-bar select{flex:1 1 40%;min-width:0;font-size:13px;padding:10px}
+.filter-reset{margin-left:0;padding:6px}
+
+/* --- Mahsulot to'ri: 2 ustun --- */
+.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+.pcard{border-radius:18px!important}
+.pcard:hover{transform:none}
+.pcard:active{transform:scale(.97)!important}
+.img-wrap{height:148px}
+.card-body{padding:10px 10px 12px}
+.card-brand{font-size:8px;letter-spacing:1.8px}
+.card-price{font-size:21px!important}
+.old-price{font-size:12px}
+.card-name{font-size:11px;min-height:0;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-info{font-size:9.5px;padding:5px 7px;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.buy-btn{padding:10px 6px;font-size:12px;border-radius:10px}
+.card-badge{top:8px;left:8px;font-size:8px;padding:3px 8px}
+.card-badge.sale{font-size:10px;padding:3px 9px}
+.no-results{padding:50px 16px}
+
+/* --- Modallar: pastdan chiqadigan oyna (bottom sheet) --- */
+@keyframes mbSheet{from{transform:translateY(100%);opacity:.6}to{transform:none;opacity:1}}
+.overlay.open .pmodal,.overlay.open .omodal,.overlay.open .login-modal,.overlay.open .cart-modal,.overlay.open .admin-modal{
+  animation:mbSheet .38s cubic-bezier(.2,.9,.3,1) both!important;filter:none!important}
+.pmodal,.omodal,.login-modal,.cart-modal{max-width:100%!important;width:100%;border-radius:24px 24px 0 0!important;max-height:92dvh;max-height:92vh}
+@supports(height:1dvh){.pmodal,.omodal,.login-modal,.cart-modal{max-height:92dvh}}
+.pmodal,.omodal,.login-modal{padding-bottom:env(safe-area-inset-bottom)}
+.pmod-img-wrap{height:230px}
+.pmod-body{padding:18px 18px 22px}
+.pmod-name{font-size:22px}.pmod-price{font-size:28px;margin-bottom:12px}
+.order-grid{grid-template-columns:1fr 1fr!important}
+.o-online{grid-column:1/-1!important;font-size:15px;padding:15px}
+.order-btn{padding:14px 8px}
+.omodal{padding:22px 18px 26px}
+.omodal h3{font-size:28px}
+.omodal input,.omodal select,.omodal textarea,.login-modal input,.search-wrap input,.filter-bar select{font-size:16px!important}
+.login-modal{padding:28px 22px 30px}
+.close-btn,.omod-close,.lm-close,.cart-close{width:40px;height:40px}
+
+/* Admin: to'liq ekran */
+.admin-modal{max-width:100%!important;width:100%;height:100vh;max-height:100vh!important;border-radius:0!important}
+@supports(height:1dvh){.admin-modal{height:100dvh;max-height:100dvh!important}}
+.admin-header{flex-wrap:wrap;padding:14px 14px 12px;gap:10px}
+.admin-header h2{font-size:22px;flex:1;min-width:0}
+.admin-stats{order:3;width:100%;gap:8px}
+.a-stat{flex:1;padding:6px 8px}
+.a-stat-num{font-size:20px}
+.at-btn{padding:13px 6px;font-size:13px}
+.admin-body{padding:14px!important}
+.admin-filter{gap:7px}
+.af-btn{padding:9px 14px;font-size:12px}
+.admin-filter .af-btn[style*="margin-left:auto"]{margin-left:0!important}
+.su-as,#su-ord-search{flex:1 1 100%!important;min-width:0}
+.prod-admin-row{flex-wrap:wrap}
+.par-actions{width:100%}
+.par-actions button{flex:1;padding:10px}
+.oc-act-btn{padding:11px 8px;min-width:46%}
+.oc-grid{grid-template-columns:1fr!important}
+
+/* Savat */
+.cart-modal{max-height:90vh}
+@supports(height:1dvh){.cart-modal{max-height:90dvh}}
+.cart-header{padding:14px 16px!important}
+.cart-body{padding:12px!important}
+.cart-contact-btns{flex-direction:column}
+
+/* --- Pastki navigatsiya --- */
+#mb-nav{display:flex;position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:9000;height:62px;padding:0 4px;
+  border-radius:22px;background:rgba(12,15,34,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.14);box-shadow:0 12px 36px rgba(0,0,0,.55),0 0 0 1px rgba(255,85,0,.08);
+  transition:transform .35s cubic-bezier(.2,.9,.3,1)}
+body.mb-modal #mb-nav{transform:translateY(160%)}
+#mb-nav button{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;background:transparent;
+  color:#9aa6d6;font:700 10px 'Barlow Condensed',sans-serif;letter-spacing:.6px;text-transform:uppercase;cursor:pointer;transition:color .2s,transform .15s}
+#mb-nav button i{font-style:normal;font-size:21px;line-height:1;transition:transform .3s cubic-bezier(.34,1.8,.64,1)}
+#mb-nav button:active{transform:scale(.9)}
+#mb-nav button.on{color:#FF5500}
+#mb-nav button.on i{transform:translateY(-3px) scale(1.18);filter:drop-shadow(0 4px 8px rgba(255,85,0,.55))}
+#mb-nav button.on::after{content:"";position:absolute;top:5px;width:22px;height:3px;border-radius:3px;background:#FF5500;box-shadow:0 0 10px #FF5500}
+#mb-nav .mb-badge{position:absolute;top:6px;left:calc(50% + 6px);min-width:17px;height:17px;border-radius:9px;padding:0 4px;background:#E53935;color:#fff;
+  font:900 9px Barlow,sans-serif;display:none;align-items:center;justify-content:center;border:2px solid #0c0f22}
+#mb-nav .mb-badge.show{display:flex}
+#mb-nav .mb-sale i{animation:suFire 1.1s ease-in-out infinite}
+
+/* Suzuvchi tugmalar navigatsiya ustida */
+#su-up{right:14px!important;width:44px!important;height:44px!important;font-size:20px!important}
+#su-up.show{bottom:calc(86px + env(safe-area-inset-bottom))!important}
+.view-switch-btn{left:12px;bottom:calc(86px + env(safe-area-inset-bottom));width:38px;height:38px;font-size:16px;opacity:.75}
+.toast{left:12px!important;right:12px!important;bottom:calc(88px + env(safe-area-inset-bottom))!important;max-width:none!important}
+
+/* --- "Nega SportUp", FAQ, footer --- */
+#su-why{padding:5vh 16px 2vh!important}
+.su-fg{grid-template-columns:repeat(2,1fr)!important;gap:12px!important;margin-top:24px!important}
+.su-flip{height:170px}
+.su-flip>div{padding:12px;border-radius:20px}
+.su-flip i{font-size:38px}.su-flip h4{font-size:21px}.su-flip p{font-size:12px}
+@media(hover:none){.su-flip:hover{transform:none}.su-flip.f,.su-flip.f:hover{transform:rotateY(180deg)}}
+.su-steps{grid-template-columns:repeat(2,1fr)!important;gap:22px 12px!important;margin:44px 0 20px!important}
+.su-steps::before{display:none}
+.su-step b{width:54px;height:54px;font-size:26px}
+.su-step h5{font-size:14px}.su-step p{font-size:12px}
+.su-band{height:240px!important;margin:30px -16px!important}
+.su-band img{width:58vw!important}
+.su-faq{margin-top:26px}
+.su-q button{padding:16px 18px;font-size:14px}
+.su-q div p{padding:0 18px;font-size:13px}.su-q.o div p{padding:0 18px 18px}
+#su-foot{padding:46px 18px 26px!important;margin-top:20px!important}
+#su-foot .r{flex-direction:column;text-align:center;gap:14px}
+#su-foot a{margin:6px 4px 0!important;display:inline-block}
+}
+
+@media(max-width:380px){
+.logo{font-size:26px}
+.card-price{font-size:19px!important}
+.img-wrap{height:132px}
+.su-flip{height:150px}
+}
+
+@media(prefers-reduced-motion:reduce){
+#mb-nav,#mb-nav *{animation:none!important;transition:none!important}
+}
+
+
+/* FAQAT TELEFON: keng ekranda ham telefon ustuni */
+@media(min-width:821px){
+html{background:#02030a}
+body{max-width:480px;margin:0 auto!important;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 0 80px rgba(0,0,0,.6);min-height:100vh}
+#mb-nav{left:50%!important;right:auto!important;width:460px;transform:translateX(-50%)}
+body.mb-modal #mb-nav{transform:translate(-50%,160%)}
+.overlay{justify-content:center}
+.overlay>*{max-width:480px;width:100%}
+}
+
+/* hero toshib ketmasin */
+.su-hero{grid-template-columns:minmax(0,1fr)!important}
+.su-hl,.su-hl *{max-width:100%}
+.su-hl h1{font-size:clamp(40px,12.5vw,72px)!important;overflow-wrap:anywhere}
+html,body{overflow-x:hidden}
+
+/* === TEZLIK: og'ir effektlar o'chirildi === */
+*:not(.ticker-inner):not(.spinner):not(.su-tape>div):not(.flow):not(.su-loader-logo),
+*::before,*::after{animation-iteration-count:1!important}
+*,*::before,*::after{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;will-change:auto!important}
+.header,.cat-scroll,.pcard,.card,#mb-nav,.overlay>*{filter:none!important}
+#mb-nav{background:rgba(10,12,24,.96)!important}
+.cat-scroll{background:rgba(5,6,15,.97)!important}
+.su-hero::before,.su-hero::after,.su-ring,.su-chip,.su-boot{animation:none!important}
+.pcard,.card{transition:none!important;box-shadow:0 2px 10px rgba(0,0,0,.35)!important}
+img{content-visibility:auto}
+.pcard{content-visibility:auto;contain-intrinsic-size:auto 260px}
+</style>
+<script id="mb-pro-js">
+(function(){
+  var $=function(s){return document.querySelector(s)};
+  var mq={matches:true};
+
+  /* Header balandligi -> sticky kategoriya paneli uchun */
+  var hdr=$('.header');
+  function setHH(){ if(hdr) document.documentElement.style.setProperty('--hh',hdr.offsetHeight+'px'); }
+  setHH(); addEventListener('resize',setHH);
+  if(window.ResizeObserver&&hdr) new ResizeObserver(setHH).observe(hdr);
+
+  /* Sensorli qurilmada kursor/tilt effektlari ishlamasin (tap bosilganda qotib qolmasin) */
+  if(matchMedia('(hover:none)').matches){
+    document.addEventListener('mousemove',function(e){e.stopPropagation()},true);
+    document.addEventListener('pointermove',function(e){if(e.pointerType==='touch')e.stopPropagation()},true);
+  }
+
+  function vib(){ try{ navigator.vibrate&&navigator.vibrate(8) }catch(e){} }
+
+  function toCatalog(){
+    var t=$('#page-title'); if(!t) return;
+    var cb=$('.cat-scroll'), catH=cb?cb.offsetHeight:0;
+    var y=t.getBoundingClientRect().top+scrollY-catH-14;
+    if(scrollY>y) y-=(hdr?hdr.offsetHeight:0);   // yuqoriga scroll bo'lsa header chiqadi
+    scrollTo({top:Math.max(0,y),behavior:'smooth'});
+  }
+  function centerChip(btn){
+    var cs=$('.cat-scroll'); if(!cs||!btn) return;
+    cs.scrollTo({left:btn.offsetLeft-(cs.clientWidth-btn.offsetWidth)/2,behavior:'smooth'});
+  }
+
+  /* Kategoriya almashganda katalogga olib borish */
+  var sc=window.switchCat;
+  if(typeof sc==='function'){
+    window.switchCat=function(cat,btn){
+      var r=sc.apply(this,arguments);
+      if(mq.matches){ centerChip(btn); setTimeout(toCatalog,60); setTimeout(mark,450); }
+      return r;
+    };
+  }
+
+  /* Pastki navigatsiya */
+  var nav=document.createElement('nav'); nav.id='mb-nav'; nav.setAttribute('aria-label','Asosiy menyu');
+  nav.innerHTML=
+    '<button data-a="home"><i>🏠</i><span>Bosh</span></button>'+
+    '<button data-a="cat"><i>🧩</i><span>Katalog</span></button>'+
+    '<button data-a="sale" class="mb-sale"><i>🔥</i><span>Aksiya</span><b class="mb-badge" id="mb-sale-n">0</b></button>'+
+    '<button data-a="cart"><i>🛒</i><span>Savat</span><b class="mb-badge" id="mb-cart-n">0</b></button>'+
+    '<button data-a="contact"><i>✈️</i><span>Aloqa</span></button>';
+  document.body.appendChild(nav);
+  var btns=[].slice.call(nav.querySelectorAll('button'));
+
+  function mark(){
+    var a=(window.activeCategory==='__sale')?'sale':(scrollY<260?'home':'cat');
+    btns.forEach(function(b){ b.classList.toggle('on',b.getAttribute('data-a')===a); });
+  }
+  nav.addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return; vib();
+    var a=b.getAttribute('data-a');
+    if(a==='home') scrollTo({top:0,behavior:'smooth'});
+    else if(a==='cat'){
+      if(window.activeCategory==='__sale'){ var first=$('.cat-btn'); if(first) first.click(); }
+      else toCatalog();
+    }
+    else if(a==='sale'){ if(typeof showSale==='function') showSale(); }
+    else if(a==='cart'){ if(typeof openCart==='function') openCart(); }
+    else if(a==='contact'){ var t=$('.h-tg'); if(t) t.click(); }
+    setTimeout(mark,450);
+  });
+  addEventListener('scroll',mark,{passive:true}); mark();
+
+  /* Badge'lar (savat / aksiya soni) */
+  function badge(id,srcSel){
+    var el=document.getElementById(id), src=$(srcSel); if(!el||!src) return;
+    var n=parseInt(src.textContent,10)||0; el.textContent=n; el.classList.toggle('show',n>0);
+  }
+  function sync(){ badge('mb-cart-n','#cart-count'); badge('mb-sale-n','#sale-count'); }
+  ['#cart-count','#sale-count'].forEach(function(s){
+    var el=$(s); if(el) new MutationObserver(sync).observe(el,{childList:true,characterData:true,subtree:true});
+  });
+  sync(); setInterval(sync,2000);
+
+  /* Modal ochiq bo'lsa navigatsiya yashirinadi */
+  function modalState(){
+    document.body.classList.toggle('mb-modal',!!document.querySelector('.overlay.open,.img-full-modal.open,#su-pick.open'));
+  }
+  [].slice.call(document.querySelectorAll('.overlay,.img-full-modal,#su-pick')).forEach(function(el){
+    new MutationObserver(modalState).observe(el,{attributes:true,attributeFilter:['class']});
+  });
+
+  /* "Sotib olish" va asosiy tugmalarga yengil tebranish */
+  document.addEventListener('click',function(e){
+    if(e.target.closest('.buy-btn,.o-online,#submit-btn,.cat-btn')) vib();
+  },true);
+})();
+
 </script>
 </body>
 </html>
