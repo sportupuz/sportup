@@ -1013,8 +1013,8 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
     <div id="lm-step1">
       <h2>ADMIN <em>KIRISH</em></h2>
       <div class="lm-sub">Har bir kirish urinishi egasiga xabar qilinadi.</div>
-      <input type="text" id="lm-username" placeholder="Login *" autocomplete="off">
-      <input type="password" id="lm-password" placeholder="Parol *">
+      <input type="email" id="lm-username" placeholder="Admin email *" autocomplete="username" autocapitalize="off">
+      <input type="password" id="lm-password" placeholder="Parol *" autocomplete="current-password">
       <button class="lm-btn" onclick="doLogin()">🔐 Kirish</button>
     </div>
     <div id="lm-step2" class="lm-step2">
@@ -1188,6 +1188,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 <!-- FIREBASE SDK (mahsulot va zakazlarni bulutga saqlash uchun) -->
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
 
 <script>
 /* =======================================================================
@@ -1212,8 +1213,6 @@ var ADMIN_EMAIL = 'zuhriddinberdaliyev2@gmail.com';
 var EMAIL_ENABLED = true;
 
 /* --- ADMIN LOGIN --- */
-var ADMIN_LOGIN = 'sp_2CV2QC';
-var ADMIN_PASS  = 'RWhA7j#9EcagC!hrv5';
 
 /* --- FIREBASE (mahsulot va zakazlar BULUTDA — barcha qurilmalarda, barcha mijozlarda ko'rinadi) --- */
 var FIREBASE_URL   = 'https://sportup-61694-default-rtdb.europe-west1.firebasedatabase.app';
@@ -1222,8 +1221,15 @@ var ORDERS_PATH    = 'orders_m4q8p2';
 
 
 /* Firebasega ulanish */
-firebase.initializeApp({ databaseURL: FIREBASE_URL });
+firebase.initializeApp({
+  apiKey: "AIzaSyA8EC1pNxz2WHeEqmftzVBfil6r3l8kQqA",
+  authDomain: "sportup-61694.firebaseapp.com",
+  databaseURL: FIREBASE_URL,
+  projectId: "sportup-61694",
+  appId: "1:1056833169751:web:b78d4c1d82a11da4183612"
+});
 var db = firebase.database();
+var auth = firebase.auth();
 
 /* =======================================================================
    2-QISM — SAYTDAGI ASOSIY MAHSULOTLAR (kod ichida turadi, hech kim o'chira olmaydi)
@@ -1946,18 +1952,31 @@ async function submitOrder(){
 /* =======================================================================
    11-QISM — ZAKAZLAR — FIREBASE BULUTIDAN REAL VAQTDA
    ======================================================================= */
-function setupOrdersListener(){
-  db.ref(ORDERS_PATH).on('value', function(snap){
-    var data=snap.val()||{};
-    allOrders=Object.keys(data).map(function(id){
-      var o=data[id]||{}; o.id=o.id||id; o.num=o.num||id.slice(-6).toUpperCase(); return o;
-    });
-    allOrders.sort(function(a,b){ return (b.createdAt||0)-(a.createdAt||0); });
-    refreshCartFromAllOrders();
-    if(document.getElementById('admin-modal').classList.contains('open')) renderOrders();
-  }, function(err){
-    console.error('Firebase (orders) xato:',err);
+var ordersOff=[], ordersMine={};
+function applyOrders(data){
+  allOrders=Object.keys(data).filter(function(id){return data[id];}).map(function(id){
+    var o=data[id]||{}; o.id=o.id||id; o.num=o.num||id.slice(-6).toUpperCase(); return o;
   });
+  allOrders.sort(function(a,b){ return (b.createdAt||0)-(a.createdAt||0); });
+  refreshCartFromAllOrders();
+  if(document.getElementById('admin-modal').classList.contains('open')) renderOrders();
+}
+function setupOrdersListener(){
+  ordersOff.forEach(function(f){ try{f();}catch(e){} }); ordersOff=[]; ordersMine={};
+  if(auth.currentUser){
+    /* admin: hamma zakazlar */
+    var r=db.ref(ORDERS_PATH);
+    var cb=r.on('value',function(snap){ applyOrders(snap.val()||{}); },function(err){ console.error('Firebase (orders) xato:',err); });
+    ordersOff.push(function(){ r.off('value',cb); });
+  }else{
+    /* mijoz: faqat o'z zakazlari */
+    applyOrders({});
+    getMyOrderIds().forEach(function(id){
+      var r=db.ref(ORDERS_PATH+'/'+id);
+      var cb=r.on('value',function(snap){ ordersMine[id]=snap.val(); applyOrders(ordersMine); },function(){});
+      ordersOff.push(function(){ r.off('value',cb); });
+    });
+  }
 }
 function getMyOrderIds(){
   try{ return JSON.parse(localStorage.getItem(MY_ORDERS_KEY)||'[]'); }catch(e){ return []; }
@@ -1968,6 +1987,7 @@ function addMyOrderId(id){
     if(ids.length>50) ids=ids.slice(0,50);
     localStorage.setItem(MY_ORDERS_KEY,JSON.stringify(ids));
   }catch(e){}
+  if(!auth.currentUser) setTimeout(setupOrdersListener,50);
 }
 async function updateOrderStatusLocal(id,status){
   try{
@@ -2310,11 +2330,13 @@ function resetAttempts(){ saveAttempts({count:0,lockUntil:0}); }
 
 function checkAdminSession(){
   try{
-    if(localStorage.getItem(LS_ADMIN_KEY)==='yes'){
-      isAdmin=true;
-      document.getElementById('btn-signup').style.display='none';
-      document.getElementById('btn-admin').style.display='flex';
-    }
+    auth.onAuthStateChanged(function(u){
+      isAdmin=!!u;
+      document.getElementById('btn-signup').style.display=u?'none':'flex';
+      document.getElementById('btn-admin').style.display=u?'flex':'none';
+      setupOrdersListener();
+      try{ render(); }catch(e){}
+    });
   }catch(e){}
 }
 function openLogin(){
@@ -2357,7 +2379,11 @@ async function doLogin(){
   var u=document.getElementById('lm-username').value.trim();
   var p=document.getElementById('lm-password').value;
 
-  if(u!==ADMIN_LOGIN||p!==ADMIN_PASS){
+  var authOk=false, authErr='';
+  try{ await auth.signInWithEmailAndPassword(u,p); authOk=true; }catch(e){ authErr=(e&&e.code)||''; }
+  if(authErr==='auth/api-key-not-valid.-please-pass-a-valid-api-key.'||authErr==='auth/invalid-api-key'){ showLoginError('⚠️ Firebase kaliti noto\'g\'ri. Egasiga ayting.'); return; }
+  if(authErr==='auth/network-request-failed'){ showLoginError('📶 Internet yo\'q. Qayta urinib ko\'ring.'); return; }
+  if(!authOk){
     registerFailedAttempt();
     document.getElementById('lm-password').value='';
     if(isLockedOut()){
@@ -2439,6 +2465,7 @@ function grantAdmin(note){
   tgSendMessage('✅ Admin panelga muvaffaqiyatli kirildi\n🕐 '+nowStr()+'\n📱 '+deviceInfo());
 }
 function logoutAdmin(){
+  try{ auth.signOut(); }catch(e){}
   isAdmin=false;
   try{ localStorage.removeItem(LS_ADMIN_KEY); }catch(e){}
   document.getElementById('btn-admin').style.display='none';
