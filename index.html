@@ -505,6 +505,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg-page);color:var(--text-
 }
 </style>
 <style>
+#su-load,#su-loader{display:none!important}
 /* ===== SPORTUP CINEMATIC LAYER ===== */
 #su-load{position:fixed;inset:0;z-index:99999;background:#07070b;display:grid;place-items:center;transition:opacity .8s .2s,visibility 0s 1s}
 #su-load b{font-family:'Bebas Neue',sans-serif;font-size:clamp(50px,14vw,150px);letter-spacing:.18em;background:linear-gradient(90deg,#fff 20%,#FF5500 50%,#fff 80%);background-size:250%;-webkit-background-clip:text;color:transparent;animation:suSh 1.4s linear infinite,suZoom 1.6s ease-out}
@@ -2629,8 +2630,6 @@ setupOrdersListener();     // zakazlarni Firebase bulutidan real vaqtda kuzatish
 <script>
 (function(){
 const $=(s,r=document)=>r.querySelector(s),mk=(t,id)=>{const e=document.createElement(t);if(id)e.id=id;document.body.appendChild(e);return e};
-const L=mk('div','su-load');L.innerHTML='<b>SPORTUP</b><i></i>';
-const done=()=>L.classList.add('off');addEventListener('load',()=>setTimeout(done,1500));setTimeout(done,3200);
 const top=mk('div','su-top'),glow=mk('div','su-glow'),cv=mk('canvas','su-cv'),up=mk('button','su-up');up.textContent='🚀';up.onclick=()=>scrollTo({top:0,behavior:'smooth'});
 /* particles */
 const c=cv.getContext('2d');let W,H;const rs=()=>{W=cv.width=innerWidth;H=cv.height=innerHeight};rs();addEventListener('resize',rs);
@@ -3046,30 +3045,6 @@ document.addEventListener('click',e=>{if(e.target.closest('.at-btn'))setTimeout(
 /* ===== SPORTUP PRO ENHANCEMENTS ===== */
 (function(){
 'use strict';
-
-/* 1. LOADING SCREEN */
-(function(){
-  if(document.getElementById('su-loader')) return;
-  var loader = document.createElement('div');
-  loader.id = 'su-loader';
-  loader.innerHTML = '<div class="su-loader-logo">SPORT<em>UP</em></div><div class="su-loader-bar"><div class="su-loader-progress" id="su-lp"></div></div><div class="su-loader-text">Yuklanmoqda...</div>';
-  document.body.insertBefore(loader, document.body.firstChild);
-  var lp = document.getElementById('su-lp');
-  var w = 0;
-  var iv = setInterval(function(){
-    w += Math.random() * 15 + 5;
-    if(w > 90) w = 90;
-    lp.style.width = w + '%';
-  }, 80);
-  window.addEventListener('load', function(){
-    clearInterval(iv);
-    lp.style.width = '100%';
-    setTimeout(function(){
-      loader.classList.add('done');
-      setTimeout(function(){ loader.style.display = 'none'; }, 600);
-    }, 300);
-  });
-})();
 
 /* 2. SCROLL PROGRESS BAR */
 (function(){
